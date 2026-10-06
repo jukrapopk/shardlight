@@ -9,6 +9,29 @@
   --accent: #ffd9a0;
   --accent-2: #cfe6ff;
   --radius: 14px;
+
+  /* Type scale */
+  --fs-micro: 11px;
+  --fs-code: 12.5px;
+  --fs-label: 13px;
+  --fs-body: 16px;
+  --fs-lede: 17px;
+  --fs-h2: 26px;
+
+  /* Spacing scale */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 40px;
+  --sp-8: 56px;
+
+  --pad-page: 24px;
+  --pad-section: 48px;
+  --pad-hero-top: 72px;
+  --pad-hero-bottom: 56px;
 }
 
 * {
@@ -31,31 +54,33 @@ body {
     'Segoe UI',
     Roboto,
     sans-serif;
+  font-size: var(--fs-body);
   -webkit-font-smoothing: antialiased;
 }
 
 .page {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 0 24px 80px;
+  padding: 0 var(--pad-page) 80px;
 }
 
 /* ---------- hero ---------- */
 .hero {
   text-align: center;
-  padding: 72px 0 56px;
+  padding: var(--pad-hero-top) 0 var(--pad-hero-bottom);
 }
 
 .hero-light {
   height: 320px;
   display: grid;
+  grid-template: 100% / 100%;
   place-items: center;
-  margin-bottom: 8px;
+  margin-bottom: var(--sp-1);
 }
 
 .hero h1 {
-  margin: 0 0 14px;
-  font-size: clamp(40px, 8vw, 72px);
+  margin: 0 0 var(--sp-3);
+  font-size: clamp(36px, 11vw, 72px);
   line-height: 1.05;
   letter-spacing: -0.03em;
   color: #fff;
@@ -64,8 +89,8 @@ body {
 
 .lede {
   max-width: 560px;
-  margin: 0 auto 24px;
-  font-size: 18px;
+  margin: 0 auto var(--sp-5);
+  font-size: var(--fs-lede);
   line-height: 1.55;
   color: var(--muted);
 }
@@ -73,7 +98,7 @@ body {
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--sp-3);
   justify-content: center;
   align-items: center;
 }
@@ -85,7 +110,7 @@ body {
   border-radius: 999px;
   color: var(--text);
   text-decoration: none;
-  font-size: 14px;
+  font-size: var(--fs-label);
   background: var(--panel);
   transition:
     border-color 0.15s,
@@ -99,13 +124,14 @@ body {
 .install {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
+  max-width: 100%;
   padding: 10px 16px;
   border-radius: 999px;
   background: var(--panel);
   border: 1px solid var(--border);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 13px;
+  font-size: var(--fs-label);
   color: var(--accent-2);
   cursor: pointer;
   transition: border-color 0.15s;
@@ -127,7 +153,7 @@ body {
     'Segoe UI',
     Roboto,
     sans-serif;
-  font-size: 11px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
@@ -135,9 +161,10 @@ body {
 
 .badges {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
   justify-content: center;
-  margin-top: 22px;
+  margin-top: var(--sp-5);
   min-height: 20px;
 }
 
@@ -156,18 +183,18 @@ body {
 
 /* ---------- sections ---------- */
 .section {
-  padding: 48px 0;
+  padding: var(--pad-section) 0;
   border-top: 1px solid var(--border);
 }
 
 .section h2 {
-  margin: 0 0 10px;
-  font-size: 26px;
+  margin: 0 0 var(--sp-2);
+  font-size: var(--fs-h2);
   letter-spacing: -0.02em;
 }
 
 .sub {
-  margin: 0 0 24px;
+  margin: 0 0 var(--sp-5);
   color: var(--muted);
 }
 
@@ -177,9 +204,11 @@ body {
 
 /* ---------- light boxes ---------- */
 .light-box {
-  width: 260px;
-  height: 260px;
+  --light-size: 260px;
+  width: min(var(--light-size), 100%);
+  aspect-ratio: 1;
   display: grid;
+  grid-template: 100% / 100%;
   place-items: center;
   background: radial-gradient(120% 120% at 50% 50%, #15151e 0%, #000 70%);
   border: 1px solid var(--border);
@@ -188,12 +217,7 @@ body {
 }
 
 .light-box.small {
-  width: 160px;
-  height: 160px;
-}
-
-.light-box canvas {
-  display: block;
+  --light-size: var(--preset-size, 160px);
 }
 
 .hoverable {
@@ -203,83 +227,143 @@ body {
 /* ---------- examples: light + its code ---------- */
 .examples {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--sp-5);
 }
 
 .examples figure {
   margin: 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
 }
 
-.examples h3 {
-  align-self: center;
+.examples h3,
+.compose-col h3 {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-label);
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
-.examples pre {
+/* ---------- code blocks ---------- */
+.code {
+  position: relative;
+  min-width: 0;
+  width: 100%;
+}
+
+.code pre {
   width: 100%;
   margin: 0;
-  padding: 14px 16px;
+  padding: 36px 16px var(--sp-4);
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12.5px;
+  font-size: var(--fs-code);
   line-height: 1.6;
-  color: var(--accent-2);
+  color: #c6cde0;
   overflow-x: auto;
+}
+
+.code.wrap pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.code-copy {
+  position: absolute;
+  top: var(--sp-2);
+  right: var(--sp-2);
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-2);
+  color: var(--muted);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.code-copy:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+.code-copy:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* syntax tokens */
+.tok-comment {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.tok-keyword {
+  color: #c792ea;
+}
+
+.tok-string {
+  color: #9fe3b0;
+}
+
+.tok-tag {
+  color: var(--accent);
+}
+
+.tok-key {
+  color: #8fd0ff;
+}
+
+.tok-call {
+  color: #79c0ff;
+}
+
+.tok-number {
+  color: #ffb454;
+}
+
+.tok-punct {
+  color: #6f7486;
 }
 
 /* ---------- effects: 2x2 showcase ---------- */
 .effects-grid {
-  grid-template-columns: repeat(2, 1fr);
-  gap: 32px;
-}
-
-@media (max-width: 720px) {
-  .effects-grid {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-7);
 }
 
 /* ---------- compose: preset vs custom ---------- */
 .compose-compare {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-8);
   align-items: start;
-}
-
-@media (max-width: 980px) {
-  .compose-compare {
-    grid-template-columns: 1fr;
-  }
 }
 
 .compose-col {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: var(--sp-4);
   min-width: 0;
-}
-
-.compose-col h3 {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
 .compose-code {
@@ -287,26 +371,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-}
-
-.compose-code pre {
-  width: 100%;
-  margin: 0;
-  padding: 14px 16px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12.5px;
-  line-height: 1.6;
-  color: var(--accent-2);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+  gap: var(--sp-3);
 }
 
 .compose-code .or {
-  font-size: 12px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -315,19 +384,21 @@ body {
 .compose-head {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--sp-3);
   min-height: 36px;
 }
 
 .preset-select {
   appearance: none;
-  padding: 8px 14px;
+  padding: 10px 34px 10px 14px;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: var(--panel);
+  background: var(--panel)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239aa0b0' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")
+    no-repeat right 14px center;
   color: var(--text);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--fs-label);
   cursor: pointer;
 }
 
@@ -342,18 +413,16 @@ body {
 
 /* ---------- presets ---------- */
 .presets {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
-}
-
-@media (max-width: 720px) {
-  .presets {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  --preset-size: 160px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-5);
 }
 
 .preset-card {
+  flex: 0 0 var(--preset-size);
+  width: var(--preset-size);
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -361,24 +430,76 @@ body {
 }
 
 figcaption {
-  margin-top: 10px;
+  margin-top: var(--sp-3);
   text-align: center;
-  font-size: 13px;
+  font-size: var(--fs-label);
   color: var(--muted);
 }
 
 /* ---------- footer ---------- */
 footer {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
   justify-content: center;
   align-items: center;
-  padding: 32px 0 8px;
+  padding: var(--sp-6) 0 var(--sp-2);
   border-top: 1px solid var(--border);
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--fs-label);
 }
 
 footer a {
   color: var(--muted);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 980px) {
+  .compose-compare {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .effects-grid {
+    gap: var(--sp-6);
+  }
+}
+
+@media (max-width: 720px) {
+  .effects-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  :root {
+    --pad-page: 16px;
+    --pad-section: 36px;
+    --pad-hero-top: 44px;
+    --pad-hero-bottom: 32px;
+    --fs-lede: 16px;
+    --fs-h2: 22px;
+    --fs-code: 12px;
+  }
+
+  .hero-light {
+    height: 240px;
+  }
+
+  .presets {
+    --preset-size: 128px;
+    gap: var(--sp-4);
+  }
+
+  /* The main light boxes stay at their natural 260px — they fit narrow screens,
+     and leaving R3F's canvas unscaled keeps its measured size centred and crisp.
+     Only the DOM-only lights (preset tiles, hero) are scaled down. */
+  .light-box.small > *,
+  .hero-light > * {
+    transform: scale(0.8);
+  }
+
+  /* Wrap code rather than scroll it on phones. */
+  .code pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
 }

@@ -5,6 +5,8 @@ import { getPreset } from 'shardlight';
 import { ShardLight, Shard } from 'shardlight/react';
 import { ShardLightMesh } from 'shardlight/r3f';
 import { createShardLight } from 'shardlight/three';
+import { Code } from './Code';
+import { copyToClipboard } from './clipboard';
 
 const PRESETS = ['star', 'sun', 'sparkle', 'starburst', 'ember'] as const;
 
@@ -54,12 +56,12 @@ scene.add(light.object);`,
     { type: 'flicker', channels: ['dust'], amount: 0.35 },
   ]}
 >
-  <Shard id="glow"  kind="blob"     channel="body"  strength={0.35} size={0.95} falloff={3} softness={5} />
-  <Shard id="core"  kind="blob"     channel="body"  strength={1} size={0.14} hardness={0.45} falloff={2.2} hover={{ scale: 1.3, opacity: 1.35 }} />
-  <Shard id="rays"  kind="fan"      channel="rays"  strength={0.7} size={1} count={6} width={4} taper={1} falloff={1.8} softness={1.5} />
-  <Shard id="cross" kind="fan"      channel="cross" angle={30} strength={0.45} size={0.72} count={6} width={2} taper={1} falloff={2} softness={1} />
-  <Shard id="ring"  kind="halo"     channel="rays"  strength={0.12} size={0.62} width={0.05} falloff={2} softness={1.5} />
-  <Shard id="dust"  kind="clusters" channel="dust"  clusters={4} perCluster={5} spread={40} inner={0.4} strength={0.25} size={0.5} width={2} taper={1} falloff={2} softness={1} />
+  <Shard id="glow" kind="blob" channel="body" strength={0.35} size={0.95} falloff={3} softness={5} />
+  <Shard id="core" kind="blob" channel="body" strength={1} size={0.14} hardness={0.45} falloff={2.2} hover={{ scale: 1.3, opacity: 1.35 }} />
+  <Shard id="rays" kind="fan" channel="rays" strength={0.7} size={1} count={6} width={4} taper={1} falloff={1.8} softness={1.5} />
+  <Shard id="cross" kind="fan" channel="cross" angle={30} strength={0.45} size={0.72} count={6} width={2} taper={1} falloff={2} softness={1} />
+  <Shard id="ring" kind="halo" channel="rays" strength={0.12} size={0.62} width={0.05} falloff={2} softness={1.5} />
+  <Shard id="dust" kind="clusters" channel="dust" clusters={4} perCluster={5} spread={40} inner={0.4} strength={0.25} size={0.5} width={2} taper={1} falloff={2} softness={1} />
 </ShardLight>`,
   collapse: `import { ShardLight } from 'shardlight/react';
 
@@ -107,30 +109,6 @@ function presetSnippets(name: string): { preset: string; shards: string } {
 }
 
 const INSTALL_COMMAND = 'npm install shardlight';
-
-async function copyToClipboard(text: string): Promise<boolean> {
-  try {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-  } catch {
-    /* fall back below */
-  }
-  try {
-    const area = document.createElement('textarea');
-    area.value = text;
-    area.style.position = 'fixed';
-    area.style.opacity = '0';
-    document.body.appendChild(area);
-    area.select();
-    const ok = document.execCommand('copy');
-    document.body.removeChild(area);
-    return ok;
-  } catch {
-    return false;
-  }
-}
 
 /** Plain three.js: an orthographic camera framing a 2-unit plane. */
 function ThreeView() {
@@ -263,13 +241,13 @@ export function App() {
             <div className="light-box">
               <ShardLight preset={PRESET} size={BOX} />
             </div>
-            <pre>{CODE.dom}</pre>
+            <Code code={CODE.dom} />
           </figure>
 
           <figure>
             <h3>three.js</h3>
             <ThreeView />
-            <pre>{CODE.three}</pre>
+            <Code code={CODE.three} />
           </figure>
 
           <figure>
@@ -285,7 +263,7 @@ export function App() {
                 <ShardLightMesh preset={PRESET} size={R3F_SIZE} />
               </Canvas>
             </div>
-            <pre>{CODE.r3f}</pre>
+            <Code code={CODE.r3f} />
           </figure>
         </div>
       </section>
@@ -331,9 +309,9 @@ export function App() {
               <ShardLight preset={composePreset} size={BOX} />
             </div>
             <div className="compose-code">
-              <pre>{compose.preset}</pre>
+              <Code code={compose.preset} wrap />
               <div className="or">or</div>
-              <pre>{compose.shards}</pre>
+              <Code code={compose.shards} wrap />
             </div>
           </div>
 
@@ -423,7 +401,7 @@ export function App() {
               </ShardLight>
             </div>
             <div className="compose-code">
-              <pre>{CODE.custom}</pre>
+              <Code code={CODE.custom} wrap />
             </div>
           </div>
         </div>
@@ -442,7 +420,7 @@ export function App() {
             <div className="light-box">
               <ShardLight preset="ember" size={BOX} flicker={{ amount: 0.35 }} />
             </div>
-            <pre>{CODE.flicker}</pre>
+            <Code code={CODE.flicker} />
           </figure>
 
           <figure>
@@ -452,7 +430,7 @@ export function App() {
                 <Shard id="beam" spin={0.08} />
               </ShardLight>
             </div>
-            <pre>{CODE.spin}</pre>
+            <Code code={CODE.spin} />
           </figure>
 
           <figure>
@@ -463,7 +441,7 @@ export function App() {
                 <Shard id="ring" hover={{ opacity: 2.5 }} />
               </ShardLight>
             </div>
-            <pre>{CODE.hover}</pre>
+            <Code code={CODE.hover} />
           </figure>
 
           <figure>
@@ -473,7 +451,7 @@ export function App() {
                 <Shard id="rays" hover={{ spin: 0.3 }} />
               </ShardLight>
             </div>
-            <pre>{CODE.hoverSpin}</pre>
+            <Code code={CODE.hoverSpin} />
           </figure>
 
           <figure>
@@ -481,7 +459,7 @@ export function App() {
             <div className="light-box">
               <ShardLight preset="star" size={BOX} className="hoverable" collapse />
             </div>
-            <pre>{CODE.collapse}</pre>
+            <Code code={CODE.collapse} />
           </figure>
         </div>
       </section>
