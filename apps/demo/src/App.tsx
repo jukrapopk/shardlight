@@ -13,14 +13,14 @@ const PRESET = 'sun';
 const CODE = {
   dom: `import { ShardLight } from 'shardlight/react';
 
-<ShardLight preset="sun" size={320} flicker />`,
+<ShardLight preset="sun" size={320} />`,
   three: `import { createShardLight } from 'shardlight/three';
 
 const light = createShardLight({ preset: 'sun', size: 0.6 });
 scene.add(light.object);`,
   r3f: `import { ShardLightMesh } from 'shardlight/r3f';
 
-<ShardLightMesh preset="sun" size={0.4} flicker />`,
+<ShardLightMesh preset="sun" size={0.4} />`,
 };
 
 /** Plain three.js: an orthographic camera framing a 2-unit plane. */
@@ -44,7 +44,6 @@ function ThreeView() {
       preset: PRESET,
       size: 2,
       resolution: 512,
-      effects: [{ type: 'flicker' }],
     });
     scene.add(light.object);
 
@@ -72,7 +71,7 @@ export function App() {
       {/* Hero + quick start */}
       <header className="hero">
         <div className="hero-light">
-          <ShardLight preset="star" size={300} flicker />
+          <ShardLight preset="star" size={300} />
         </div>
         <h1>shardlight</h1>
         <p className="lede">
@@ -114,7 +113,7 @@ export function App() {
           <figure>
             <h3>React (DOM)</h3>
             <div className="light-box">
-              <ShardLight preset={PRESET} size={BOX} flicker />
+              <ShardLight preset={PRESET} size={BOX} />
             </div>
             <pre>{CODE.dom}</pre>
           </figure>
@@ -135,7 +134,7 @@ export function App() {
                 gl={{ antialias: true, alpha: true }}
                 style={{ width: BOX, height: BOX }}
               >
-                <ShardLightMesh preset={PRESET} size={2} flicker />
+                <ShardLightMesh preset={PRESET} size={2} />
               </Canvas>
             </div>
             <pre>{CODE.r3f}</pre>
