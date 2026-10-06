@@ -76,8 +76,9 @@ export function App() {
         </div>
         <h1>shardlight</h1>
         <p className="lede">
-          Lens flares for React, three.js and React Three Fiber. Build a light once and it looks the
-          same everywhere.
+          Lens flares for React, three.js and React Three Fiber.
+          <br />
+          Build a light once and it looks the same everywhere.
         </p>
         <div className="hero-actions">
           <a className="button primary" href="#quick-start">
