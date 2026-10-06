@@ -6,7 +6,7 @@
 [![demo](https://img.shields.io/badge/demo-live-ffb454)](https://jukrapopk.github.io/shardlight/)
 
 Layered **shard** lens-flare lights for normal 2D React (DOM), [three.js](https://threejs.org)
-and [React Three Fiber](https://docs.pmnd.rs/react-three-fiber) — one config that renders the same
+and [React Three Fiber](https://r3f.docs.pmnd.rs/) — one config that renders the same
 in all three.
 
 ![shardlight presets: star, sun, sparkle, starburst, ember](assets/demo.png)
@@ -90,4 +90,4 @@ pnpm release
 
 ## License
 
-MIT
+[MIT](./LICENSE)

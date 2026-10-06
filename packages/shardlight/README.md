@@ -2,11 +2,11 @@
 
 [![CI](https://github.com/jukrapopk/shardlight/actions/workflows/ci.yml/badge.svg)](https://github.com/jukrapopk/shardlight/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/shardlight.svg)](https://www.npmjs.com/package/shardlight)
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jukrapopk/shardlight/blob/main/packages/shardlight/LICENSE)
 [![demo](https://img.shields.io/badge/demo-live-ffb454)](https://jukrapopk.github.io/shardlight/)
 
 Layered **shard** lens-flare lights that render the same in normal 2D React (DOM),
-[three.js](https://threejs.org) and [React Three Fiber](https://docs.pmnd.rs/react-three-fiber).
+[three.js](https://threejs.org) and [React Three Fiber](https://r3f.docs.pmnd.rs/).
 
 A light is an ordered list of _shards_ (glows, rays, streak bundles, halos). Shards that
 share a motion channel are baked into one image, then animated — scale, opacity and rotation —
@@ -325,4 +325,4 @@ compare against golden PNGs in `tests/visual/__screenshots__`, and check parity 
 
 ## License
 
-MIT
+[MIT](https://github.com/jukrapopk/shardlight/blob/main/packages/shardlight/LICENSE)

@@ -20,6 +20,7 @@ The build uses a relative `base`, so `apps/demo/dist` can be served from any pat
 
 ## GitHub Pages
 
-The `.github/workflows/deploy.yml` workflow builds the demo and deploys `apps/demo/dist` to
-GitHub Pages on every push to `main`. Enable it in the repo settings under
-**Settings → Pages → Source: GitHub Actions**.
+The `.github/workflows/deploy.yml` workflow builds the demo and deploys `apps/demo/dist` to GitHub
+Pages on every push to `main` (Pages source is set to **GitHub Actions**).
+
+Live: https://jukrapopk.github.io/shardlight/
