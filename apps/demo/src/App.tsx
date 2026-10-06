@@ -74,11 +74,10 @@ export function App() {
         <div className="hero-light">
           <ShardLight preset="star" size={300} flicker />
         </div>
-        <p className="eyebrow">one light · three targets</p>
         <h1>shardlight</h1>
         <p className="lede">
-          Layered <em>shard</em> lens-flare lights that render identically in 2D React, three.js and
-          React Three Fiber.
+          Lens flares for React, three.js and React Three Fiber. Build a light once and it looks the
+          same everywhere.
         </p>
         <div className="hero-actions">
           <a className="button primary" href="#quick-start">
