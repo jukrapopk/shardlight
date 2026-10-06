@@ -145,7 +145,6 @@ export function App() {
       {/* Presets */}
       <section className="section">
         <h2>Presets</h2>
-        <p className="sub">Registered by default — pass a name and go.</p>
         <div className="presets">
           {PRESETS.map((name) => (
             <figure key={name} className="preset-card">
