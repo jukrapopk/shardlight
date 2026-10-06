@@ -64,12 +64,10 @@ body {
 .hero h1 {
   margin: 0 0 14px;
   font-size: clamp(40px, 8vw, 72px);
-  line-height: 1;
+  line-height: 1.05;
   letter-spacing: -0.03em;
-  background: linear-gradient(180deg, #ffffff, var(--accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #fff;
+  text-shadow: 0 0 34px rgba(255, 217, 160, 0.35);
 }
 
 .lede {
@@ -212,6 +210,9 @@ input[type='color'] {
 .targets figure,
 .preset-card {
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .light-box {

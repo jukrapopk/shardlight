@@ -27,7 +27,7 @@ function ThreeView({ preset, color, spin, flicker }: TargetProps) {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
-    renderer.setSize(TARGET_BOX, TARGET_BOX, false);
+    renderer.setSize(TARGET_BOX, TARGET_BOX);
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
