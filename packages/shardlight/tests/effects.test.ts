@@ -63,6 +63,22 @@ describe('built-in effects', () => {
     expect(half.opacity).toBeCloseTo(1.5, 5);
     expect(half.rotation).toBeCloseTo(15, 5);
   });
+
+  it('hover spins by the time banked while hovered', () => {
+    const effects = resolveConfig({
+      preset: null,
+      shards: [],
+      effects: [{ type: 'hover', channels: ['rays'], spin: 0.5 }],
+    }).effects;
+    // 0.5 s of full hover at 0.5 turns/s → 90°.
+    expect(
+      computeFrame({ hover: 1, hoverTime: 0.5 }, effects, 0).channel('rays').rotation,
+    ).toBeCloseTo(90, 5);
+    // Banked angle is kept once hovered out.
+    expect(
+      computeFrame({ hover: 0, hoverTime: 0.5 }, effects, 0).channel('rays').rotation,
+    ).toBeCloseTo(90, 5);
+  });
 });
 
 describe('migration', () => {

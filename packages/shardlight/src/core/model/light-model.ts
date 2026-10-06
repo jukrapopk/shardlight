@@ -93,6 +93,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
   let time = 0;
   let hover = 0;
   let hoverTarget = 0;
+  let hoverTime = 0;
   let disposed = false;
 
   function resolve(current: LightModelOptions): ResolvedLight {
@@ -126,7 +127,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
   }
 
   function frame(): FrameValues {
-    return computeFrame({ ...manual, hover }, activeEffects(), time, channelNames());
+    return computeFrame({ ...manual, hover, hoverTime }, activeEffects(), time, channelNames());
   }
 
   function emitFrame(): void {
@@ -277,6 +278,8 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
           if (Math.abs(hoverTarget - hover) < 0.001) hover = hoverTarget;
         }
       }
+      // Bank time spent hovering, so `hover.spin` can wind up and down.
+      hoverTime += hover * dt;
       emitFrame();
     },
     dispose() {

@@ -74,13 +74,14 @@ describe('per-shard motion', () => {
     const light = resolveConfig({ preset: 'sparkle', shards: [{ id: 'glint', hover: true }] });
     const glint = light.shards.find((s) => s.id === 'glint')!;
     expect(glint.channel).toBe('glint');
-    expect(glint.hover).toEqual({ scale: 1.15, opacity: 1, rotate: 0 });
+    expect(glint.hover).toEqual({ scale: 1.15, opacity: 1, rotate: 0, spin: 0 });
     expect(light.effects).toContainEqual({
       type: 'hover',
       channels: ['glint'],
       scale: 1.15,
       opacity: 1,
       rotate: 0,
+      spin: 0,
     });
   });
 

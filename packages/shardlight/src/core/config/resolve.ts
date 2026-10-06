@@ -181,7 +181,7 @@ function resolveShard(
 }
 
 const DEFAULT_SPIN_SPEED = 0.1;
-const HOVER_DEFAULTS: ResolvedHover = { scale: 1.15, opacity: 1, rotate: 0 };
+const HOVER_DEFAULTS: ResolvedHover = { scale: 1.15, opacity: 1, rotate: 0, spin: 0 };
 
 function resolveSpin(
   value: number | ShardSpin | boolean | undefined | null,
@@ -220,6 +220,7 @@ function resolveHover(
       scale: finiteOr(value.scale, HOVER_DEFAULTS.scale),
       opacity: finiteOr(value.opacity, HOVER_DEFAULTS.opacity),
       rotate: finiteOr(value.rotate, HOVER_DEFAULTS.rotate),
+      spin: finiteOr(value.spin, HOVER_DEFAULTS.spin),
     };
   }
   warn(`shard "${id}" hover must be a boolean or object; hover ignored`);
@@ -269,6 +270,7 @@ function applyShardMotion(shards: ResolvedShard[], warn: Warn): EffectConfig[] {
         scale: shard.hover.scale,
         opacity: shard.hover.opacity,
         rotate: shard.hover.rotate,
+        spin: shard.hover.spin,
       });
     }
   }

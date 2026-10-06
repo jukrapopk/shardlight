@@ -9,6 +9,8 @@ export interface FrameBase {
   opacity?: number;
   /** Light-wide hover amount, 0..1. Default 0. */
   hover?: number;
+  /** Seconds accumulated while hovered. Default 0. */
+  hoverTime?: number;
 }
 
 /**
@@ -38,6 +40,7 @@ export function computeFrame(
   const out: FrameValues = {
     opacity: base.opacity ?? 1,
     hover: base.hover ?? 0,
+    hoverTime: base.hoverTime ?? 0,
     channel(name) {
       let channel = map.get(name);
       if (!channel) {

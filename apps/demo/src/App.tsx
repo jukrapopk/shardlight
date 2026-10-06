@@ -43,6 +43,11 @@ scene.add(light.object);`,
   <Shard id="hotspot" hover={{ scale: 1.7, opacity: 1.35 }} />
   <Shard id="ring" hover={{ opacity: 2.5 }} />
 </ShardLight>`,
+  hoverSpin: `import { ShardLight, Shard } from 'shardlight/react';
+
+<ShardLight preset="starburst" size={320}>
+  <Shard id="rays" hover={{ spin: 0.3 }} />
+</ShardLight>`,
 };
 
 /** Plain three.js: an orthographic camera framing a 2-unit plane. */
@@ -224,6 +229,16 @@ export function App() {
               </ShardLight>
             </div>
             <pre>{CODE.hover}</pre>
+          </figure>
+
+          <figure>
+            <h3>Spin on hover</h3>
+            <div className="light-box">
+              <ShardLight preset="starburst" size={BOX} className="hoverable">
+                <Shard id="rays" hover={{ spin: 0.3 }} />
+              </ShardLight>
+            </div>
+            <pre>{CODE.hoverSpin}</pre>
           </figure>
         </div>
       </section>

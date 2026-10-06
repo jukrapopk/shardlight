@@ -67,20 +67,21 @@ carry its own defaults:
 <ShardLight preset="star" size={320}>
   <Shard id="beam" spin={0.08} />                             {/* turns on its own */}
   <Shard id="hotspot" hover={{ scale: 1.6, opacity: 1.4 }} /> {/* reacts to pointer-over */}
+  <Shard id="ring" hover={{ spin: 0.3 }} />                    {/* spins up while hovered */}
 </ShardLight>
 ```
 
 A shard with `spin` or `hover` is moved to its own channel, so it never drags the shards it was
-baked with. `spin` is `turns/second` (negative reverses); `hover` scales / fades / turns the
-shard as the pointer sits over the light, eased in and out. Hover is whole-light, and
-`ref.current?.setHover(false)` drives it by hand.
+baked with. `spin` is `turns/second` (negative reverses). `hover` scales / fades / turns the shard
+as the pointer sits over the light, eased in and out; add `spin` to keep turning while hovered and
+hold that angle after. Hover is whole-light, and `ref.current?.setHover(false)` drives it by hand.
 
 Both are ordinary effects too, so a preset (or you) can list them with any channel:
 
 ```ts
 effects={[
   { type: 'spin', channels: ['rays'], speed: 0.05 },
-  { type: 'hover', channels: ['body'], scale: 1.2 },
+  { type: 'hover', channels: ['body'], scale: 1.2, spin: 0.1 },
 ]}
 ```
 

@@ -12,6 +12,8 @@ export interface FrameValues {
   opacity: number;
   /** Light-wide hover amount, 0..1, eased by the model. */
   hover: number;
+  /** Seconds accumulated while hovered; lets effects spin up on hover. */
+  hoverTime: number;
   /** Channel names currently present (built-in effects use this for `channels: 'all'`). */
   channels(): string[];
 }

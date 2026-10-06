@@ -136,6 +136,8 @@ export interface ShardHover {
   opacity?: number;
   /** Degrees added at full hover. Default 0. */
   rotate?: number;
+  /** Turns/second banked while hovered; negative reverses. Default 0. */
+  spin?: number;
 }
 
 export interface ShardBase {
@@ -177,6 +179,7 @@ export interface ResolvedHover {
   scale: number;
   opacity: number;
   rotate: number;
+  spin: number;
 }
 
 /** A full shard: `kind` required, params optional (kind defaults fill the rest). */

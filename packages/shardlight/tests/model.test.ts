@@ -91,6 +91,29 @@ describe('createLightModel', () => {
     model.dispose();
   });
 
+  it('winds a hover spin up while hovered and holds it after', () => {
+    const model = makeModel({ shards: [{ id: 'beam', hover: { spin: 0.25 } }] });
+    const frames: FrameValues[] = [];
+    model.onFrame((values) => frames.push(values));
+
+    model.setHover(true);
+    model.tick(1);
+    const spun = frames.at(-1)!.channel('beam').rotation;
+    expect(spun).toBeGreaterThan(0);
+
+    model.tick(1);
+    const more = frames.at(-1)!.channel('beam').rotation;
+    expect(more).toBeGreaterThan(spun);
+
+    // Hover out: the banked angle stops growing once the ease reaches 0.
+    model.setHover(false);
+    model.tick(5);
+    const settled = frames.at(-1)!.channel('beam').rotation;
+    model.tick(1);
+    expect(frames.at(-1)!.channel('beam').rotation).toBeCloseTo(settled, 5);
+    model.dispose();
+  });
+
   it('is deterministic: the same config gives the same layer keys', async () => {
     const a = makeModel();
     const b = makeModel();
