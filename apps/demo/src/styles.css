@@ -220,6 +220,45 @@ body {
   overflow-x: auto;
 }
 
+/* ---------- compose: one light, two snippets ---------- */
+.compose {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.compose-code {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.compose-code pre {
+  width: 100%;
+  margin: 0;
+  padding: 14px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--accent-2);
+  overflow-x: auto;
+}
+
+.compose-code .or {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 /* ---------- presets ---------- */
 .presets {
   display: grid;
