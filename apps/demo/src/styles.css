@@ -169,7 +169,7 @@ body {
 }
 
 .hoverable {
-  cursor: crosshair;
+  cursor: pointer;
 }
 
 /* ---------- examples: light + its code ---------- */
