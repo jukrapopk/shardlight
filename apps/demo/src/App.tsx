@@ -205,6 +205,7 @@ export function App() {
       {/* Presets */}
       <section className="section">
         <h2>Presets</h2>
+        <p className="sub">Five built-in looks. Use one by name.</p>
         <div className="presets">
           {PRESETS.map((name) => (
             <figure key={name} className="preset-card">
