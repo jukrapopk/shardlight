@@ -2,18 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { PNG } from 'pngjs';
 import './types.js';
 
-const presets = [
-  'star',
-  'sun',
-  'anamorphic',
-  'sparkle',
-  'neon',
-  'ember',
-  'starburst',
-  'frost',
-  'orbit',
-  'comet',
-] as const;
+const presets = ['star', 'sun', 'sparkle', 'starburst', 'ember'] as const;
 type Target = 'dom' | 'three' | 'r3f';
 
 /**

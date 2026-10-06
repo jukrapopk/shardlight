@@ -5,33 +5,22 @@ import { ShardLight } from 'shardlight/react';
 import { ShardLightMesh } from 'shardlight/r3f';
 import { createShardLight } from 'shardlight/three';
 
-const PRESETS = [
-  'star',
-  'sun',
-  'anamorphic',
-  'sparkle',
-  'neon',
-  'ember',
-  'starburst',
-  'frost',
-  'orbit',
-  'comet',
-] as const;
+const PRESETS = ['star', 'sun', 'sparkle', 'starburst', 'ember'] as const;
 
 const BOX = 260;
-const PRESET = 'sun';
+const PRESET = 'star';
 
 const CODE = {
   dom: `import { ShardLight } from 'shardlight/react';
 
-<ShardLight preset="sun" size={320} />`,
+<ShardLight preset="star" size={320} />`,
   three: `import { createShardLight } from 'shardlight/three';
 
-const light = createShardLight({ preset: 'sun', size: 0.6 });
+const light = createShardLight({ preset: 'star', size: 0.6 });
 scene.add(light.object);`,
   r3f: `import { ShardLightMesh } from 'shardlight/r3f';
 
-<ShardLightMesh preset="sun" size={0.4} />`,
+<ShardLightMesh preset="star" size={0.4} />`,
 };
 
 /** Plain three.js: an orthographic camera framing a 2-unit plane. */
