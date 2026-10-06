@@ -267,7 +267,7 @@ import {
 } from 'shardlight';
 import { createShardComponent } from 'shardlight/react';
 
-// a new shard kind — `params` drives defaults, validation and the playground controls
+// a new shard kind — `params` drives defaults, validation and typed props
 const dots = defineShardKind({
   kind: 'dots',
   label: 'Ring of dots',

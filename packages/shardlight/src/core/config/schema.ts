@@ -1,6 +1,6 @@
 /**
  * Param schemas. One schema per kind or effect drives types, defaults,
- * validation, the playground controls and (later) shader backends.
+ * validation and (later) shader backends.
  */
 
 export interface NumberParam {
