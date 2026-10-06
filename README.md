@@ -22,6 +22,7 @@ pnpm install
 pnpm build        # build packages/shardlight
 pnpm test         # unit tests (Vitest)
 pnpm test:visual  # Playwright golden + cross-target parity tests (Chromium)
+pnpm playground   # build, then start the interactive playground (localhost:5173)
 pnpm lint
 pnpm typecheck
 pnpm format:check

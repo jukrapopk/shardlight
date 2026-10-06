@@ -17,11 +17,13 @@
   "scripts": {
     "build": "pnpm --filter shardlight build",
     "test": "pnpm --filter shardlight test",
+    "test:visual": "pnpm --filter shardlight test:visual",
     "typecheck": "pnpm --filter shardlight typecheck",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build",
+    "playground": "pnpm build && pnpm --filter playground dev",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "pnpm build && changeset publish"
