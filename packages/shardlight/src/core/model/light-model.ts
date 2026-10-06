@@ -10,6 +10,7 @@ import type { Baker, LayerSource } from '../bake/baker.js';
 import { createScheduler } from '../bake/scheduler.js';
 import { isAbortError } from '../bake/scheduler.js';
 import { buildLayers } from './layers.js';
+import { definedOnly } from '../util/object.js';
 
 /** One host unit: one baked image, one `<img>` or plane (plan §5). */
 export interface Layer {
@@ -70,7 +71,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
     rayScale: 1,
     baker: canvas2dBaker,
     accepts: DEFAULT_ACCEPTS,
-    ...options,
+    ...definedOnly(options),
   };
 
   const scheduler = createScheduler();
@@ -225,7 +226,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
     },
     update(patch) {
       if (disposed) return;
-      opts = { ...opts, ...patch };
+      opts = { ...opts, ...definedOnly(patch) };
       resolved = resolve(opts);
       sync();
       // Effects may have changed: recompute the current frame.

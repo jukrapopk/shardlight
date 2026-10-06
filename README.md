@@ -21,8 +21,13 @@ shardlight/
 pnpm install
 pnpm build        # build packages/shardlight
 pnpm test         # unit tests (Vitest)
+pnpm test:visual  # Playwright golden + cross-target parity tests (Chromium)
+pnpm lint
 pnpm typecheck
+pnpm format:check
 ```
+
+The first visual run needs a browser: `pnpm --filter shardlight exec playwright install chromium`.
 
 ## Publishing
 

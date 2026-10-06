@@ -78,3 +78,4 @@ export * from './util/hash.js';
 export * from './util/rng.js';
 export * from './util/stringify.js';
 export * from './util/dom.js';
+export * from './util/object.js';

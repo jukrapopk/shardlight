@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { cacheSize, clearCache, createLightModel, type Layer } from '../src/core/index.js';
+import {
+  cacheSize,
+  clearCache,
+  createLightModel,
+  definedOnly,
+  type Layer,
+} from '../src/core/index.js';
 import { createFakeBaker, waitFor } from '../src/testing/index.js';
 
 afterEach(() => clearCache());
@@ -104,5 +110,25 @@ describe('createLightModel (§5)', () => {
     await waitFor(() => model.layers.length === 0);
     expect(model.layers).toHaveLength(0);
     model.dispose();
+  });
+
+  it('ignores explicitly-undefined options instead of clobbering defaults', () => {
+    // Regression: the React adapter passes `baker: undefined`, which used to
+    // wipe the default baker via object spread and crash on `baker.id`.
+    expect(() =>
+      createLightModel({
+        preset: 'star',
+        resolution: 64,
+        accepts: ['bitmap'],
+        baker: undefined,
+        rayScale: undefined,
+      }),
+    ).not.toThrow();
+  });
+});
+
+describe('definedOnly', () => {
+  it('drops undefined but keeps null', () => {
+    expect(definedOnly({ a: 1, b: undefined, c: null })).toEqual({ a: 1, c: null });
   });
 });

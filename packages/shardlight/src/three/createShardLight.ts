@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {
   createLightModel,
+  definedOnly,
   type Baker,
   type EffectConfig,
   type FrameValues,
@@ -63,7 +64,13 @@ interface MeshEntry {
  * model's layers and frame values into meshes, scales, opacities and rotation.
  */
 export function createShardLight(options: CreateShardLightOptions = {}): ShardLightController {
-  let opts = { size: 0.5, resolution: 1024, autoUpdate: true, billboard: false, ...options };
+  let opts = {
+    size: 0.5,
+    resolution: 1024,
+    autoUpdate: true,
+    billboard: false,
+    ...definedOnly(options),
+  };
   const object = new THREE.Group();
   const spinGroup = new THREE.Group();
   object.add(spinGroup);
@@ -211,7 +218,7 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
     update(patch) {
       if (disposed) return;
       const previousSize = opts.size;
-      opts = { ...opts, ...patch };
+      opts = { ...opts, ...definedOnly(patch) };
       if (patch.size !== undefined && patch.size !== previousSize) {
         geometry.dispose();
         geometry = new THREE.PlaneGeometry(opts.size, opts.size);

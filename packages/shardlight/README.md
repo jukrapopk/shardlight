@@ -116,6 +116,18 @@ registerShardKind(dots);
 `shardlight/testing` exports the contract suite (`runAdapterContract`, `createFakeBaker`,
 `waitFor`) that any adapter — including a third-party one — can run against itself.
 
+## Testing
+
+```bash
+pnpm test           # Vitest unit tests (config, model, effects, three adapter)
+pnpm test:visual    # Playwright: golden PNGs + cross-target parity (Chromium)
+```
+
+The visual tests render every preset in real headless Chromium through all three targets,
+compare against golden PNGs in `tests/visual/__screenshots__`, and check parity between
+`<ShardLight>`, `createShardLight()` and `<ShardLightMesh>`. Regenerate goldens with
+`pnpm test:visual:update` after an intentional look change.
+
 ## License
 
 MIT
