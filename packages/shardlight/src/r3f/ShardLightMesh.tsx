@@ -17,6 +17,8 @@ import type { EffectConfig, LightModel, SetValues, ShardInput } from '../core/in
 export interface ShardLightMeshProps extends Omit<GroupProps, 'ref'> {
   preset?: CreateShardLightOptions['preset'];
   config?: CreateShardLightOptions['config'];
+  /** Overrides the preset's colour for the whole light. */
+  color?: string;
   /** Plain shard objects; `<Shard>` children are also accepted (plan §7.2). */
   shards?: ShardInput[];
   effects?: EffectConfig[];
@@ -53,6 +55,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
     const {
       preset,
       config,
+      color,
       shards: shardsProp,
       effects,
       spin,
@@ -90,6 +93,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
       const created = createShardLight({
         preset,
         config,
+        color,
         shards,
         effects: effectsList,
         size,
@@ -115,6 +119,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
     const updateKey = JSON.stringify({
       preset,
       config,
+      color,
       shards,
       effects: effectsList,
       size,
@@ -132,6 +137,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
       controller?.update({
         preset,
         config,
+        color,
         shards,
         effects: effectsList,
         size,

@@ -125,6 +125,28 @@ describe('createLightModel (§5)', () => {
       }),
     ).not.toThrow();
   });
+  it('does not poison a shared bake when a StrictMode-style remount disposes the first model', async () => {
+    const baker = createFakeBaker({ delayMs: 20 });
+    const first = createLightModel({
+      preset: 'star',
+      resolution: 64,
+      accepts: ['bitmap'],
+      baker,
+    });
+    // StrictMode unmounts right after mount, before the bake can finish.
+    first.dispose();
+
+    const second = createLightModel({
+      preset: 'star',
+      resolution: 64,
+      accepts: ['bitmap'],
+      baker,
+    });
+    await second.ready;
+    expect(second.layers.length).toBeGreaterThan(0);
+    expect(second.layers.every((layer) => layer.source !== null)).toBe(true);
+    second.dispose();
+  });
 });
 
 describe('definedOnly', () => {

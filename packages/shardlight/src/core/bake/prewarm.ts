@@ -51,12 +51,11 @@ export async function prewarm(options: PrewarmOptions = {}): Promise<void> {
   const scheduler = createScheduler();
   await Promise.all(
     layers.map((layer) => {
-      const controller = new AbortController();
       prewarmed.push(layer.key);
-      return acquireSource(layer.key, () =>
+      return acquireSource(layer.key, (signal) =>
         scheduler.run(
-          () => baker.bake(layer, { resolution, rayScale, accept: accepts }, controller.signal),
-          controller.signal,
+          () => baker.bake(layer, { resolution, rayScale, accept: accepts }, signal),
+          signal,
         ),
       );
     }),

@@ -130,6 +130,7 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
     entry.textureKey = layer.key;
     entry.material.map = acquireTexture(layer.key, layer.source);
     entry.material.needsUpdate = true;
+    entry.mesh.visible = true;
   }
 
   function beforeRender(
@@ -165,6 +166,11 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
         if (entry.textureKey) releaseTexture(entry.textureKey);
         entry.textureKey = null;
         entry.key = layer.key;
+        // Hide until the new texture is ready, so a stale/absent map never
+        // shows as a white quad.
+        entry.material.map = null;
+        entry.material.needsUpdate = true;
+        entry.mesh.visible = false;
         if (layer.source) applyTexture(entry, layer);
       } else if (entry) {
         // The layer was created before its source finished baking.
@@ -173,6 +179,7 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
         const material = createMaterial(layer);
         const mesh = new THREE.Mesh(geometry, material);
         mesh.name = layer.id;
+        mesh.visible = false;
         mesh.renderOrder = opts.renderOrder ?? 0;
         mesh.onBeforeRender = beforeRender;
         entry = {

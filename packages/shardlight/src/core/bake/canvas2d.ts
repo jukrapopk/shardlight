@@ -110,7 +110,14 @@ async function encode(
 
   if (accept.includes('bitmap') && typeof createImageBitmap === 'function') {
     try {
-      const bitmap = await createImageBitmap(canvas as unknown as ImageBitmapSource);
+      // Straight (non-premultiplied) alpha, no colour-space conversion: three
+      // uploads it as-is and premultiplies once on blending, exactly like the
+      // DOM composites the PNG. The default is premultiplied, which three then
+      // premultiplies again, darkening faint (low-alpha) pixels.
+      const bitmap = await createImageBitmap(canvas as unknown as ImageBitmapSource, {
+        premultiplyAlpha: 'none',
+        colorSpaceConversion: 'none',
+      });
       throwIfAborted(signal);
       freeCanvas(canvas);
       return { type: 'bitmap', bitmap };

@@ -78,7 +78,6 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
   const layerListeners = new Set<(layers: Layer[]) => void>();
   const frameListeners = new Set<(values: FrameValues) => void>();
   const acquired = new Map<string, number>();
-  const controllers = new Set<AbortController>();
   const readyWaiters: Array<() => void> = [];
 
   let resolved: ResolvedLight = resolve(opts);
@@ -132,9 +131,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
   }
 
   function bake(resolvedLayer: ResolvedLayer, view: Layer): void {
-    const controller = new AbortController();
-    controllers.add(controller);
-    acquireSource(view.key, () =>
+    acquireSource(view.key, (signal) =>
       scheduler.run(
         () =>
           opts.baker!.bake(
@@ -144,13 +141,12 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
               rayScale: opts.rayScale ?? 1,
               accept: opts.accepts ?? DEFAULT_ACCEPTS,
             },
-            controller.signal,
+            signal,
           ),
-        controller.signal,
+        signal,
       ),
     )
       .then((source) => {
-        controllers.delete(controller);
         if (disposed) return;
         const current = currentView(view);
         if (!current) return;
@@ -159,7 +155,6 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
         flushReady();
       })
       .catch((error) => {
-        controllers.delete(controller);
         if (disposed || isAbortError(error)) return;
         opts.onError?.(error);
         // Leave it pending so a later update retries (plan §8).
@@ -253,8 +248,6 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
       if (disposed) return;
       disposed = true;
       scheduler.clear();
-      for (const controller of controllers) controller.abort();
-      controllers.clear();
       for (const key of acquired.keys()) releaseSource(key);
       acquired.clear();
       layerListeners.clear();
