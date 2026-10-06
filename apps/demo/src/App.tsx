@@ -10,40 +10,43 @@ const PRESETS = ['star', 'sun', 'sparkle', 'starburst', 'ember'] as const;
 
 const BOX = 260;
 const PRESET = 'star';
+const THREE_SIZE = 0.6;
+const R3F_SIZE = 0.4;
 
 const CODE = {
   dom: `import { ShardLight } from 'shardlight/react';
 
-<ShardLight preset="star" size={320} />`,
+<ShardLight preset="star" size={${BOX}} />`,
   three: `import { createShardLight } from 'shardlight/three';
 
-const light = createShardLight({ preset: 'star', size: 0.6 });
+const light = createShardLight({ preset: 'star', size: ${THREE_SIZE} });
 scene.add(light.object);`,
   r3f: `import { ShardLightMesh } from 'shardlight/r3f';
 
-<ShardLightMesh preset="star" size={0.4} />`,
+<ShardLightMesh preset="star" size={${R3F_SIZE}} />`,
   spin: `import { ShardLight, Shard } from 'shardlight/react';
 
-<ShardLight preset="star" size={320}>
+<ShardLight preset="star" size={${BOX}}>
   <Shard id="beam" spin={0.08} />
 </ShardLight>`,
   hover: `import { ShardLight, Shard } from 'shardlight/react';
 
-<ShardLight preset="sun" size={320}>
+<ShardLight preset="sun" size={${BOX}}>
   <Shard id="hotspot" hover={{ scale: 1.7, opacity: 1.35 }} />
   <Shard id="ring" hover={{ opacity: 2.5 }} />
 </ShardLight>`,
   hoverSpin: `import { ShardLight, Shard } from 'shardlight/react';
 
-<ShardLight preset="starburst" size={320}>
+<ShardLight preset="starburst" size={${BOX}}>
   <Shard id="rays" hover={{ spin: 0.3 }} />
 </ShardLight>`,
   flicker: `import { ShardLight } from 'shardlight/react';
 
-<ShardLight preset="ember" size={320} flicker={{ amount: 0.35 }} />`,
+<ShardLight preset="ember" size={${BOX}} flicker={{ amount: 0.35 }} />`,
   custom: `import { ShardLight, Shard } from 'shardlight/react';
 
 <ShardLight
+  size={${BOX}}
   color="#9BE8FF"
   effects={[
     { type: 'spin', channels: ['rays'], speed: 0.05 },
@@ -60,7 +63,7 @@ scene.add(light.object);`,
 </ShardLight>`,
   collapse: `import { ShardLight } from 'shardlight/react';
 
-<ShardLight preset="star" size={320} collapse />`,
+<ShardLight preset="star" size={${BOX}} collapse />`,
 };
 
 const SHARD_BASE_KEYS = new Set([
@@ -73,18 +76,21 @@ const SHARD_BASE_KEYS = new Set([
   'visible',
   'spin',
   'hover',
+  'collapse',
 ]);
 
 /** The two ways to get a preset: by name, or as the shards it is built from. */
 function presetSnippets(name: string): { preset: string; shards: string } {
-  const preset = `import { ShardLight } from 'shardlight/react';\n\n<ShardLight preset="${name}" size={320} />`;
+  const preset = `import { ShardLight } from 'shardlight/react';\n\n<ShardLight preset="${name}" size={${BOX}} />`;
   const config = getPreset(name);
   if (!config) return { preset, shards: '' };
 
-  const attrs: string[] = [];
+  // Only what differs from the defaults, so the shard list rebuilds the preset.
+  const attrs: string[] = [`size={${BOX}}`];
   if (config.color.toUpperCase() !== '#FFFFFF') attrs.push(`color="${config.color}"`);
   if (config.rotation) attrs.push(`rotation={${config.rotation}}`);
-  const head = attrs.length > 0 ? ` ${attrs.join(' ')}` : '';
+  if (config.seed !== 1) attrs.push(`seed={${config.seed}}`);
+  const head = ` ${attrs.join(' ')}`;
 
   const lines = config.shards.map((shard) => {
     const parts = [`id="${shard.id}"`, `kind="${shard.kind}"`];
@@ -114,12 +120,13 @@ function ThreeView() {
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 100);
+    const half = THREE_SIZE / 2;
+    const camera = new THREE.OrthographicCamera(-half, half, half, -half, 0.01, 100);
     camera.position.z = 1;
 
     const light = createShardLight({
       preset: PRESET,
-      size: 2,
+      size: THREE_SIZE,
       resolution: 512,
     });
     scene.add(light.object);
@@ -210,11 +217,11 @@ export function App() {
               <Canvas
                 orthographic
                 dpr={[1, 2]}
-                camera={{ position: [0, 0, 1], zoom: BOX / 2 }}
+                camera={{ position: [0, 0, 1], zoom: BOX / R3F_SIZE }}
                 gl={{ antialias: true, alpha: true }}
                 style={{ width: BOX, height: BOX }}
               >
-                <ShardLightMesh preset={PRESET} size={2} />
+                <ShardLightMesh preset={PRESET} size={R3F_SIZE} />
               </Canvas>
             </div>
             <pre>{CODE.r3f}</pre>
@@ -275,6 +282,7 @@ export function App() {
             </div>
             <div className="light-box hoverable">
               <ShardLight
+                size={BOX}
                 color="#9BE8FF"
                 effects={[
                   { type: 'spin', channels: ['rays'], speed: 0.05 },
