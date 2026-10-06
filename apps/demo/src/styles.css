@@ -159,62 +159,7 @@ body {
   color: var(--accent-2);
 }
 
-/* ---------- controls ---------- */
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  align-items: center;
-  padding: 14px 18px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--panel);
-  margin-bottom: 24px;
-}
-
-.controls label {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  font-size: 14px;
-  color: var(--muted);
-}
-
-.controls .check {
-  gap: 6px;
-  cursor: pointer;
-}
-
-select,
-input[type='color'] {
-  background: #1b1b24;
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 8px;
-}
-
-input[type='color'] {
-  width: 42px;
-  height: 30px;
-  padding: 2px;
-}
-
-/* ---------- targets ---------- */
-.targets {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 22px;
-}
-
-.targets figure,
-.preset-card {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
+/* ---------- light boxes ---------- */
 .light-box {
   width: 260px;
   height: 260px;
@@ -235,21 +180,41 @@ input[type='color'] {
   display: block;
 }
 
-figcaption {
-  margin-top: 10px;
-  text-align: center;
+/* ---------- examples: light + its code ---------- */
+.examples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.examples figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.examples h3 {
+  align-self: center;
+  margin: 0;
   font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--muted);
 }
 
-.code {
-  margin-top: 24px;
-  padding: 14px 18px;
+.examples pre {
+  width: 100%;
+  margin: 0;
+  padding: 14px 16px;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 13px;
+  font-size: 12.5px;
+  line-height: 1.6;
   color: var(--accent-2);
   overflow-x: auto;
 }
@@ -261,32 +226,18 @@ figcaption {
   gap: 22px;
 }
 
-/* ---------- cards ---------- */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 18px;
-}
-
-.card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px;
-}
-
-.card h3 {
-  margin: 0 0 10px;
-  font-size: 15px;
-}
-
-.card pre {
+.preset-card {
   margin: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+figcaption {
+  margin-top: 10px;
+  text-align: center;
   font-size: 13px;
-  line-height: 1.6;
-  color: var(--accent-2);
-  overflow-x: auto;
+  color: var(--muted);
 }
 
 /* ---------- footer ---------- */

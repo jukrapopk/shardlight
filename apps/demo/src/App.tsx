@@ -1,23 +1,30 @@
 import { Canvas } from '@react-three/fiber';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { ShardLight } from 'shardlight/react';
 import { ShardLightMesh } from 'shardlight/r3f';
 import { createShardLight } from 'shardlight/three';
 
 const PRESETS = ['star', 'sun', 'anamorphic', 'sparkle'] as const;
-type Preset = (typeof PRESETS)[number];
 
-const TARGET_BOX = 260;
+const BOX = 260;
+const PRESET = 'sun';
 
-interface TargetProps {
-  preset: Preset;
-  color: string;
-  flicker: boolean;
-}
+const CODE = {
+  dom: `import { ShardLight } from 'shardlight/react';
+
+<ShardLight preset="sun" size={320} flicker />`,
+  three: `import { createShardLight } from 'shardlight/three';
+
+const light = createShardLight({ preset: 'sun', size: 0.6 });
+scene.add(light.object);`,
+  r3f: `import { ShardLightMesh } from 'shardlight/r3f';
+
+<ShardLightMesh preset="sun" size={0.4} flicker />`,
+};
 
 /** Plain three.js: an orthographic camera framing a 2-unit plane. */
-function ThreeView({ preset, color, flicker }: TargetProps) {
+function ThreeView() {
   const hostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,7 +33,7 @@ function ThreeView({ preset, color, flicker }: TargetProps) {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
-    renderer.setSize(TARGET_BOX, TARGET_BOX);
+    renderer.setSize(BOX, BOX);
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -34,11 +41,10 @@ function ThreeView({ preset, color, flicker }: TargetProps) {
     camera.position.z = 1;
 
     const light = createShardLight({
-      preset,
-      color,
+      preset: PRESET,
       size: 2,
       resolution: 512,
-      effects: flicker ? [{ type: 'flicker' }] : [],
+      effects: [{ type: 'flicker' }],
     });
     scene.add(light.object);
 
@@ -55,33 +61,18 @@ function ThreeView({ preset, color, flicker }: TargetProps) {
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [preset, color, flicker]);
+  }, []);
 
   return <div className="light-box" ref={hostRef} />;
 }
 
-function snippet(props: TargetProps): string {
-  const parts = [
-    `preset="${props.preset}"`,
-    props.color.toUpperCase() !== '#FFF4E0' ? `color="${props.color}"` : null,
-    props.flicker ? 'flicker' : null,
-  ].filter(Boolean);
-  return `<ShardLight ${parts.join(' ')} />`;
-}
-
 export function App() {
-  const [preset, setPreset] = useState<Preset>('star');
-  const [color, setColor] = useState('#FFF4E0');
-  const [flicker, setFlicker] = useState(false);
-
-  const target: TargetProps = { preset, color, flicker };
-
   return (
     <div className="page">
-      {/* Hero */}
+      {/* Hero + quick start */}
       <header className="hero">
         <div className="hero-light">
-          <ShardLight preset="star" color={color} size={300} flicker={flicker} />
+          <ShardLight preset="star" size={300} flicker />
         </div>
         <p className="eyebrow">one light · three targets</p>
         <h1>shardlight</h1>
@@ -90,7 +81,7 @@ export function App() {
           React Three Fiber.
         </p>
         <div className="hero-actions">
-          <a className="button primary" href="#play">
+          <a className="button primary" href="#quick-start">
             Try it
           </a>
           <a
@@ -101,7 +92,6 @@ export function App() {
           >
             GitHub
           </a>
-          <code className="install">npm install shardlight</code>
         </div>
         <div className="badges">
           <img alt="npm version" src="https://img.shields.io/npm/v/shardlight" loading="lazy" />
@@ -114,68 +104,43 @@ export function App() {
         </div>
       </header>
 
-      {/* Interactive three-target playground */}
-      <section id="play" className="section">
-        <h2>One light, three targets</h2>
+      {/* Quick start: the same light in each target, with its code */}
+      <section className="section" id="quick-start">
+        <h2>Quick start</h2>
         <p className="sub">
-          The same config renders to <code>&lt;img&gt;</code>, three.js planes and R3F meshes.
+          <code className="install">npm install shardlight</code>
         </p>
-
-        <div className="controls">
-          <label>
-            Preset
-            <select value={preset} onChange={(event) => setPreset(event.target.value as Preset)}>
-              {PRESETS.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Color
-            <input type="color" value={color} onChange={(event) => setColor(event.target.value)} />
-          </label>
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={flicker}
-              onChange={(e) => setFlicker(e.target.checked)}
-            />{' '}
-            flicker
-          </label>
-        </div>
-
-        <div className="targets">
+        <div className="examples">
           <figure>
+            <h3>React (DOM)</h3>
             <div className="light-box">
-              <ShardLight preset={preset} color={color} size={TARGET_BOX} flicker={flicker} />
+              <ShardLight preset={PRESET} size={BOX} flicker />
             </div>
-            <figcaption>React (DOM)</figcaption>
+            <pre>{CODE.dom}</pre>
           </figure>
 
           <figure>
-            <ThreeView {...target} />
-            <figcaption>three.js</figcaption>
+            <h3>three.js</h3>
+            <ThreeView />
+            <pre>{CODE.three}</pre>
           </figure>
 
           <figure>
+            <h3>React Three Fiber</h3>
             <div className="light-box">
               <Canvas
                 orthographic
                 dpr={[1, 2]}
-                camera={{ position: [0, 0, 1], zoom: TARGET_BOX / 2 }}
+                camera={{ position: [0, 0, 1], zoom: BOX / 2 }}
                 gl={{ antialias: true, alpha: true }}
-                style={{ width: TARGET_BOX, height: TARGET_BOX }}
+                style={{ width: BOX, height: BOX }}
               >
-                <ShardLightMesh preset={preset} color={color} size={2} flicker={flicker} />
+                <ShardLightMesh preset={PRESET} size={2} flicker />
               </Canvas>
             </div>
-            <figcaption>React Three Fiber</figcaption>
+            <pre>{CODE.r3f}</pre>
           </figure>
         </div>
-
-        <pre className="code">{snippet(target)}</pre>
       </section>
 
       {/* Presets */}
@@ -191,32 +156,6 @@ export function App() {
               <figcaption>{name}</figcaption>
             </figure>
           ))}
-        </div>
-      </section>
-
-      {/* Quick start */}
-      <section className="section">
-        <h2>Quick start</h2>
-        <div className="cards">
-          <div className="card">
-            <h3>React (DOM)</h3>
-            <pre>{`import { ShardLight } from 'shardlight/react';
-
-<ShardLight preset="sun" size={320} flicker />`}</pre>
-          </div>
-          <div className="card">
-            <h3>three.js</h3>
-            <pre>{`import { createShardLight } from 'shardlight/three';
-
-const light = createShardLight({ preset: 'sun', size: 0.6 });
-scene.add(light.object);`}</pre>
-          </div>
-          <div className="card">
-            <h3>React Three Fiber</h3>
-            <pre>{`import { ShardLightMesh } from 'shardlight/r3f';
-
-<ShardLightMesh preset="sun" size={0.4} flicker />`}</pre>
-          </div>
         </div>
       </section>
 
