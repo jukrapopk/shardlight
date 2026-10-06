@@ -12,6 +12,8 @@ A light is an ordered list of _shards_ (glows, rays, streak bundles, halos). Sha
 share a motion channel are baked into one image, then animated — scale, opacity and rotation —
 with no re-rendering.
 
+![shardlight presets: star, sun, sparkle, starburst, ember](https://raw.githubusercontent.com/jukrapopk/shardlight/main/assets/demo.png)
+
 - **One light, three targets.** The same config renders to `<img>`, to three.js planes, and
   to R3F meshes, and looks identical everywhere.
 - **Easy by default.** `<ShardLight preset="star" />` draws a light; swap the preset, or start

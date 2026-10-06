@@ -3,11 +3,47 @@
 [![CI](https://github.com/jukrapopk/shardlight/actions/workflows/ci.yml/badge.svg)](https://github.com/jukrapopk/shardlight/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/shardlight.svg)](https://www.npmjs.com/package/shardlight)
 [![license](https://img.shields.io/npm/l/shardlight.svg)](./LICENSE)
+[![demo](https://img.shields.io/badge/demo-live-ffb454)](https://jukrapopk.github.io/shardlight/)
 
-Monorepo for [`shardlight`](packages/shardlight) — layered shard lens-flare lights for the
-DOM (React), three.js and React Three Fiber.
+Layered **shard** lens-flare lights for normal 2D React (DOM), [three.js](https://threejs.org)
+and [React Three Fiber](https://docs.pmnd.rs/react-three-fiber) — one config that renders the same
+in all three.
 
-**[Live demo →](https://jukrapopk.github.io/shardlight/)**
+![shardlight presets: star, sun, sparkle, starburst, ember](assets/demo.png)
+
+**▶ [Live demo](https://jukrapopk.github.io/shardlight/)** ·
+**[Full docs →](packages/shardlight/README.md)**
+
+## Install
+
+```bash
+npm install shardlight
+```
+
+```tsx
+import { ShardLight } from 'shardlight/react';
+
+<ShardLight preset="star" size={320} />
+```
+
+Works the same in three.js and R3F, with per-shard motion, effects and imperative control — see the
+[package README](packages/shardlight/README.md) for everything.
+
+## Highlights
+
+- **One light, three targets.** The same config renders to `<img>`, to three.js planes and to R3F
+  meshes, and looks identical everywhere.
+- **Easy by default.** `<ShardLight preset="star" />` draws a light; swap the preset, or start from
+  nothing.
+- **Tunable at every level.** Preset → shards → per-shard motion → channel effects → per-frame
+  values → CSS variables.
+- **Declarative or imperative.** Describe lights as JSX / JSON, or drive them per frame from state,
+  a ref, or CSS — without re-baking.
+- **Extensible without forking.** New shard kinds, effects and presets plug in through public
+  registries.
+- **Data first.** Every light is a plain, versioned JSON config; JSX compiles to it.
+
+## Monorepo
 
 ```
 shardlight/
@@ -30,6 +66,8 @@ pnpm format:check
 
 The first visual run needs a browser: `pnpm --filter shardlight exec playwright install chromium`.
 
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Publishing
 
 ```bash
@@ -46,3 +84,7 @@ pnpm changeset
 pnpm version-packages
 pnpm release
 ```
+
+## License
+
+MIT
