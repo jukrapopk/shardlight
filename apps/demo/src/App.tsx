@@ -178,6 +178,14 @@ export function App() {
           >
             GitHub
           </a>
+          <a
+            className="button"
+            href="https://www.npmjs.com/package/shardlight"
+            target="_blank"
+            rel="noreferrer"
+          >
+            npm
+          </a>
         </div>
         <div className="badges">
           <img alt="npm version" src="https://img.shields.io/npm/v/shardlight" loading="lazy" />
