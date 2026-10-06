@@ -96,6 +96,19 @@ describe('per-shard motion', () => {
     expect(beam.channel).toBe('rays');
     expect(light.effects).toEqual([]);
   });
+
+  it('collapses a shard on click and defaults to imploding', () => {
+    const light = resolveConfig({ preset: 'star', shards: [{ id: 'beam', collapse: true }] });
+    const beam = light.shards.find((s) => s.id === 'beam')!;
+    expect(beam.channel).toBe('beam');
+    expect(beam.collapse).toEqual({ scale: 0, opacity: 1 });
+    expect(light.effects).toContainEqual({
+      type: 'collapse',
+      channels: ['beam'],
+      scale: 0,
+      opacity: 1,
+    });
+  });
 });
 
 describe('defaults and clamping', () => {

@@ -4,14 +4,16 @@ import type { EffectConfig } from '../core/index.js';
 export type EffectShorthand = boolean | Record<string, unknown>;
 
 /**
- * Turn the `flicker` shorthand into an effect config and append it to any
- * explicit `effects`.
+ * Turn the `flicker` / `collapse` shorthands into effect configs and append them
+ * to any explicit `effects`.
  */
 export function normalizeEffects(
   effects?: readonly EffectConfig[] | null,
   flicker?: EffectShorthand,
+  collapse?: EffectShorthand,
 ): EffectConfig[] {
   const out: EffectConfig[] = effects ? [...effects] : [];
   if (flicker) out.push({ type: 'flicker', ...(typeof flicker === 'object' ? flicker : {}) });
+  if (collapse) out.push({ type: 'collapse', ...(typeof collapse === 'object' ? collapse : {}) });
   return out;
 }

@@ -34,6 +34,8 @@ export interface ShardLightProps {
   rayScale?: number;
   effects?: EffectConfig[];
   flicker?: EffectShorthand;
+  /** Click the light to collapse it (click again to expand). */
+  collapse?: EffectShorthand;
   /** Static channel values. */
   channels?: Record<string, { scale?: number; opacity?: number }>;
   /** CSS `mix-blend-mode` of the whole light. Default `plus-lighter`. */
@@ -57,6 +59,10 @@ export type ShardLightHandle = HTMLDivElement & {
   ): void;
   /** Drives the whole-light hover amount (`spin`/`hover` shards use it). */
   setHover(hovered: boolean): void;
+  /** Eases the light toward collapsed (click behavior). */
+  setCollapsed(collapsed: boolean): void;
+  /** Flips between expanded and collapsed. */
+  toggleCollapsed(): void;
   readonly ready: Promise<void>;
   readonly model: LightModel | null;
 };
@@ -72,6 +78,7 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
       rayScale,
       effects,
       flicker,
+      collapse,
       channels,
       blend,
       baker,
@@ -89,7 +96,10 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
     const [ready, setReady] = useState(false);
 
     const { registry, shards } = useShardRegistry();
-    const effectsList = useMemo(() => normalizeEffects(effects, flicker), [effects, flicker]);
+    const effectsList = useMemo(
+      () => normalizeEffects(effects, flicker, collapse),
+      [effects, flicker, collapse],
+    );
 
     const bakeResolution = useCallback(
       () => (resolution === 'auto' ? autoResolution(size) : resolution),
@@ -212,6 +222,8 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
         values: { scale?: number; opacity?: number; rotation?: number },
       ) => modelRef.current?.setChannel(channel, values);
       node.setHover = (hovered: boolean) => modelRef.current?.setHover(hovered);
+      node.setCollapsed = (collapsed: boolean) => modelRef.current?.setCollapsed(collapsed);
+      node.toggleCollapsed = () => modelRef.current?.toggleCollapsed();
       Object.defineProperty(node, 'ready', {
         configurable: true,
         get: () => modelRef.current?.ready ?? Promise.resolve(),
@@ -242,6 +254,7 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
           onPointerEnter={() => modelRef.current?.setHover(true)}
           onPointerLeave={() => modelRef.current?.setHover(false)}
           onPointerCancel={() => modelRef.current?.setHover(false)}
+          onClick={() => modelRef.current?.toggleCollapsed()}
         >
           {layers.map((layer) => renderLayer(layer))}
           {!ready && fallback ? (

@@ -34,6 +34,8 @@ export interface CreateShardLightOptions {
   hitRadius?: number;
   /** Seconds for hover to ease in/out. Default 0.25; 0 snaps. */
   hoverEase?: number;
+  /** Seconds for the click collapse to ease in/out. Default 0.3; 0 snaps. */
+  collapseEase?: number;
   /** Custom material factory, for custom shading. */
   material?: (layer: Layer) => THREE.Material;
   renderOrder?: number;
@@ -48,6 +50,10 @@ export interface ShardLightController {
   set(values: SetValues): void;
   /** Ease the whole-light hover amount toward 0 or 1. */
   setHover(hovered: boolean): void;
+  /** Ease the collapse toward expanded / collapsed. */
+  setCollapsed(collapsed: boolean): void;
+  /** Flip between expanded and collapsed. */
+  toggleCollapsed(): void;
   update(patch: Partial<CreateShardLightOptions>): void;
   tick(dt: number): void;
   ready: Promise<void>;
@@ -92,6 +98,7 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
     rayScale: opts.rayScale,
     baker: opts.baker,
     hoverEase: opts.hoverEase,
+    collapseEase: opts.collapseEase,
     accepts: ['bitmap', 'canvas'],
     onError: (error) => {
       console.error('[shardlight] bake error', error);
@@ -132,7 +139,11 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
    * whole light) whenever any shard reacts to hover.
    */
   function ensureHitMesh(): void {
-    const wanted = opts.hitRadius !== undefined || model.resolved.shards.some((s) => s.hover);
+    const wanted =
+      opts.hitRadius !== undefined ||
+      model.resolved.effects.some(
+        (effect) => effect.type === 'hover' || effect.type === 'collapse',
+      );
     if (!wanted) {
       if (hitMesh) {
         hitMesh.geometry.dispose();
@@ -248,6 +259,12 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
     setHover(hovered) {
       model.setHover(hovered);
     },
+    setCollapsed(collapsed) {
+      model.setCollapsed(collapsed);
+    },
+    toggleCollapsed() {
+      model.toggleCollapsed();
+    },
     update(patch) {
       if (disposed) return;
       const previousSize = opts.size;
@@ -267,6 +284,7 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
         rayScale: opts.rayScale,
         baker: opts.baker,
         hoverEase: opts.hoverEase,
+        collapseEase: opts.collapseEase,
       });
       ensureHitMesh();
     },

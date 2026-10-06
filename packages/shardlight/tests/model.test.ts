@@ -114,6 +114,24 @@ describe('createLightModel', () => {
     model.dispose();
   });
 
+  it('collapses on click and expands again', () => {
+    const model = makeModel({ shards: [{ id: 'beam', collapse: true }] });
+    const frames: FrameValues[] = [];
+    model.onFrame((values) => frames.push(values));
+    expect(frames.at(-1)!.channel('beam').scale).toBeCloseTo(1, 5);
+
+    model.toggleCollapsed();
+    model.tick(2);
+    expect(frames.at(-1)!.collapse).toBeGreaterThan(0.9);
+    expect(frames.at(-1)!.channel('beam').scale).toBeLessThan(0.1);
+
+    model.toggleCollapsed();
+    model.tick(2);
+    expect(frames.at(-1)!.collapse).toBeLessThan(0.1);
+    expect(frames.at(-1)!.channel('beam').scale).toBeGreaterThan(0.9);
+    model.dispose();
+  });
+
   it('is deterministic: the same config gives the same layer keys', async () => {
     const a = makeModel();
     const b = makeModel();

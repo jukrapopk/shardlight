@@ -11,6 +11,8 @@ export interface FrameBase {
   hover?: number;
   /** Seconds accumulated while hovered. Default 0. */
   hoverTime?: number;
+  /** Light-wide collapsed amount, 0..1. Default 0. */
+  collapse?: number;
 }
 
 /**
@@ -41,6 +43,7 @@ export function computeFrame(
     opacity: base.opacity ?? 1,
     hover: base.hover ?? 0,
     hoverTime: base.hoverTime ?? 0,
+    collapse: base.collapse ?? 0,
     channel(name) {
       let channel = map.get(name);
       if (!channel) {

@@ -79,6 +79,33 @@ describe('built-in effects', () => {
       computeFrame({ hover: 0, hoverTime: 0.5 }, effects, 0).channel('rays').rotation,
     ).toBeCloseTo(90, 5);
   });
+
+  it('collapse shrinks and fades by the collapsed amount', () => {
+    const effects = resolveConfig({
+      preset: null,
+      shards: [],
+      effects: [{ type: 'collapse', channels: ['main'], scale: 0, opacity: 0.5 }],
+    }).effects;
+    const open = computeFrame({ collapse: 0 }, effects, 0).channel('main');
+    expect(open).toMatchObject({ scale: 1, opacity: 1 });
+    const half = computeFrame({ collapse: 0.5 }, effects, 0).channel('main');
+    expect(half.scale).toBeCloseTo(0.5, 5);
+    expect(half.opacity).toBeCloseTo(0.75, 5);
+    const shut = computeFrame({ collapse: 1 }, effects, 0).channel('main');
+    expect(shut.scale).toBeCloseTo(0, 5);
+    expect(shut.opacity).toBeCloseTo(0.5, 5);
+  });
+
+  it('collapse defaults to every channel', () => {
+    const effects = resolveConfig({
+      preset: null,
+      shards: [],
+      effects: [{ type: 'collapse' }],
+    }).effects;
+    const frame = computeFrame({ collapse: 1 }, effects, 0, ['a', 'b']);
+    expect(frame.channel('a').scale).toBeCloseTo(0, 5);
+    expect(frame.channel('b').scale).toBeCloseTo(0, 5);
+  });
 });
 
 describe('migration', () => {

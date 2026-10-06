@@ -23,6 +23,8 @@ export interface ShardLightMeshProps extends Omit<GroupProps, 'ref'> {
   shards?: ShardInput[];
   effects?: EffectConfig[];
   flicker?: EffectShorthand;
+  /** Click the light to collapse it (click again to expand). */
+  collapse?: EffectShorthand;
   size?: number;
   resolution?: number;
   rayScale?: number;
@@ -32,6 +34,8 @@ export interface ShardLightMeshProps extends Omit<GroupProps, 'ref'> {
   hitRadius?: number;
   /** Seconds for hover to ease in/out. Default 0.25; 0 snaps. */
   hoverEase?: number;
+  /** Seconds for the click collapse to ease in/out. Default 0.3; 0 snaps. */
+  collapseEase?: number;
   material?: CreateShardLightOptions['material'];
   renderOrder?: number;
   depthTest?: boolean;
@@ -43,6 +47,10 @@ export interface ShardLightHandle {
   set(values: SetValues): void;
   /** Ease the whole-light hover amount toward 0 or 1. */
   setHover(hovered: boolean): void;
+  /** Ease the collapse toward expanded / collapsed. */
+  setCollapsed(collapsed: boolean): void;
+  /** Flip between expanded and collapsed. */
+  toggleCollapsed(): void;
   ready: Promise<void>;
   object: THREE.Group | null;
   model: LightModel | null;
@@ -62,6 +70,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
       shards: shardsProp,
       effects,
       flicker,
+      collapse,
       size,
       resolution,
       rayScale,
@@ -70,6 +79,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
       billboard,
       hitRadius,
       hoverEase,
+      collapseEase,
       material,
       renderOrder,
       depthTest,
@@ -80,7 +90,10 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
     } = props;
 
     const { registry, shards: childShards } = useShardRegistry();
-    const effectsList = useMemo(() => normalizeEffects(effects, flicker), [effects, flicker]);
+    const effectsList = useMemo(
+      () => normalizeEffects(effects, flicker, collapse),
+      [effects, flicker, collapse],
+    );
     const shards = useMemo(
       () => [...childShards, ...(shardsProp ?? [])],
       [childShards, shardsProp],
@@ -104,6 +117,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
         billboard,
         hitRadius,
         hoverEase,
+        collapseEase,
         material,
         renderOrder,
         depthTest,
@@ -133,6 +147,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
       billboard,
       hitRadius,
       hoverEase,
+      collapseEase,
     });
 
     useEffect(() => {
@@ -150,6 +165,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
         billboard,
         hitRadius,
         hoverEase,
+        collapseEase,
         material,
         renderOrder,
         depthTest,
@@ -175,6 +191,8 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
       () => ({
         set: (values: SetValues) => controller?.set(values),
         setHover: (hovered: boolean) => controller?.setHover(hovered),
+        setCollapsed: (collapsed: boolean) => controller?.setCollapsed(collapsed),
+        toggleCollapsed: () => controller?.toggleCollapsed(),
         ready: controller?.ready ?? Promise.resolve(),
         object: controller?.object ?? null,
         model: controller?.model ?? null,
@@ -184,7 +202,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
 
     if (!controller) return null;
 
-    const { onPointerOver, onPointerOut, ...restGroupProps } = groupProps;
+    const { onPointerOver, onPointerOut, onClick, ...restGroupProps } = groupProps;
 
     return (
       <ShardLightContext.Provider value={registry}>
@@ -198,6 +216,10 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
           onPointerOut={(event: ThreeEvent<PointerEvent>) => {
             controller.setHover(false);
             onPointerOut?.(event);
+          }}
+          onClick={(event: ThreeEvent<MouseEvent>) => {
+            controller.toggleCollapsed();
+            onClick?.(event);
           }}
         >
           {children}

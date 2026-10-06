@@ -60,7 +60,7 @@ ref.current?.setChannel('rays', { scale: 1.3 });
 
 #### Effects
 
-Four built-in effects:
+Five built-in effects:
 
 | Effect | Params (defaults) | Does |
 |---|---|---|
@@ -68,27 +68,32 @@ Four built-in effects:
 | `flicker` | `amount` 0.15, `speed` 1, `channels` all | Wobbles a channel's brightness |
 | `spin` | `speed` 0.1 turns/s, `phase` 0, `channels` `['main']` | Turns a channel |
 | `hover` | `scale` 1.15, `opacity` 1, `rotate` 0, `spin` 0, `channels` `['main']` | Reacts while hovered |
+| `collapse` | `scale` 0, `opacity` 1, `channels` all | Implodes on click, springs back on the next |
 
-`flicker` is also a shorthand prop:
+`flicker` and `collapse` are also shorthand props:
 
 ```tsx
 <ShardLight preset="ember" size={320} flicker={{ amount: 0.35 }} />
+<ShardLight preset="star" size={320} collapse />   {/* click to collapse */}
 ```
 
-`spin` and `hover` sit directly on a shard, so a preset can carry its own defaults:
+`spin`, `hover` and `collapse` also sit directly on a shard, so a preset can carry its own defaults:
 
 ```tsx
 <ShardLight preset="star" size={320}>
   <Shard id="beam" spin={0.08} />                             {/* turns on its own */}
   <Shard id="hotspot" hover={{ scale: 1.6, opacity: 1.4 }} /> {/* reacts to pointer-over */}
   <Shard id="ring" hover={{ spin: 0.3 }} />                    {/* spins up while hovered */}
+  <Shard id="glint" kind="fan" count={5} collapse />           {/* implodes on click */}
 </ShardLight>
 ```
 
-A shard with `spin` or `hover` is moved to its own channel, so it never drags the shards it was
-baked with. `spin` is `turns/second` (negative reverses). `hover` scales / fades / turns the shard
-as the pointer sits over the light, eased in and out; add `spin` to keep turning while hovered and
-hold that angle after. Hover is whole-light, and `ref.current?.setHover(false)` drives it by hand.
+A shard with `spin`, `hover` or `collapse` is moved to its own channel, so it never drags the
+shards it was baked with. `spin` is `turns/second` (negative reverses). `hover` scales / fades /
+turns the shard as the pointer sits over the light, eased in and out; add `spin` to keep turning
+while hovered and hold that angle after. `collapse` scales / fades it away when the light is
+clicked, eased in and out. Both are whole-light; drive them by hand with `ref.current?.setHover(…)`
+and `ref.current?.setCollapsed(…)`.
 
 Every effect is also plain config, so a preset (or you) can list them on any channel:
 
@@ -97,6 +102,7 @@ effects={[
   { type: 'spin', channels: ['rays'], speed: 0.05 },
   { type: 'hover', channels: ['body'], scale: 1.2, spin: 0.1 },
   { type: 'flicker', amount: 0.2, channels: ['*'] },
+  { type: 'collapse', scale: 0.2, opacity: 0, channels: ['*'] },
 ]}
 ```
 

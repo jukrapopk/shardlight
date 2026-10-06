@@ -58,6 +58,9 @@ scene.add(light.object);`,
   <Shard id="ring"  kind="halo"     channel="rays"  strength={0.12} size={0.62} width={0.05} falloff={2} softness={1.5} />
   <Shard id="dust"  kind="clusters" channel="dust"  clusters={4} perCluster={5} spread={40} inner={0.4} strength={0.25} size={0.5} width={2} taper={1} falloff={2} softness={1} />
 </ShardLight>`,
+  collapse: `import { ShardLight } from 'shardlight/react';
+
+<ShardLight preset="star" size={320} collapse />`,
 };
 
 const SHARD_BASE_KEYS = new Set([
@@ -361,8 +364,8 @@ export function App() {
       <section className="section" id="effects">
         <h2>Effects</h2>
         <p className="sub">
-          Bring any preset to life with <code>flicker</code>, <code>spin</code>, or{' '}
-          <code>hover</code>.
+          Bring any preset to life with <code>flicker</code>, <code>spin</code>, <code>hover</code>,
+          or <code>collapse</code>.
         </p>
         <div className="examples effects-grid">
           <figure>
@@ -402,6 +405,14 @@ export function App() {
               </ShardLight>
             </div>
             <pre>{CODE.hoverSpin}</pre>
+          </figure>
+
+          <figure>
+            <h3>Collapse</h3>
+            <div className="light-box">
+              <ShardLight preset="star" size={BOX} className="hoverable" collapse />
+            </div>
+            <pre>{CODE.collapse}</pre>
           </figure>
         </div>
       </section>

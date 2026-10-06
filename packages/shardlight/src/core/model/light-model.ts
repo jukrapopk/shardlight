@@ -29,6 +29,8 @@ export interface SetValues {
   opacity?: number;
   /** Direct hover amount 0..1; also snaps the eased hover target. */
   hover?: number;
+  /** Direct collapsed amount 0..1; also snaps the eased collapse target. */
+  collapse?: number;
 }
 
 export interface LightModelOptions extends ResolveInput {
@@ -40,6 +42,8 @@ export interface LightModelOptions extends ResolveInput {
   reducedMotion?: boolean;
   /** Seconds for hover to ease in/out. Default 0.25; 0 snaps. */
   hoverEase?: number;
+  /** Seconds for the click collapse to ease in/out. Default 0.3; 0 snaps. */
+  collapseEase?: number;
   warn?: boolean;
   onError?: (error: unknown) => void;
 }
@@ -55,6 +59,10 @@ export interface LightModel {
   ): void;
   /** Ease the light-wide hover amount toward 0 or 1. */
   setHover(hovered: boolean): void;
+  /** Ease the light-wide collapse toward 0 (expanded) or 1 (collapsed). */
+  setCollapsed(collapsed: boolean): void;
+  /** Flip between expanded and collapsed. */
+  toggleCollapsed(): void;
   tick(dt: number): void;
   dispose(): void;
   readonly layers: readonly Layer[];
@@ -66,6 +74,7 @@ export interface LightModel {
 const DEFAULT_RESOLUTION = 1024;
 const DEFAULT_ACCEPTS: LayerSource['type'][] = ['url'];
 const DEFAULT_HOVER_EASE = 0.25;
+const DEFAULT_COLLAPSE_EASE = 0.3;
 
 /**
  * The headless controller every target wraps. It owns everything that
@@ -94,6 +103,8 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
   let hover = 0;
   let hoverTarget = 0;
   let hoverTime = 0;
+  let collapse = 0;
+  let collapseTarget = 0;
   let disposed = false;
 
   function resolve(current: LightModelOptions): ResolvedLight {
@@ -121,13 +132,22 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
     return [...new Set(layers.map((layer) => layer.channel))];
   }
 
+  function hasEffect(type: string): boolean {
+    return resolved.effects.some((effect) => effect.type === type);
+  }
+
   function emitLayers(): void {
     const snapshot = layers.slice();
     for (const listener of layerListeners) listener(snapshot);
   }
 
   function frame(): FrameValues {
-    return computeFrame({ ...manual, hover, hoverTime }, activeEffects(), time, channelNames());
+    return computeFrame(
+      { ...manual, hover, hoverTime, collapse },
+      activeEffects(),
+      time,
+      channelNames(),
+    );
   }
 
   function emitFrame(): void {
@@ -245,6 +265,10 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
         hover = clamp01(values.hover);
         hoverTarget = hover;
       }
+      if (values.collapse !== undefined) {
+        collapse = clamp01(values.collapse);
+        collapseTarget = collapse;
+      }
       manual = {
         ...manual,
         ...values,
@@ -257,17 +281,29 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
     },
     setHover(hovered) {
       if (disposed) return;
-      if (!resolved.shards.some((shard) => shard.hover)) return;
+      if (!hasEffect('hover')) return;
       hoverTarget = hovered ? 1 : 0;
       if ((opts.hoverEase ?? DEFAULT_HOVER_EASE) <= 0) {
         hover = hoverTarget;
         emitFrame();
       }
     },
+    setCollapsed(collapsed) {
+      if (disposed) return;
+      if (!hasEffect('collapse')) return;
+      collapseTarget = collapsed ? 1 : 0;
+      if ((opts.collapseEase ?? DEFAULT_COLLAPSE_EASE) <= 0) {
+        collapse = collapseTarget;
+        emitFrame();
+      }
+    },
+    toggleCollapsed() {
+      model.setCollapsed(collapseTarget < 0.5);
+    },
     tick(dt) {
       if (disposed) return;
       const idle = activeEffects().length === 0;
-      if (idle && hover === hoverTarget) return;
+      if (idle && hover === hoverTarget && collapse === collapseTarget) return;
       time += dt;
       if (hover !== hoverTarget) {
         const ease = opts.hoverEase ?? DEFAULT_HOVER_EASE;
@@ -276,6 +312,15 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
         } else {
           hover += (hoverTarget - hover) * (1 - Math.exp(-dt / ease));
           if (Math.abs(hoverTarget - hover) < 0.001) hover = hoverTarget;
+        }
+      }
+      if (collapse !== collapseTarget) {
+        const ease = opts.collapseEase ?? DEFAULT_COLLAPSE_EASE;
+        if (ease <= 0) {
+          collapse = collapseTarget;
+        } else {
+          collapse += (collapseTarget - collapse) * (1 - Math.exp(-dt / ease));
+          if (Math.abs(collapseTarget - collapse) < 0.001) collapse = collapseTarget;
         }
       }
       // Bank time spent hovering, so `hover.spin` can wind up and down.

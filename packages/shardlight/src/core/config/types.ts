@@ -140,6 +140,13 @@ export interface ShardHover {
   spin?: number;
 }
 
+export interface ShardCollapse {
+  /** Scale at full collapse. Default 0 (implodes). */
+  scale?: number;
+  /** Opacity at full collapse. Default 1 (keeps its brightness). */
+  opacity?: number;
+}
+
 export interface ShardBase {
   /** Stable name: seeds its randomness, target of overrides. */
   id: string;
@@ -160,6 +167,11 @@ export interface ShardBase {
    * object = `{ scale, opacity, rotate }` at full hover. Eased in and out.
    */
   hover?: boolean | ShardHover;
+  /**
+   * Collapses when the light is clicked. `true` = implodes to nothing;
+   * object = `{ scale, opacity }` at full collapse. Click again to expand.
+   */
+  collapse?: boolean | ShardCollapse;
   /** Default 'add'. */
   blend?: ShardBlend;
   /** Overrides the light's colour for this shard only. */
@@ -180,6 +192,12 @@ export interface ResolvedHover {
   opacity: number;
   rotate: number;
   spin: number;
+}
+
+/** A shard's collapse response, with defaults filled in. */
+export interface ResolvedCollapse {
+  scale: number;
+  opacity: number;
 }
 
 /** A full shard: `kind` required, params optional (kind defaults fill the rest). */
@@ -239,6 +257,8 @@ export interface ResolvedShard {
   spin?: ResolvedSpin;
   /** Present when the shard reacts to hover. */
   hover?: ResolvedHover;
+  /** Present when the shard collapses on click. */
+  collapse?: ResolvedCollapse;
   /** Kind defaults filled in and clamped. */
   params: Record<string, unknown>;
 }

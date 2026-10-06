@@ -14,6 +14,8 @@ export interface FrameValues {
   hover: number;
   /** Seconds accumulated while hovered; lets effects spin up on hover. */
   hoverTime: number;
+  /** Light-wide collapsed amount, 0..1, eased by the model. */
+  collapse: number;
   /** Channel names currently present (built-in effects use this for `channels: 'all'`). */
   channels(): string[];
 }

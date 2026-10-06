@@ -1,10 +1,12 @@
 import type {
   EffectConfig,
   Preset,
+  ResolvedCollapse,
   ResolvedHover,
   ResolvedLight,
   ResolvedShard,
   ResolvedSpin,
+  ShardCollapse,
   ShardConfig,
   ShardHover,
   ShardInput,
@@ -176,12 +178,14 @@ function resolveShard(
     seed: shard.seed ?? lightSeed,
     spin: resolveSpin(shard.spin, shard.id, warn),
     hover: resolveHover(shard.hover, shard.id, warn),
+    collapse: resolveCollapse(shard.collapse, shard.id, warn),
     params,
   };
 }
 
 const DEFAULT_SPIN_SPEED = 0.1;
 const HOVER_DEFAULTS: ResolvedHover = { scale: 1.15, opacity: 1, rotate: 0, spin: 0 };
+const COLLAPSE_DEFAULTS: ResolvedCollapse = { scale: 0, opacity: 1 };
 
 function resolveSpin(
   value: number | ShardSpin | boolean | undefined | null,
@@ -227,15 +231,33 @@ function resolveHover(
   return undefined;
 }
 
+function resolveCollapse(
+  value: ShardCollapse | boolean | undefined | null,
+  id: string,
+  warn: Warn,
+): ResolvedCollapse | undefined {
+  if (value === undefined || value === null || value === false) return undefined;
+  if (value === true) return { ...COLLAPSE_DEFAULTS };
+  if (typeof value === 'object') {
+    return {
+      scale: finiteOr(value.scale, COLLAPSE_DEFAULTS.scale),
+      opacity: finiteOr(value.opacity, COLLAPSE_DEFAULTS.opacity),
+    };
+  }
+  warn(`shard "${id}" collapse must be a boolean or object; collapse ignored`);
+  return undefined;
+}
+
 function finiteOr(value: unknown, fallback: number): number {
   const n = Number(value);
   return Number.isFinite(n) ? n : fallback;
 }
 
 /**
- * Turn per-shard `spin` / `hover` into channel effects. A shard that shares its
- * channel with others is moved to its own channel (named after its id) so it
- * can move independently; a shard already alone on its channel keeps it.
+ * Turn per-shard `spin` / `hover` / `collapse` into channel effects. A shard
+ * that shares its channel with others is moved to its own channel (named after
+ * its id) so it can move independently; a shard already alone on its channel
+ * keeps it.
  */
 function applyShardMotion(shards: ResolvedShard[], warn: Warn): EffectConfig[] {
   const effects: EffectConfig[] = [];
@@ -243,7 +265,7 @@ function applyShardMotion(shards: ResolvedShard[], warn: Warn): EffectConfig[] {
   const taken = new Set(originalChannels);
 
   for (const shard of shards) {
-    if (!shard.spin && !shard.hover) continue;
+    if (!shard.spin && !shard.hover && !shard.collapse) continue;
 
     const shared = originalChannels.filter((channel) => channel === shard.channel).length > 1;
     if (shared) {
@@ -271,6 +293,14 @@ function applyShardMotion(shards: ResolvedShard[], warn: Warn): EffectConfig[] {
         opacity: shard.hover.opacity,
         rotate: shard.hover.rotate,
         spin: shard.hover.spin,
+      });
+    }
+    if (shard.collapse) {
+      effects.push({
+        type: 'collapse',
+        channels: [shard.channel],
+        scale: shard.collapse.scale,
+        opacity: shard.collapse.opacity,
       });
     }
   }
