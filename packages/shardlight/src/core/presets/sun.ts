@@ -1,0 +1,57 @@
+import { definePreset } from './registry.js';
+
+/** `sun`: a big soft sun with many faint rays (plan §9). */
+export const sun = definePreset({
+  version: 1,
+  color: '#FFE9B8',
+  rotation: 0,
+  seed: 2,
+  shards: [
+    {
+      id: 'bloom',
+      kind: 'blob',
+      channel: 'body',
+      strength: 0.5,
+      size: 1.1,
+      hardness: 0,
+      falloff: 2.6,
+      softness: 4,
+    },
+    {
+      id: 'hotspot',
+      kind: 'blob',
+      channel: 'body',
+      strength: 1,
+      size: 0.22,
+      hardness: 0.3,
+      falloff: 2,
+    },
+    {
+      id: 'rays',
+      kind: 'fan',
+      channel: 'rays',
+      strength: 0.4,
+      size: 1,
+      count: 36,
+      variance: 0.7,
+      jitter: 0.6,
+      inner: 0.05,
+      width: 2,
+      taper: 1,
+      falloff: 1.5,
+      fadeIn: 0.05,
+      softness: 1.5,
+    },
+    {
+      id: 'ring',
+      kind: 'halo',
+      channel: 'rays',
+      strength: 0.05,
+      size: 0.75,
+      width: 0.08,
+      falloff: 2,
+      softness: 2,
+      variance: 0.4,
+    },
+  ],
+});

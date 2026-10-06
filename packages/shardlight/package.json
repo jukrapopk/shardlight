@@ -1,0 +1,109 @@
+{
+  "name": "shardlight",
+  "version": "0.1.0",
+  "description": "Layered shard lens-flare lights that render identically in 2D React (DOM), three.js and React Three Fiber.",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": [
+    "./dist/**/*.js",
+    "./src/**/*.ts",
+    "./src/**/*.tsx"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js"
+    },
+    "./three": {
+      "types": "./dist/three/index.d.ts",
+      "import": "./dist/three/index.js"
+    },
+    "./r3f": {
+      "types": "./dist/r3f/index.d.ts",
+      "import": "./dist/r3f/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/core/index.js",
+  "module": "./dist/core/index.js",
+  "types": "./dist/core/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "@react-three/fiber": ">=8",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "three": ">=0.150"
+  },
+  "peerDependenciesMeta": {
+    "@react-three/fiber": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "three": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@react-three/fiber": "^8.17.10",
+    "@types/node": "^22.7.5",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@types/three": "^0.169.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.169.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.3"
+  },
+  "keywords": [
+    "lens-flare",
+    "flare",
+    "light",
+    "glow",
+    "shards",
+    "three",
+    "threejs",
+    "react",
+    "react-three-fiber",
+    "r3f",
+    "webgl",
+    "canvas"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shardlight/shardlight.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shardlight/shardlight/issues"
+  },
+  "homepage": "https://github.com/shardlight/shardlight#readme"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "shardlight-monorepo",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "packageManager": "pnpm@12.3.4",
+  "description": "Monorepo for the shardlight package.",
+  "scripts": {
+    "build": "pnpm --filter shardlight build",
+    "test": "pnpm --filter shardlight test",
+    "typecheck": "pnpm --filter shardlight typecheck",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.9",
+    "typescript": "^5.6.3"
+  }
+}
