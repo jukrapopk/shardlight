@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { getPreset } from 'shardlight';
 import { ShardLight, Shard } from 'shardlight/react';
 import { ShardLightMesh } from 'shardlight/r3f';
 import { createShardLight } from 'shardlight/three';
@@ -21,17 +22,6 @@ scene.add(light.object);`,
   r3f: `import { ShardLightMesh } from 'shardlight/r3f';
 
 <ShardLightMesh preset="star" size={0.4} />`,
-  presetSun: `import { ShardLight } from 'shardlight/react';
-
-<ShardLight preset="sun" size={320} />`,
-  shardsSun: `import { ShardLight, Shard } from 'shardlight/react';
-
-<ShardLight color="#FFE9B8">
-  <Shard id="bloom"   kind="blob" channel="body" strength={0.55} size={1.15} falloff={2.6} softness={5} />
-  <Shard id="hotspot" kind="blob" channel="body" strength={1} size={0.22} hardness={0.3} falloff={2} />
-  <Shard id="rays"    kind="fan"  channel="rays" strength={0.45} size={1} count={32} variance={0.7} jitter={0.55} inner={0.06} width={2} taper={1} falloff={1.6} fadeIn={0.05} softness={1.5} />
-  <Shard id="ring"    kind="halo" channel="rays" strength={0.04} size={0.8} width={0.07} falloff={2} softness={2.5} variance={0.4} />
-</ShardLight>`,
   spin: `import { ShardLight, Shard } from 'shardlight/react';
 
 <ShardLight preset="star" size={320}>
@@ -49,6 +39,43 @@ scene.add(light.object);`,
   <Shard id="rays" hover={{ spin: 0.3 }} />
 </ShardLight>`,
 };
+
+const SHARD_BASE_KEYS = new Set([
+  'id',
+  'kind',
+  'channel',
+  'blend',
+  'color',
+  'seed',
+  'visible',
+  'spin',
+  'hover',
+]);
+
+/** The two ways to get a preset: by name, or as the shards it is built from. */
+function presetSnippets(name: string): { preset: string; shards: string } {
+  const preset = `import { ShardLight } from 'shardlight/react';\n\n<ShardLight preset="${name}" size={320} />`;
+  const config = getPreset(name);
+  if (!config) return { preset, shards: '' };
+
+  const attrs: string[] = [];
+  if (config.color.toUpperCase() !== '#FFFFFF') attrs.push(`color="${config.color}"`);
+  if (config.rotation) attrs.push(`rotation={${config.rotation}}`);
+  const head = attrs.length > 0 ? ` ${attrs.join(' ')}` : '';
+
+  const lines = config.shards.map((shard) => {
+    const parts = [`id="${shard.id}"`, `kind="${shard.kind}"`];
+    if (shard.channel) parts.push(`channel="${shard.channel}"`);
+    for (const [key, value] of Object.entries(shard as unknown as Record<string, unknown>)) {
+      if (SHARD_BASE_KEYS.has(key)) continue;
+      parts.push(typeof value === 'string' ? `${key}="${value}"` : `${key}={${value}}`);
+    }
+    return `  <Shard ${parts.join(' ')} />`;
+  });
+
+  const shards = `import { ShardLight, Shard } from 'shardlight/react';\n\n<ShardLight${head}>\n${lines.join('\n')}\n</ShardLight>`;
+  return { preset, shards };
+}
 
 /** Plain three.js: an orthographic camera framing a 2-unit plane. */
 function ThreeView() {
@@ -93,6 +120,9 @@ function ThreeView() {
 }
 
 export function App() {
+  const [composePreset, setComposePreset] = useState<string>('star');
+  const compose = presetSnippets(composePreset);
+
   return (
     <div className="page">
       {/* Hero */}
@@ -184,20 +214,31 @@ export function App() {
         </div>
       </section>
 
-      {/* Compose: one light, two ways to get it */}
+      {/* Compose: pick any preset and see the shards it's built from */}
       <section className="section" id="compose">
         <h2>Compose it yourself</h2>
-        <p className="sub">
-          Every preset is just shards. Use <code>sun</code>, or build the same light by hand.
-        </p>
+        <p className="sub">Every preset is just shards.</p>
         <div className="compose">
+          <label className="preset-picker">
+            <span>Preset</span>
+            <select
+              value={composePreset}
+              onChange={(event) => setComposePreset(event.target.value)}
+            >
+              {PRESETS.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </label>
           <div className="light-box">
-            <ShardLight preset="sun" size={BOX} />
+            <ShardLight preset={composePreset} size={BOX} />
           </div>
           <div className="compose-code">
-            <pre>{CODE.presetSun}</pre>
+            <pre>{compose.preset}</pre>
             <div className="or">or</div>
-            <pre>{CODE.shardsSun}</pre>
+            <pre>{compose.shards}</pre>
           </div>
         </div>
       </section>

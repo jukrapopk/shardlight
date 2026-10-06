@@ -263,6 +263,35 @@ body {
   color: var(--muted);
 }
 
+.preset-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.preset-picker select {
+  appearance: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.preset-picker select:hover {
+  border-color: var(--muted);
+}
+
+.preset-picker select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* ---------- presets ---------- */
 .presets {
   display: grid;
