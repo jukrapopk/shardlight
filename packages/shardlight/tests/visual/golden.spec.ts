@@ -10,6 +10,8 @@ const presets = [
   'ember',
   'starburst',
   'frost',
+  'orbit',
+  'comet',
 ] as const;
 // The DOM target is covered by the per-preset goldens below.
 const extraTargets = ['three', 'r3f'] as const;

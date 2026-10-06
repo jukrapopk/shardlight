@@ -222,9 +222,15 @@ body {
 
 /* ---------- presets ---------- */
 .presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 22px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 720px) {
+  .presets {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .preset-card {

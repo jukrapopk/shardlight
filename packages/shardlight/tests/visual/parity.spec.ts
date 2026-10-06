@@ -11,6 +11,8 @@ const presets = [
   'ember',
   'starburst',
   'frost',
+  'orbit',
+  'comet',
 ] as const;
 type Target = 'dom' | 'three' | 'r3f';
 

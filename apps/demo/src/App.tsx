@@ -14,6 +14,8 @@ const PRESETS = [
   'ember',
   'starburst',
   'frost',
+  'orbit',
+  'comet',
 ] as const;
 
 const BOX = 260;
