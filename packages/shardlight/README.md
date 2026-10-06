@@ -3,6 +3,7 @@
 [![CI](https://github.com/jukrapopk/shardlight/actions/workflows/ci.yml/badge.svg)](https://github.com/jukrapopk/shardlight/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/shardlight.svg)](https://www.npmjs.com/package/shardlight)
 [![license](https://img.shields.io/npm/l/shardlight.svg)](./LICENSE)
+[![demo](https://img.shields.io/badge/demo-live-ffb454)](https://jukrapopk.github.io/shardlight/)
 
 Layered **shard** lens-flare lights that render the same in normal 2D React (DOM),
 [three.js](https://threejs.org) and [React Three Fiber](https://docs.pmnd.rs/react-three-fiber).
@@ -47,8 +48,8 @@ import { ShardLight, Shard, Glow, Rays, Halo } from 'shardlight/react';
 </ShardLight>
 ```
 
-`flicker` is a shorthand for a `flicker` effect. Omit `preset` (or pass `preset={null}`) to start
-empty and build a light purely from `<Shard>` children.
+`flicker` and `collapse` are shorthands for those effects. Omit `preset` (or pass `preset={null}`)
+to start empty and build a light purely from `<Shard>` children.
 
 Animate from CSS variables, or imperatively through a ref — never through React props:
 
@@ -119,6 +120,7 @@ scene.add(light.object);
 // per frame: no re-bake, just transforms and opacity
 light.set({ channels: { rays: { scale: 1.2 } }, opacity: 0.8 });
 light.setHover(true); // eases the light's `hover` shards in
+light.toggleCollapsed(); // or setCollapsed(true) to implode
 
 light.update({ shards: [{ id: 'beam', strength: 1 }] }); // re-bakes only what changed
 light.dispose();
@@ -133,8 +135,9 @@ import { ShardLightMesh, Shard } from 'shardlight/r3f';
   <Shard id="ring" visible={false} />
 </ShardLightMesh>;
 
-// pointer-over eases `hover` shards in automatically; the ref adds setHover(bool)
+// pointer-over eases `hover` shards in and clicks collapse — automatically
 light.current?.setHover(false);
+light.current?.setCollapsed(true);
 ```
 
 ### Headless core — `shardlight`
@@ -150,9 +153,10 @@ model.subscribe((layers) => {
   /* one image per layer */
 });
 model.onFrame((values) => {
-  /* channel scale / opacity / rotation, plus the eased `hover` */
+  /* channel scale / opacity / rotation, plus the eased `hover` and `collapse` */
 });
 model.setHover(true);
+model.toggleCollapsed();
 await model.ready;
 ```
 
