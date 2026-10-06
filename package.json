@@ -23,7 +23,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build",
-    "playground": "pnpm build && pnpm --filter playground dev",
+    "demo": "pnpm build && pnpm --filter demo dev",
+    "demo:build": "pnpm build && pnpm --filter demo build",
+    "demo:preview": "pnpm --filter demo preview",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "pnpm build && changeset publish"

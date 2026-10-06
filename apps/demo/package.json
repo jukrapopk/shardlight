@@ -1,9 +1,9 @@
 {
-  "name": "playground",
+  "name": "demo",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Interactive playground for shardlight: the three targets side by side.",
+  "description": "shardlight demo and landing page (GitHub Pages + local).",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
