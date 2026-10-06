@@ -96,15 +96,10 @@ body {
   border-color: var(--muted);
 }
 
-.button.primary {
-  background: var(--accent);
-  color: #1a1206;
-  border-color: transparent;
-  font-weight: 600;
-}
-
 .install {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   padding: 10px 16px;
   border-radius: 999px;
   background: var(--panel);
@@ -112,6 +107,30 @@ body {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 13px;
   color: var(--accent-2);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.install:hover {
+  border-color: var(--muted);
+}
+
+.install:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.install-hint {
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .badges {
@@ -124,6 +143,15 @@ body {
 
 .badges img {
   display: block;
+}
+
+.badges a {
+  display: block;
+  transition: opacity 0.15s;
+}
+
+.badges a:hover {
+  opacity: 0.8;
 }
 
 /* ---------- sections ---------- */

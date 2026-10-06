@@ -106,6 +106,32 @@ function presetSnippets(name: string): { preset: string; shards: string } {
   return { preset, shards };
 }
 
+const INSTALL_COMMAND = 'npm install shardlight';
+
+async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    /* fall back below */
+  }
+  try {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(area);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
 /** Plain three.js: an orthographic camera framing a 2-unit plane. */
 function ThreeView() {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -152,6 +178,14 @@ function ThreeView() {
 export function App() {
   const [composePreset, setComposePreset] = useState<string>('star');
   const compose = presetSnippets(composePreset);
+  const [copied, setCopied] = useState(false);
+
+  const copyInstall = async () => {
+    if (await copyToClipboard(INSTALL_COMMAND)) {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    }
+  };
 
   return (
     <div className="page">
@@ -167,9 +201,6 @@ export function App() {
           Build a light once and it looks the same everywhere.
         </p>
         <div className="hero-actions">
-          <a className="button primary" href="#quick-start">
-            Try it
-          </a>
           <a
             className="button"
             href="https://github.com/jukrapopk/shardlight"
@@ -188,13 +219,27 @@ export function App() {
           </a>
         </div>
         <div className="badges">
-          <img alt="npm version" src="https://img.shields.io/npm/v/shardlight" loading="lazy" />
-          <img alt="license" src="https://img.shields.io/npm/l/shardlight" loading="lazy" />
-          <img
-            alt="CI"
-            src="https://img.shields.io/github/actions/workflow/status/jukrapopk/shardlight/ci.yml"
-            loading="lazy"
-          />
+          <a href="https://www.npmjs.com/package/shardlight" target="_blank" rel="noreferrer">
+            <img alt="npm version" src="https://img.shields.io/npm/v/shardlight" loading="lazy" />
+          </a>
+          <a
+            href="https://github.com/jukrapopk/shardlight/blob/main/LICENSE"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img alt="license" src="https://img.shields.io/badge/license-MIT-blue" loading="lazy" />
+          </a>
+          <a
+            href="https://github.com/jukrapopk/shardlight/actions/workflows/ci.yml"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              alt="CI"
+              src="https://img.shields.io/github/actions/workflow/status/jukrapopk/shardlight/ci.yml"
+              loading="lazy"
+            />
+          </a>
         </div>
       </header>
 
@@ -202,7 +247,15 @@ export function App() {
       <section className="section" id="quick-start">
         <h2>Quick start</h2>
         <p className="sub">
-          <code className="install">npm install shardlight</code>
+          <button
+            type="button"
+            className="install"
+            onClick={copyInstall}
+            aria-label="Copy the install command"
+          >
+            {INSTALL_COMMAND}
+            <span className="install-hint">{copied ? 'Copied' : 'Copy'}</span>
+          </button>
         </p>
         <div className="examples">
           <figure>
