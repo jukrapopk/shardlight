@@ -210,7 +210,6 @@ body {
   display: grid;
   grid-template: 100% / 100%;
   place-items: center;
-  background: radial-gradient(120% 120% at 50% 50%, #15151e 0%, #000 70%);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
