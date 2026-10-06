@@ -1,0 +1,55 @@
+import { definePreset } from './registry.js';
+
+/** `neon`: an electric cyan tube — a hot core, a wide glow and thin bright rays. */
+export const neon = definePreset({
+  version: 1,
+  color: '#66F0FF',
+  rotation: 0,
+  seed: 5,
+  shards: [
+    {
+      id: 'glow',
+      kind: 'blob',
+      channel: 'body',
+      strength: 0.35,
+      size: 0.9,
+      hardness: 0,
+      falloff: 3,
+      softness: 4,
+    },
+    {
+      id: 'core',
+      kind: 'blob',
+      channel: 'body',
+      strength: 1,
+      size: 0.09,
+      hardness: 0.5,
+      falloff: 2,
+    },
+    {
+      id: 'rays',
+      kind: 'fan',
+      channel: 'rays',
+      strength: 0.8,
+      size: 0.95,
+      count: 8,
+      variance: 0.5,
+      width: 2.5,
+      taper: 1,
+      falloff: 1.8,
+      fadeIn: 0.03,
+      softness: 1.5,
+    },
+    {
+      id: 'ring',
+      kind: 'halo',
+      channel: 'rays',
+      strength: 0.12,
+      size: 0.5,
+      width: 0.03,
+      falloff: 3,
+      softness: 2,
+      variance: 0.6,
+    },
+  ],
+});

@@ -5,7 +5,16 @@ import { ShardLight } from 'shardlight/react';
 import { ShardLightMesh } from 'shardlight/r3f';
 import { createShardLight } from 'shardlight/three';
 
-const PRESETS = ['star', 'sun', 'anamorphic', 'sparkle'] as const;
+const PRESETS = [
+  'star',
+  'sun',
+  'anamorphic',
+  'sparkle',
+  'neon',
+  'ember',
+  'starburst',
+  'frost',
+] as const;
 
 const BOX = 260;
 const PRESET = 'sun';

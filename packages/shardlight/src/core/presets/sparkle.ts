@@ -1,6 +1,6 @@
 import { definePreset } from './registry.js';
 
-/** `sparkle`: a small crisp glint. */
+/** `sparkle`: a small crisp glint — a tight core with two crossed fans. */
 export const sparkle = definePreset({
   version: 1,
   color: '#FFFFFF',
@@ -8,11 +8,21 @@ export const sparkle = definePreset({
   seed: 4,
   shards: [
     {
+      id: 'bloom',
+      kind: 'blob',
+      channel: 'body',
+      strength: 0.25,
+      size: 0.28,
+      hardness: 0,
+      falloff: 3,
+      softness: 2,
+    },
+    {
       id: 'hotspot',
       kind: 'blob',
       channel: 'body',
       strength: 1,
-      size: 0.06,
+      size: 0.08,
       hardness: 0.5,
       falloff: 2,
     },
@@ -20,8 +30,8 @@ export const sparkle = definePreset({
       id: 'spikes',
       kind: 'fan',
       channel: 'rays',
-      strength: 0.9,
-      size: 0.3,
+      strength: 1,
+      size: 0.42,
       count: 6,
       width: 3,
       taper: 1,
@@ -33,7 +43,7 @@ export const sparkle = definePreset({
       kind: 'fan',
       channel: 'glint',
       strength: 0.6,
-      size: 0.18,
+      size: 0.26,
       count: 6,
       angle: 30,
       width: 2,

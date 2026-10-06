@@ -1,0 +1,58 @@
+import { definePreset } from './registry.js';
+
+/** `frost`: a cool, soft halo with short clustered splinters. */
+export const frost = definePreset({
+  version: 1,
+  color: '#BFE6FF',
+  rotation: 0,
+  seed: 8,
+  shards: [
+    {
+      id: 'bloom',
+      kind: 'blob',
+      channel: 'body',
+      strength: 0.45,
+      size: 1.05,
+      hardness: 0,
+      falloff: 2.8,
+      softness: 5,
+    },
+    {
+      id: 'hotspot',
+      kind: 'blob',
+      channel: 'body',
+      strength: 0.9,
+      size: 0.14,
+      hardness: 0.35,
+      falloff: 2.2,
+    },
+    {
+      id: 'splinters',
+      kind: 'clusters',
+      channel: 'rays',
+      strength: 0.35,
+      size: 0.7,
+      clusters: 6,
+      perCluster: 4,
+      spread: 12,
+      inner: 0.2,
+      variance: 0.6,
+      width: 1.5,
+      taper: 1,
+      falloff: 1.6,
+      fadeIn: 0.1,
+      softness: 1.5,
+    },
+    {
+      id: 'ring',
+      kind: 'halo',
+      channel: 'rays',
+      strength: 0.08,
+      size: 0.75,
+      width: 0.04,
+      falloff: 2,
+      softness: 2,
+      variance: 0.5,
+    },
+  ],
+});

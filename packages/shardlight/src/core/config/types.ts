@@ -113,6 +113,10 @@ export interface BaseShardPresets {
   sun: true;
   anamorphic: true;
   sparkle: true;
+  neon: true;
+  ember: true;
+  starburst: true;
+  frost: true;
 }
 
 // ---------------------------------------------------------------------------
@@ -173,7 +177,7 @@ export interface ShardLightConfig {
   effects?: EffectConfig[];
 }
 
-/** A preset is a plain ShardLightConfig. Built-ins: star, sun, anamorphic, sparkle. */
+/** A preset is a plain ShardLightConfig. Built-ins: star, sun, anamorphic, sparkle, neon, ember, starburst, frost. */
 export type BuiltInPresetName = keyof BaseShardPresets;
 export type Preset = string | ShardLightConfig;
 

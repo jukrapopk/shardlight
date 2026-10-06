@@ -1,7 +1,16 @@
 import { expect, test } from '@playwright/test';
 import './types.js';
 
-const presets = ['star', 'sun', 'anamorphic', 'sparkle'] as const;
+const presets = [
+  'star',
+  'sun',
+  'anamorphic',
+  'sparkle',
+  'neon',
+  'ember',
+  'starburst',
+  'frost',
+] as const;
 // The DOM target is covered by the per-preset goldens below.
 const extraTargets = ['three', 'r3f'] as const;
 
