@@ -19,7 +19,7 @@ export function createCanvas(width: number, height: number): AnyCanvas {
     return canvas;
   }
   // No canvas host (SSR / unit tests). The caller treats a missing context as
-  // a non-fatal "try again later" (plan §8).
+  // a non-fatal "try again later".
   throw new Error('shardlight: no canvas implementation available in this environment');
 }
 
@@ -32,7 +32,7 @@ export function get2dContext(canvas: AnyCanvas): AnyCanvasContext | null {
 }
 
 /**
- * Free a scratch canvas immediately rather than waiting for the GC (plan §8).
+ * Free a scratch canvas immediately rather than waiting for the GC.
  * Setting both dimensions to 0 releases the backing store in browsers.
  */
 export function freeCanvas(canvas: AnyCanvas): void {

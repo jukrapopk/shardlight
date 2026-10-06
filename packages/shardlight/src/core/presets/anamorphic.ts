@@ -1,6 +1,6 @@
 import { definePreset } from './registry.js';
 
-/** `anamorphic`: a cinematic horizontal streak (plan §9). */
+/** `anamorphic`: a cinematic horizontal streak. */
 export const anamorphic = definePreset({
   version: 1,
   color: '#CFE6FF',

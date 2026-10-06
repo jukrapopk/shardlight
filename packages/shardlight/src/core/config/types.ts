@@ -1,5 +1,5 @@
 /**
- * The config model (plan §4). A ShardLight is an ordered list of shards, each a
+ * The config model. A ShardLight is an ordered list of shards, each a
  * flat set of that kind's parameters. Flat means no nested `shape: {}` objects,
  * so overriding one field never needs a deep merge, and config keys match the
  * component props one to one.
@@ -124,14 +124,12 @@ export type ShardBlend = 'add' | 'screen';
 export interface ShardBase {
   /** Stable name: seeds its randomness, target of overrides. */
   id: string;
-  /** Any registered kind (plan §4.1). */
+  /** Any registered kind. */
   kind: string;
   /** Default true. */
   visible?: boolean;
   /** Motion channel it animates with; default 'main'. */
   channel?: string;
-  /** Turns with the light's spin; default false. */
-  spin?: boolean;
   /** Default 'add'. */
   blend?: ShardBlend;
   /** Overrides the light's colour for this shard only. */
@@ -161,7 +159,7 @@ export interface EffectConfig {
 }
 
 export interface ShardLightConfig {
-  /** Schema version, see plan §4.6. */
+  /** Schema version. */
   version: 1;
   /** Default '#FFFFFF'. */
   color: string;
@@ -171,7 +169,7 @@ export interface ShardLightConfig {
   seed: number;
   /** Drawn in order (additive, so order only matters for 'screen'). */
   shards: ShardConfig[];
-  /** Optional animations, plan §4.3. */
+  /** Optional animations. */
   effects?: EffectConfig[];
 }
 
@@ -188,7 +186,6 @@ export interface ResolvedShard {
   kind: string;
   visible: boolean;
   channel: string;
-  spin: boolean;
   blend: ShardBlend;
   /** Resolved colour (shard override or the light's). */
   color: string;
@@ -210,10 +207,9 @@ export interface ResolvedLight {
 export interface ResolvedLayer {
   /** Content hash of the resolved shards plus light-wide bake inputs. */
   key: string;
-  /** Stable while the layer exists: `${channel}|${spin}|${blend}`. */
+  /** Stable while the layer exists: `${channel}|${blend}`. */
   id: string;
   channel: string;
-  spin: boolean;
   blend: ShardBlend;
   shards: ResolvedShard[];
   color: string;

@@ -22,10 +22,10 @@ function makeModel(options: Record<string, unknown> = {}) {
 
 const ids = (layers: readonly Layer[]) => layers.map((l) => l.id).sort();
 
-describe('createLightModel (§5)', () => {
-  it('groups shards into layers by channel + spin + blend', () => {
+describe('createLightModel', () => {
+  it('groups shards into layers by channel + blend', () => {
     const model = makeModel();
-    expect(ids(model.layers)).toEqual(['body|false|add', 'rays|false|add']);
+    expect(ids(model.layers)).toEqual(['body|add', 'rays|add']);
     model.dispose();
   });
 
@@ -44,7 +44,7 @@ describe('createLightModel (§5)', () => {
     model.update({
       shards: [{ id: 'extra', kind: 'fan', channel: 'extra', count: 3, size: 0.4 }],
     });
-    expect(ids(model.layers)).toEqual(['body|false|add', 'extra|false|add', 'rays|false|add']);
+    expect(ids(model.layers)).toEqual(['body|add', 'extra|add', 'rays|add']);
     await model.ready;
     expect(model.layers.every((l) => l.source !== null)).toBe(true);
 
@@ -83,7 +83,7 @@ describe('createLightModel (§5)', () => {
       shards: [{ id: 'extra', kind: 'fan', channel: 'extra', count: 3, size: 0.4 }],
     });
     for (const layer of after.layers) {
-      if (layer.id === 'extra|false|add') continue;
+      if (layer.id === 'extra|add') continue;
       expect(layer.key).toBe(beforeKeys.get(layer.id));
     }
     after.dispose();

@@ -4,7 +4,7 @@ import { fan } from './fan.js';
 import { clusters } from './clusters.js';
 import { halo } from './halo.js';
 
-/** Register the built-in kinds as ordinary definitions (plan §4.1). */
+/** Register the built-in kinds as ordinary definitions. */
 export function registerBuiltInKinds(): void {
   registerShardKind(blob as never);
   registerShardKind(fan as never);

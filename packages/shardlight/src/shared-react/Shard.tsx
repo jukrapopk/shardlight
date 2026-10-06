@@ -6,7 +6,7 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect.js';
 /**
  * `<Shard>` props: a stable `id`, an optional `kind`, and any of that kind's
  * flat parameters. Returns `null` and registers itself with the nearest
- * `<ShardLight>` / `<ShardLightMesh>` (plan §6.2).
+ * `<ShardLight>` / `<ShardLightMesh>`.
  */
 export interface ShardProps {
   id: string;

@@ -69,7 +69,7 @@ export function makeRgba(color: string): RgbaFormatter {
   };
 }
 
-/** Loose validity check for names used in CSS custom properties (plan §6.3). */
+/** Loose validity check for names used in CSS custom properties. */
 export function isCssIdentifier(name: string): boolean {
   return /^-?[_a-zA-Z][-_a-zA-Z0-9]*$/.test(name);
 }

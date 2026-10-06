@@ -10,15 +10,15 @@ export interface BakeInputs {
 }
 
 /**
- * Group shards into layers: shards that share `channel` + `spin` + `blend` are
- * baked together into one image (plan §4). The layer `key` is a stable content
+ * Group shards into layers: shards that share `channel` + `blend` are baked
+ * baked together into one image. The layer `key` is a stable content
  * hash (resolved shards + light-wide bake inputs) used for caching and sharing.
  */
 export function buildLayers(light: ResolvedLight, inputs: BakeInputs): ResolvedLayer[] {
   const groups = new Map<string, ResolvedShard[]>();
   for (const shard of light.shards) {
     if (!shard.visible) continue;
-    const id = layerId(shard.channel, shard.spin, shard.blend);
+    const id = layerId(shard.channel, shard.blend);
     let group = groups.get(id);
     if (!group) {
       group = [];
@@ -29,7 +29,7 @@ export function buildLayers(light: ResolvedLight, inputs: BakeInputs): ResolvedL
 
   const layers: ResolvedLayer[] = [];
   for (const [id, shards] of groups) {
-    const [channel, spin, blend] = id.split('|') as [string, string, string];
+    const [channel, blend] = id.split('|') as [string, string];
     const content = {
       shards: shards.map((s) => ({
         id: s.id,
@@ -50,7 +50,6 @@ export function buildLayers(light: ResolvedLight, inputs: BakeInputs): ResolvedL
       key: `sl_${hashString(stableStringify(content)).toString(36)}`,
       id,
       channel,
-      spin: spin === 'true',
       blend: blend as 'add' | 'screen',
       shards,
       color: light.color,
@@ -61,6 +60,6 @@ export function buildLayers(light: ResolvedLight, inputs: BakeInputs): ResolvedL
   return layers;
 }
 
-export function layerId(channel: string, spin: boolean, blend: string): string {
-  return `${channel}|${spin}|${blend}`;
+export function layerId(channel: string, blend: string): string {
+  return `${channel}|${blend}`;
 }

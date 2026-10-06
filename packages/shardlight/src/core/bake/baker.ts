@@ -1,7 +1,7 @@
 import type { ResolvedLayer } from '../config/types.js';
 
 /**
- * What a baked layer can become (plan §4.4). Adapters say which types they
+ * What a baked layer can become. Adapters say which types they
  * accept, and the model asks the baker for a compatible one: DOM takes `url`,
  * three takes `bitmap` or `canvas`.
  */
@@ -27,7 +27,7 @@ export interface Baker {
 
 /**
  * Thrown when a 2D context is unavailable (canvas memory cap). Treat it as a
- * non-fatal "try again later": the result is left uncached (plan §8).
+ * non-fatal "try again later": the result is left uncached.
  */
 export class NullContextError extends Error {
   constructor() {

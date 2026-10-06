@@ -1,7 +1,7 @@
 /**
  * FNV-1a string hash. Deterministic across runs and platforms.
  * Used to seed a shard's PRNG from its `id`, so reordering or inserting
- * shards never reshuffles the other shards' randomness (plan §4.1).
+ * shards never reshuffles the other shards' randomness.
  */
 export function hashString(input: string): number {
   let h = 0x811c9dc5;

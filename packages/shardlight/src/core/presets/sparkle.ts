@@ -1,6 +1,6 @@
 import { definePreset } from './registry.js';
 
-/** `sparkle`: a small crisp glint (plan §9). */
+/** `sparkle`: a small crisp glint. */
 export const sparkle = definePreset({
   version: 1,
   color: '#FFFFFF',
@@ -40,7 +40,6 @@ export const sparkle = definePreset({
       taper: 1,
       falloff: 2,
       softness: 1,
-      spin: true,
     },
   ],
 });

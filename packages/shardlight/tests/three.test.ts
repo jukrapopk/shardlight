@@ -18,7 +18,7 @@ function meshNames(object: THREE.Object3D): string[] {
   return names.filter((name) => name !== 'shardlight-hit');
 }
 
-describe('three adapter (§7.1)', () => {
+describe('three adapter', () => {
   it('creates one plane per layer and disposes its textures', async () => {
     const controller = createShardLight({
       preset: 'star',
@@ -27,7 +27,7 @@ describe('three adapter (§7.1)', () => {
       baker: createFakeBaker(),
     });
     await controller.ready;
-    expect(meshNames(controller.object).sort()).toEqual(['body|false|add', 'rays|false|add']);
+    expect(meshNames(controller.object).sort()).toEqual(['body|add', 'rays|add']);
     expect(textureCacheSize()).toBe(2);
     controller.dispose();
   });

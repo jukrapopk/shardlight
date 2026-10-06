@@ -1,6 +1,6 @@
 import { definePreset } from './registry.js';
 
-/** `star` (default): a warm 4-point star (plan §9). */
+/** `star` (default): a warm 4-point star. */
 export const star = definePreset({
   version: 1,
   color: '#FFF4E0',

@@ -7,7 +7,7 @@
 Layered **shard** lens-flare lights that render the same in normal 2D React (DOM),
 [three.js](https://threejs.org) and [React Three Fiber](https://docs.pmnd.rs/react-three-fiber).
 
-A light is an ordered list of *shards* (glows, rays, streak bundles, halos). Shards that
+A light is an ordered list of _shards_ (glows, rays, streak bundles, halos). Shards that
 share a motion channel are baked into one image, then animated with transforms and opacity —
 no re-rendering.
 
@@ -40,18 +40,20 @@ import { ShardLight, Shard, Glow, Rays, Halo } from 'shardlight/react';
 <ShardLight />                              // the default preset (star)
 <ShardLight preset="sun" size={320} />
 
-<ShardLight preset="star" size={320} spin>
+<ShardLight preset="star" size={320} flicker>
   <Shard id="beam" strength={0.9} size={1.1} />   {/* tweak a preset shard */}
   <Shard id="ring" visible={false} />             {/* hide one */}
-  <Shard id="glint" kind="fan" count={5} size={0.25} channel="glint" spin /> {/* add one */}
+  <Shard id="glint" kind="fan" count={5} size={0.25} channel="glint" /> {/* add one */}
 </ShardLight>
 ```
+
+`flicker` is a shorthand for a `flicker` effect.
 
 Animate from CSS variables, or imperatively through a ref — never through React props:
 
 ```tsx
 const ref = useRef<ShardLightHandle>(null);
-ref.current?.set({ channels: { rays: { scale: 1.3 } }, spin: 30 });
+ref.current?.set({ channels: { rays: { scale: 1.3 } } });
 ref.current?.setChannel('rays', { scale: 1.3 });
 ```
 
@@ -64,7 +66,7 @@ const light = createShardLight({ preset: 'sun', size: 0.6 });
 scene.add(light.object);
 
 // per frame: no re-bake, just transforms and opacity
-light.set({ channels: { rays: { scale: 1.2 } }, opacity: 0.8, spin: angle });
+light.set({ channels: { rays: { scale: 1.2 } }, opacity: 0.8 });
 
 light.update({ shards: [{ id: 'beam', strength: 1 }] }); // re-bakes only what changed
 light.dispose();
@@ -75,9 +77,9 @@ light.dispose();
 ```tsx
 import { ShardLightMesh, Shard } from 'shardlight/r3f';
 
-<ShardLightMesh ref={light} preset="sun" size={0.4} position={[0, 1, -2]} spin flicker>
+<ShardLightMesh ref={light} preset="sun" size={0.4} position={[0, 1, -2]} flicker>
   <Shard id="ring" visible={false} />
-</ShardLightMesh>
+</ShardLightMesh>;
 ```
 
 ### Headless core — `shardlight`
@@ -89,8 +91,12 @@ Framework-free: config, kinds, presets, effects, baking and cache. Every adapter
 import { createLightModel, resolveConfig, prewarm } from 'shardlight';
 
 const model = createLightModel({ preset: 'star', accepts: ['bitmap'] });
-model.subscribe((layers) => {/* one image per layer */});
-model.onFrame((values) => {/* channel scale / opacity, spin */});
+model.subscribe((layers) => {
+  /* one image per layer */
+});
+model.onFrame((values) => {
+  /* channel scale / opacity */
+});
 await model.ready;
 ```
 

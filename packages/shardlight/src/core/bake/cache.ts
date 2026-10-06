@@ -2,7 +2,7 @@ import type { LayerSource } from './baker.js';
 
 /**
  * A ref-counted cache keyed by the layer's content hash, shared across every
- * light and target on the page (plan §8). A null/deferred context is not an
+ * light and target on the page. A null/deferred context is not an
  * error: the source simply never lands in the cache, so the next call retries.
  *
  * The cache — not the caller — owns each bake's `AbortController`. Several

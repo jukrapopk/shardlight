@@ -59,9 +59,9 @@ interface MeshEntry {
 }
 
 /**
- * The three.js adapter (plan §7.1): one additive plane per layer, spin layers
- * inside a rotating child group. It wraps a `createLightModel()` and turns the
- * model's layers and frame values into meshes, scales, opacities and rotation.
+ * The three.js adapter: one additive plane per layer. It wraps a
+ * `createLightModel()` and turns the model's layers and frame values into
+ * meshes, scales and opacities.
  */
 export function createShardLight(options: CreateShardLightOptions = {}): ShardLightController {
   let opts = {
@@ -72,8 +72,6 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
     ...definedOnly(options),
   };
   const object = new THREE.Group();
-  const spinGroup = new THREE.Group();
-  object.add(spinGroup);
 
   let geometry = new THREE.PlaneGeometry(opts.size, opts.size);
   const entries = new Map<string, MeshEntry>();
@@ -191,7 +189,7 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
         };
         entries.set(layer.id, entry);
         if (layer.source) applyTexture(entry, layer);
-        (layer.spin ? spinGroup : object).add(mesh);
+        object.add(mesh);
       }
     }
   }
@@ -209,7 +207,6 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
       entry.mesh.scale.set(channel.scale, channel.scale, 1);
       entry.material.opacity = channel.opacity * values.opacity;
     }
-    spinGroup.rotation.z = (values.spin * Math.PI) / 180;
   }
 
   const unsubscribeLayers = model.subscribe(syncLayers);

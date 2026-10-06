@@ -9,7 +9,7 @@ export type ShardComponentProps<D> = Omit<ShardBase, 'kind'> & { id: string } & 
 
 /**
  * Make a typed component for a shard kind: `const Dots = createShardComponent(dots)`
- * (plan §4.1). Works in both React entries.
+ *. Works in both React entries.
  */
 export function createShardComponent<D extends ShardKindDefinition<any, any>>(
   def: D,

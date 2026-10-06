@@ -12,14 +12,13 @@ import { isAbortError } from '../bake/scheduler.js';
 import { buildLayers } from './layers.js';
 import { definedOnly } from '../util/object.js';
 
-/** One host unit: one baked image, one `<img>` or plane (plan §5). */
+/** One host unit: one baked image, one `<img>` or plane. */
 export interface Layer {
-  /** Stable while the layer exists: `${channel}|${spin}|${blend}`. */
+  /** Stable while the layer exists: `${channel}|${blend}`. */
   id: string;
   /** Content hash; changes when the layer needs re-baking. */
   key: string;
   channel: string;
-  spin: boolean;
   blend: 'add' | 'screen';
   source: LayerSource | null;
 }
@@ -28,8 +27,6 @@ export interface SetValues {
   channels?: Record<string, { scale?: number; opacity?: number }>;
   /** The whole light's opacity. */
   opacity?: number;
-  /** Degrees; turns the `spin` shards. */
-  spin?: number;
 }
 
 export interface LightModelOptions extends ResolveInput {
@@ -37,7 +34,7 @@ export interface LightModelOptions extends ResolveInput {
   rayScale?: number;
   baker?: Baker;
   accepts?: LayerSource['type'][];
-  /** Pause effects under `prefers-reduced-motion` (plan §4.3). */
+  /** Pause effects under `prefers-reduced-motion`. */
   reducedMotion?: boolean;
   warn?: boolean;
   onError?: (error: unknown) => void;
@@ -61,7 +58,7 @@ const DEFAULT_RESOLUTION = 1024;
 const DEFAULT_ACCEPTS: LayerSource['type'][] = ['url'];
 
 /**
- * The headless controller every target wraps (plan §5). It owns everything that
+ * The headless controller every target wraps. It owns everything that
  * isn't drawing to a host: resolving, grouping, baking, caching, diffing and
  * effects.
  */
@@ -157,7 +154,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
       .catch((error) => {
         if (disposed || isAbortError(error)) return;
         opts.onError?.(error);
-        // Leave it pending so a later update retries (plan §8).
+        // Leave it pending so a later update retries.
       });
   }
 
@@ -190,7 +187,6 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
         id: layer.id,
         key: layer.key,
         channel: layer.channel,
-        spin: layer.spin,
         blend: layer.blend,
         source: prev && prev.key === layer.key ? prev.source : null,
       };

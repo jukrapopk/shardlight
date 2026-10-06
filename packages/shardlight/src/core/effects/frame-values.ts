@@ -7,13 +7,11 @@ import type { EffectConfig } from '../config/types.js';
 export interface FrameBase {
   channels?: Record<string, { scale?: number; opacity?: number }>;
   opacity?: number;
-  spin?: number;
 }
 
 /**
- * Compute a frame: start from the manual base (scale 1 / opacity 1 / spin 0),
- * seed every known channel, then let each effect multiply scale and opacity and
- * add to the spin angle (plan §4.3).
+ * Compute a frame: start from the manual base (scale 1 / opacity 1), seed every
+ * known channel, then let each effect multiply scale and opacity.
  */
 export function computeFrame(
   base: FrameBase,
@@ -35,7 +33,6 @@ export function computeFrame(
 
   const out: FrameValues = {
     opacity: base.opacity ?? 1,
-    spin: base.spin ?? 0,
     channel(name) {
       let channel = map.get(name);
       if (!channel) {

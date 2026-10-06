@@ -7,8 +7,6 @@
 Monorepo for [`shardlight`](packages/shardlight) — layered shard lens-flare lights for the
 DOM (React), three.js and React Three Fiber.
 
-The design and full specification live in [`shardlight-plan.md`](./shardlight-plan.md).
-
 ```
 shardlight/
 ├── packages/shardlight/   # the published package (core + react + three + r3f + testing)

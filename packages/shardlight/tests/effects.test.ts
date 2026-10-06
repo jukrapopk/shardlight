@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { computeFrame, migrateConfig, resolveConfig } from '../src/core/index.js';
 
-describe('built-in effects (§4.3)', () => {
-  it('spin adds speed · 360 · t degrees', () => {
-    const frame = computeFrame({}, [{ type: 'spin', speed: 0.05 }], 1);
-    expect(frame.spin).toBeCloseTo(18, 5);
-  });
-
+describe('built-in effects', () => {
   it('pulse multiplies a channel scale', () => {
     const effects = resolveConfig({
       preset: null,
@@ -43,7 +38,7 @@ describe('built-in effects (§4.3)', () => {
   });
 });
 
-describe('migration (§4.6)', () => {
+describe('migration', () => {
   it('is a no-op for current configs', () => {
     const config = resolveConfig({ preset: 'star' });
     const migrated = migrateConfig(config);

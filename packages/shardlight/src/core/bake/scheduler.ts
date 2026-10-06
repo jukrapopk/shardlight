@@ -1,6 +1,6 @@
 /**
  * Runs bakes one layer per task, yielding between them, so a big light never
- * blocks a frame and stale bakes never finish (plan §8).
+ * blocks a frame and stale bakes never finish.
  */
 export interface Scheduler {
   run<T>(task: () => Promise<T>, signal?: AbortSignal): Promise<T>;

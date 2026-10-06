@@ -1,6 +1,6 @@
 /**
  * Param schemas. One schema per kind or effect drives types, defaults,
- * validation, the playground controls and (later) shader backends (plan §4.1).
+ * validation, the playground controls and (later) shader backends.
  */
 
 export interface NumberParam {
@@ -11,7 +11,7 @@ export interface NumberParam {
   step?: number;
   /** `'px'` costs and widths scale with the bake resolution. */
   unit?: string;
-  /** Multiplied by the `rayScale` render option (plan §4.1). */
+  /** Multiplied by the `rayScale` render option. */
   ray?: boolean;
   label?: string;
 }

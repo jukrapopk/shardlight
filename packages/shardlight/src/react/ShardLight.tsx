@@ -20,7 +20,7 @@ import {
 } from '../shared-react/index.js';
 
 export interface ShardLightProps {
-  /** Starting config. Default 'star'. `null` = start empty (plan §4.5). */
+  /** Starting config. Default 'star'. `null` = start empty. */
   preset?: Preset | null;
   /** Data-driven alternative or addition to children. */
   config?: Partial<ShardLightConfig>;
@@ -28,12 +28,11 @@ export interface ShardLightProps {
   color?: string;
   /** CSS edge length of the light box. */
   size?: number | string;
-  /** Bake size. `'auto'` uses rendered size × DPR, capped (plan §6.1). */
+  /** Bake size. `'auto'` uses rendered size × DPR, capped. */
   resolution?: number | 'auto';
   /** Thins every ray. */
   rayScale?: number;
   effects?: EffectConfig[];
-  spin?: EffectShorthand;
   flicker?: EffectShorthand;
   /** Static channel values. */
   channels?: Record<string, { scale?: number; opacity?: number }>;
@@ -49,7 +48,7 @@ export interface ShardLightProps {
   children?: ReactNode;
 }
 
-/** The root `<div>` plus the imperative API (plan §6.3). */
+/** The root `<div>` plus the imperative API. */
 export type ShardLightHandle = HTMLDivElement & {
   set(values: SetValues): void;
   setChannel(channel: string, values: { scale?: number; opacity?: number }): void;
@@ -67,7 +66,6 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
       resolution = 1024,
       rayScale,
       effects,
-      spin,
       flicker,
       channels,
       blend,
@@ -86,10 +84,7 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
     const [ready, setReady] = useState(false);
 
     const { registry, shards } = useShardRegistry();
-    const effectsList = useMemo(
-      () => normalizeEffects(effects, spin, flicker),
-      [effects, spin, flicker],
-    );
+    const effectsList = useMemo(() => normalizeEffects(effects, flicker), [effects, flicker]);
 
     const bakeResolution = useCallback(
       () => (resolution === 'auto' ? autoResolution(size) : resolution),
@@ -104,7 +99,6 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
         root.style.setProperty(`--shardlight-${name}-scale`, String(channel.scale));
         root.style.setProperty(`--shardlight-${name}-opacity`, String(channel.opacity));
       }
-      root.style.setProperty('--shardlight-spin', `${values.spin}deg`);
       root.style.setProperty('--shardlight-opacity', String(values.opacity));
     }, []);
 
@@ -202,7 +196,7 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [channelKey]);
 
-    // Expose the imperative API on the root element (plan §6.3).
+    // Expose the imperative API on the root element.
     useEffect(() => {
       const node = rootRef.current as ShardLightHandle | null;
       if (!node) return;
@@ -256,20 +250,7 @@ function renderLayer(layer: Layer): ReactNode {
     transform: `scale(var(--shardlight-${layer.channel}-scale, 1))`,
     opacity: `var(--shardlight-${layer.channel}-opacity, 1)` as unknown as number,
   };
-  const img = <img key={layer.id} src={src} alt="" draggable={false} style={imgStyle} />;
-  if (!layer.spin) return img;
-  return (
-    <div
-      key={layer.id}
-      style={{
-        position: 'absolute',
-        inset: 0,
-        transform: 'rotate(var(--shardlight-spin, 0deg))',
-      }}
-    >
-      {img}
-    </div>
-  );
+  return <img key={layer.id} src={src} alt="" draggable={false} style={imgStyle} />;
 }
 
 function autoResolution(size: number | string): number {

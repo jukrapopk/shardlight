@@ -12,7 +12,7 @@ import {
   unregisterShardKind,
 } from '../src/core/index.js';
 
-describe('extensibility from outside the package (§4.1)', () => {
+describe('extensibility from outside the package', () => {
   afterEach(() => {
     unregisterShardKind('dots');
     unregisterEffect('sway');

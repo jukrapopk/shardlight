@@ -22,8 +22,6 @@ pnpm format       # Prettier --write
   - `src/shared-react` — `<Shard>`, `createShardComponent()`, named shards, context.
   - `src/react`, `src/three`, `src/r3f` — adapters.
   - `src/testing` — the adapter contract suite.
-- `shardlight-plan.md` — the design spec. The tables and stated rules are the spec; where a
-  code sketch and a rule disagree, follow the rule.
 
 ## Ground rules
 

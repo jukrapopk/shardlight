@@ -1,5 +1,5 @@
 /**
- * **shardlight/testing** — the adapter contract suite (plan §5, §11). Any
+ * **shardlight/testing** — the adapter contract suite. Any
  * adapter (ours or a third party's) can run it against itself: add / replace /
  * remove / dispose, checking the adapter's host objects follow the model.
  */

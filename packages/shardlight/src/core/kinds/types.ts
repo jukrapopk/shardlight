@@ -5,7 +5,7 @@ export type Ctx2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 /**
  * Everything a draw function needs besides the context and its params. The
  * context is already centred and rotated for the shard; draw functions work in
- * local coordinates with the origin at the light's centre (plan §4.1).
+ * local coordinates with the origin at the light's centre.
  */
 export interface DrawEnv {
   /** Half-edge of the bake canvas, in px (`resolution / 2`). */
@@ -27,7 +27,7 @@ export interface DrawEnv {
 /**
  * A shard kind: a param schema plus a draw function. The four built-ins are
  * written the same way and go through the same registry, so nothing in core
- * switches on kind names (plan §4.1).
+ * switches on kind names.
  */
 export interface ShardKindDefinition<K extends string = string, P extends ParamMap = ParamMap> {
   kind: K;

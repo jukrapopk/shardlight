@@ -18,7 +18,7 @@ const prewarmed: string[] = [];
 
 /**
  * Bake a config into the shared cache ahead of time, so a light that appears on
- * a key moment (a reveal, an entrance) is ready before it's needed (plan §8).
+ * a key moment (a reveal, an entrance) is ready before it's needed.
  * Holds a cache reference until `releasePrewarm()` is called.
  */
 export async function prewarm(options: PrewarmOptions = {}): Promise<void> {

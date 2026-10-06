@@ -19,10 +19,9 @@ export interface ShardLightMeshProps extends Omit<GroupProps, 'ref'> {
   config?: CreateShardLightOptions['config'];
   /** Overrides the preset's colour for the whole light. */
   color?: string;
-  /** Plain shard objects; `<Shard>` children are also accepted (plan §7.2). */
+  /** Plain shard objects; `<Shard>` children are also accepted. */
   shards?: ShardInput[];
   effects?: EffectConfig[];
-  spin?: EffectShorthand;
   flicker?: EffectShorthand;
   size?: number;
   resolution?: number;
@@ -46,7 +45,7 @@ export interface ShardLightHandle {
 }
 
 /**
- * `<ShardLightMesh>` (plan §7.2): a thin wrapper over `createShardLight`,
+ * `<ShardLightMesh>`: a thin wrapper over `createShardLight`,
  * mounting its `object` with `<primitive>` and pushing prop and `<Shard>`
  * changes into `update()`.
  */
@@ -58,7 +57,6 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
       color,
       shards: shardsProp,
       effects,
-      spin,
       flicker,
       size,
       resolution,
@@ -77,10 +75,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
     } = props;
 
     const { registry, shards: childShards } = useShardRegistry();
-    const effectsList = useMemo(
-      () => normalizeEffects(effects, spin, flicker),
-      [effects, spin, flicker],
-    );
+    const effectsList = useMemo(() => normalizeEffects(effects, flicker), [effects, flicker]);
     const shards = useMemo(
       () => [...childShards, ...(shardsProp ?? [])],
       [childShards, shardsProp],

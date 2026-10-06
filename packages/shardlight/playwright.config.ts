@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Visual tests (plan §11): render each preset in a headless Chromium, store
+ * Visual tests: render each preset in a headless Chromium, store
  * golden PNGs, and compare the three targets for parity. These exercise the
  * real `canvas2d` baker and the DOM / three.js / R3F adapters, which the Vitest
  * unit suite never touches.

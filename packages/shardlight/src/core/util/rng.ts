@@ -12,7 +12,7 @@ export function mulberry32(seed: number): () => number {
 }
 
 /**
- * A shard's PRNG seed: `hash(id) ^ (shard.seed ?? light.seed)` (plan §4.1).
+ * A shard's PRNG seed: `hash(id) ^ (shard.seed ?? light.seed)`.
  * Seeding by id (not position) keeps each shard's randomness stable.
  */
 export function shardSeed(id: string, seed: number): number {

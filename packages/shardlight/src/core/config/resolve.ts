@@ -38,7 +38,7 @@ const DEFAULT_PRESET = 'star';
 const DEFAULT_COLOR = '#FFFFFF';
 
 /**
- * The single place that decides what gets drawn (plan §4.5). Every adapter calls
+ * The single place that decides what gets drawn. Every adapter calls
  * it. Order: preset → config → shard overrides, merged per shard by `id`; then
  * kind defaults are filled in; then values are clamped.
  */
@@ -106,7 +106,7 @@ function resolvePreset(
 /**
  * Merge overrides into a base list by `id`. A full shard (with `kind`) whose id
  * matches nothing is added; a partial one whose id matches nothing is skipped
- * with a warning (plan §4).
+ * with a warning.
  */
 function mergeShardList(
   base: ShardConfig[],
@@ -169,7 +169,6 @@ function resolveShard(
     kind: shard.kind,
     visible: shard.visible ?? true,
     channel,
-    spin: shard.spin ?? false,
     blend: shard.blend ?? 'add',
     color: shard.color ?? lightColor,
     seed: shard.seed ?? lightSeed,

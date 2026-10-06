@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { resolveConfig } from '../src/core/index.js';
 
-describe('resolveConfig merge rules (§4.5)', () => {
+describe('resolveConfig merge rules', () => {
   it('uses the default preset (star) when none is given', () => {
     const light = resolveConfig({});
     expect(light.version).toBe(1);
@@ -54,7 +54,7 @@ describe('resolveConfig merge rules (§4.5)', () => {
   });
 });
 
-describe('defaults and clamping (§4.1)', () => {
+describe('defaults and clamping', () => {
   it('fills kind defaults', () => {
     const light = resolveConfig({ preset: null, shards: [{ id: 'x', kind: 'fan' }] });
     const x = light.shards[0]!;

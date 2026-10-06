@@ -3,7 +3,7 @@ import type { ShardKindDefinition } from './types.js';
 
 /**
  * The kind registry. Lookups go through `getShardKind` only, so a scoped
- * registry can be added later without breaking anything (plan §12.1).
+ * registry can be added later without breaking anything.
  */
 const kinds = new Map<string, ShardKindDefinition<never, ParamMap>>();
 

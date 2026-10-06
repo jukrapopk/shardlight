@@ -13,12 +13,11 @@ const TARGET_BOX = 260;
 interface TargetProps {
   preset: Preset;
   color: string;
-  spin: boolean;
   flicker: boolean;
 }
 
 /** Plain three.js: an orthographic camera framing a 2-unit plane. */
-function ThreeView({ preset, color, spin, flicker }: TargetProps) {
+function ThreeView({ preset, color, flicker }: TargetProps) {
   const hostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,11 +33,13 @@ function ThreeView({ preset, color, spin, flicker }: TargetProps) {
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 100);
     camera.position.z = 1;
 
-    const effects = [
-      ...(spin ? [{ type: 'spin' as const }] : []),
-      ...(flicker ? [{ type: 'flicker' as const }] : []),
-    ];
-    const light = createShardLight({ preset, color, size: 2, resolution: 512, effects });
+    const light = createShardLight({
+      preset,
+      color,
+      size: 2,
+      resolution: 512,
+      effects: flicker ? [{ type: 'flicker' }] : [],
+    });
     scene.add(light.object);
 
     let raf = 0;
@@ -54,7 +55,7 @@ function ThreeView({ preset, color, spin, flicker }: TargetProps) {
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [preset, color, spin, flicker]);
+  }, [preset, color, flicker]);
 
   return <div className="light-box" ref={hostRef} />;
 }
@@ -63,7 +64,6 @@ function snippet(props: TargetProps): string {
   const parts = [
     `preset="${props.preset}"`,
     props.color.toUpperCase() !== '#FFF4E0' ? `color="${props.color}"` : null,
-    props.spin ? 'spin' : null,
     props.flicker ? 'flicker' : null,
   ].filter(Boolean);
   return `<ShardLight ${parts.join(' ')} />`;
@@ -72,17 +72,16 @@ function snippet(props: TargetProps): string {
 export function App() {
   const [preset, setPreset] = useState<Preset>('star');
   const [color, setColor] = useState('#FFF4E0');
-  const [spin, setSpin] = useState(true);
   const [flicker, setFlicker] = useState(false);
 
-  const target: TargetProps = { preset, color, spin, flicker };
+  const target: TargetProps = { preset, color, flicker };
 
   return (
     <div className="page">
       {/* Hero */}
       <header className="hero">
         <div className="hero-light">
-          <ShardLight preset="star" color={color} size={300} spin flicker={flicker} />
+          <ShardLight preset="star" color={color} size={300} flicker={flicker} />
         </div>
         <p className="eyebrow">one light · three targets</p>
         <h1>shardlight</h1>
@@ -138,10 +137,6 @@ export function App() {
             <input type="color" value={color} onChange={(event) => setColor(event.target.value)} />
           </label>
           <label className="check">
-            <input type="checkbox" checked={spin} onChange={(e) => setSpin(e.target.checked)} />{' '}
-            spin
-          </label>
-          <label className="check">
             <input
               type="checkbox"
               checked={flicker}
@@ -154,13 +149,7 @@ export function App() {
         <div className="targets">
           <figure>
             <div className="light-box">
-              <ShardLight
-                preset={preset}
-                color={color}
-                size={TARGET_BOX}
-                spin={spin}
-                flicker={flicker}
-              />
+              <ShardLight preset={preset} color={color} size={TARGET_BOX} flicker={flicker} />
             </div>
             <figcaption>React (DOM)</figcaption>
           </figure>
@@ -179,13 +168,7 @@ export function App() {
                 gl={{ antialias: true, alpha: true }}
                 style={{ width: TARGET_BOX, height: TARGET_BOX }}
               >
-                <ShardLightMesh
-                  preset={preset}
-                  color={color}
-                  size={2}
-                  spin={spin}
-                  flicker={flicker}
-                />
+                <ShardLightMesh preset={preset} color={color} size={2} flicker={flicker} />
               </Canvas>
             </div>
             <figcaption>React Three Fiber</figcaption>
@@ -219,7 +202,7 @@ export function App() {
             <h3>React (DOM)</h3>
             <pre>{`import { ShardLight } from 'shardlight/react';
 
-<ShardLight preset="sun" size={320} spin />`}</pre>
+<ShardLight preset="sun" size={320} flicker />`}</pre>
           </div>
           <div className="card">
             <h3>three.js</h3>
@@ -232,7 +215,7 @@ scene.add(light.object);`}</pre>
             <h3>React Three Fiber</h3>
             <pre>{`import { ShardLightMesh } from 'shardlight/r3f';
 
-<ShardLightMesh preset="sun" size={0.4} spin />`}</pre>
+<ShardLightMesh preset="sun" size={0.4} flicker />`}</pre>
           </div>
         </div>
       </section>

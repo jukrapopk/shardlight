@@ -13,7 +13,7 @@ export interface ShardRegistryState {
 /**
  * Collects `<Shard>` registrations for one light. A plain `Map` preserves
  * insertion order and lets shards sit inside fragments, conditionals and
- * wrapper components (plan §6.2).
+ * wrapper components.
  */
 export function useShardRegistry(): ShardRegistryState {
   const mapRef = useRef(new Map<string, ShardInput>());

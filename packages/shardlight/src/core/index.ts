@@ -9,7 +9,7 @@
  * `preset="sun"` works with no setup. That is the package's only side effect.
  */
 
-// Side-effect: register the built-ins (plan §3).
+// Side-effect: register the built-ins.
 import './kinds/index.js';
 import './effects/index.js';
 import './presets/index.js';
@@ -35,8 +35,8 @@ export interface ShardKinds extends BaseShardKinds {}
 export interface ShardPresets extends BaseShardPresets {}
 
 /**
- * Per-channel animation values. Augmentable so a later release can add fields
- * (plan §12.3); v1 ships scale and opacity plus the light-wide spin.
+ * Per-channel animation values. Augmentable so a later release can add fields;
+ * v1 ships scale and opacity.
  */
 export interface ChannelValues {
   scale: number;

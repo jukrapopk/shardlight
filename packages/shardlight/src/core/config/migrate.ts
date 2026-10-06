@@ -4,7 +4,7 @@ export const CURRENT_VERSION = 1;
 
 /**
  * Upgrade older config JSON to the current schema version, step by step
- * (plan §4.6). Adapters run this on every config they're given, so old saves
+ *. Adapters run this on every config they're given, so old saves
  * keep working. Unknown fields are preserved so a config from a newer version
  * degrades gracefully rather than throwing.
  */

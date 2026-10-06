@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import type { LayerSource } from '../core/index.js';
 
 /**
- * Instance-shared, ref-counted textures (plan §7.1). Every light with the same
+ * Instance-shared, ref-counted textures. Every light with the same
  * baked layer reuses one texture; each light still gets its own material, so
  * opacity can fade per instance. Textures are disposed when their last user is.
  */

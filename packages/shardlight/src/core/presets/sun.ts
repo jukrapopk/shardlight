@@ -1,6 +1,6 @@
 import { definePreset } from './registry.js';
 
-/** `sun`: a big soft sun with many faint rays (plan §9). */
+/** `sun`: a big soft sun with many faint rays. */
 export const sun = definePreset({
   version: 1,
   color: '#FFE9B8',

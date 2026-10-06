@@ -8,7 +8,7 @@ import type { BakeOptions, Baker, LayerSource } from './baker.js';
 import { NullContextError } from './baker.js';
 
 /**
- * The default baker (plan §4.4). Draws each shard to its own scratch canvas with
+ * The default baker. Draws each shard to its own scratch canvas with
  * the kind's `draw`, applies its variance mask, then composites it onto the
  * layer canvas with `lighter` and a per-shard blur.
  */

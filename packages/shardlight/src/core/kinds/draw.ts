@@ -1,6 +1,6 @@
 import type { Ctx2D, DrawEnv } from './types.js';
 
-/** Gradients approximate their curves with 16 colour stops (plan §4.1). */
+/** Gradients approximate their curves with 16 colour stops. */
 export const GRADIENT_STOPS = 16;
 
 /**
@@ -75,7 +75,7 @@ interface VarianceParams {
 }
 
 /**
- * The variance mask (plan §4.1): a conic gradient with 12 evenly spaced stops,
+ * The variance mask: a conic gradient with 12 evenly spaced stops,
  * each alpha `1 − variance · rng()`, the last repeating the first so there is no
  * seam. Applied with `destination-in` on the untransformed scratch canvas.
  */
