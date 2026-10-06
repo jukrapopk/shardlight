@@ -11,8 +11,11 @@ in all three.
 
 ![shardlight presets: star, sun, sparkle, starburst, ember](assets/demo.png)
 
-**▶ [Live demo](https://jukrapopk.github.io/shardlight/)** ·
-**[Full docs →](packages/shardlight/README.md)**
+<p align="center">
+  <a href="https://jukrapopk.github.io/shardlight/"><img alt="Live demo" src="https://img.shields.io/badge/%E2%96%B6%20Live%20demo-ffb454?style=for-the-badge"></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="packages/shardlight/README.md"><img alt="Full docs" src="https://img.shields.io/badge/Full%20docs%20%E2%86%92-3b82f6?style=for-the-badge"></a>
+</p>
 
 ## Install
 
