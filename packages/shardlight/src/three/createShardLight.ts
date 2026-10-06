@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {
+  collapseTrigger,
   createLightModel,
   definedOnly,
   type Baker,
@@ -141,9 +142,8 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
   function ensureHitMesh(): void {
     const wanted =
       opts.hitRadius !== undefined ||
-      model.resolved.effects.some(
-        (effect) => effect.type === 'hover' || effect.type === 'collapse',
-      );
+      model.resolved.effects.some((effect) => effect.type === 'hover') ||
+      collapseTrigger(model.resolved.effects) !== 'none';
     if (!wanted) {
       if (hitMesh) {
         hitMesh.geometry.dispose();

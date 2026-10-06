@@ -12,6 +12,7 @@ import {
   type CreateShardLightOptions,
   type ShardLightController,
 } from '../three/index.js';
+import { collapseTrigger } from '../core/index.js';
 import type { EffectConfig, LightModel, SetValues, ShardInput } from '../core/index.js';
 
 export interface ShardLightMeshProps extends Omit<GroupProps, 'ref'> {
@@ -218,7 +219,9 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
             onPointerOut?.(event);
           }}
           onClick={(event: ThreeEvent<MouseEvent>) => {
-            controller.toggleCollapsed();
+            const trigger = collapseTrigger(controller.model.resolved.effects);
+            if (trigger === 'click') controller.toggleCollapsed();
+            else if (trigger === 'once') controller.setCollapsed(true);
             onClick?.(event);
           }}
         >

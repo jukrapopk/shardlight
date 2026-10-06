@@ -69,14 +69,19 @@ Five built-in effects:
 | `flicker` | `amount` 0.15, `speed` 1, `channels` all | Wobbles a channel's brightness |
 | `spin` | `speed` 0.1 turns/s, `phase` 0, `channels` `['main']` | Turns a channel |
 | `hover` | `scale` 1.15, `opacity` 1, `rotate` 0, `spin` 0, `channels` `['main']` | Reacts while hovered |
-| `collapse` | `scale` 0, `opacity` 1, `channels` all | Implodes on click, springs back on the next |
+| `collapse` | `scale` 0, `opacity` 1, `channels` all, `trigger` click | Implodes on click (`click` toggles, `once` stays, `none` = manual) |
 
 `flicker` and `collapse` are also shorthand props:
 
 ```tsx
 <ShardLight preset="ember" size={320} flicker={{ amount: 0.35 }} />
-<ShardLight preset="star" size={320} collapse />   {/* click to collapse */}
+<ShardLight preset="star" size={320} collapse />                      {/* click toggles */}
+<ShardLight preset="star" size={320} collapse={{ trigger: 'once' }} /> {/* click collapses once */}
 ```
+
+`collapse={{ trigger: 'none' }}` leaves the light's click alone so you can drive it yourself —
+`ref.current?.setCollapsed(true)`, `toggleCollapsed()`, or `set({ collapse: 0..1 })` — and tie it to
+your own state. `once` collapses and stays; `click` (the default) toggles.
 
 `spin`, `hover` and `collapse` also sit directly on a shard, so a preset can carry its own defaults:
 

@@ -3,7 +3,8 @@ import { pulse } from './pulse.js';
 import { flicker } from './flicker.js';
 import { spin } from './spin.js';
 import { hover } from './hover.js';
-import { collapse } from './collapse.js';
+import { collapse, collapseTrigger } from './collapse.js';
+export type { CollapseTrigger } from './collapse.js';
 
 /** Register the built-in effects as ordinary definitions. */
 export function registerBuiltInEffects(): void {
@@ -16,4 +17,4 @@ export function registerBuiltInEffects(): void {
 
 registerBuiltInEffects();
 
-export { pulse, flicker, spin, hover, collapse };
+export { pulse, flicker, spin, hover, collapse, collapseTrigger };

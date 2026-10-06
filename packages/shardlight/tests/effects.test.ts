@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeFrame, migrateConfig, resolveConfig } from '../src/core/index.js';
+import { collapseTrigger, computeFrame, migrateConfig, resolveConfig } from '../src/core/index.js';
 
 describe('built-in effects', () => {
   it('pulse multiplies a channel scale', () => {
@@ -105,6 +105,21 @@ describe('built-in effects', () => {
     const frame = computeFrame({ collapse: 1 }, effects, 0, ['a', 'b']);
     expect(frame.channel('a').scale).toBeCloseTo(0, 5);
     expect(frame.channel('b').scale).toBeCloseTo(0, 5);
+  });
+
+  it('collapse trigger picks the click behavior', () => {
+    const effects = (trigger?: string) =>
+      resolveConfig({
+        preset: null,
+        shards: [],
+        effects: [{ type: 'collapse', ...(trigger ? { trigger } : {}) }],
+      }).effects;
+
+    expect(effects()[0]!.trigger).toBe('click');
+    expect(collapseTrigger(effects())).toBe('click');
+    expect(collapseTrigger(effects('once'))).toBe('once');
+    expect(collapseTrigger(effects('none'))).toBe('none');
+    expect(collapseTrigger([])).toBe('none');
   });
 });
 

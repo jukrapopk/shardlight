@@ -1,6 +1,7 @@
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, MutableRefObject, ReactNode } from 'react';
 import {
+  collapseTrigger,
   createLightModel,
   isLowMemoryDevice,
   type Baker,
@@ -254,7 +255,13 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
           onPointerEnter={() => modelRef.current?.setHover(true)}
           onPointerLeave={() => modelRef.current?.setHover(false)}
           onPointerCancel={() => modelRef.current?.setHover(false)}
-          onClick={() => modelRef.current?.toggleCollapsed()}
+          onClick={() => {
+            const model = modelRef.current;
+            if (!model) return;
+            const trigger = collapseTrigger(model.resolved.effects);
+            if (trigger === 'click') model.toggleCollapsed();
+            else if (trigger === 'once') model.setCollapsed(true);
+          }}
         >
           {layers.map((layer) => renderLayer(layer))}
           {!ready && fallback ? (
