@@ -1,7 +1,7 @@
 {
   "name": "shardlight",
   "version": "0.1.1",
-  "description": "Layered shard lens-flare lights that render identically in 2D React (DOM), three.js and React Three Fiber.",
+  "description": "Procedural lens-flare lights for React, three.js and React Three Fiber. Build a light once and it looks the same everywhere.",
   "type": "module",
   "license": "MIT",
   "sideEffects": [
@@ -90,6 +90,7 @@
   },
   "keywords": [
     "lens-flare",
+    "procedural",
     "flare",
     "light",
     "glow",

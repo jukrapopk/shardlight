@@ -45,6 +45,13 @@ scene.add(light.object);`,
   flicker: `import { ShardLight } from 'shardlight/react';
 
 <ShardLight preset="ember" size={${BOX}} flicker={{ amount: 0.35 }} />`,
+  pulse: `import { ShardLight } from 'shardlight/react';
+
+<ShardLight
+  preset="star"
+  size={${BOX}}
+  effects={[{ type: 'pulse', channels: ['body'], amount: 0.15 }]}
+/>`,
   custom: `import { ShardLight, Shard } from 'shardlight/react';
 
 <ShardLight
@@ -174,7 +181,7 @@ export function App() {
         </div>
         <h1>shardlight</h1>
         <p className="lede">
-          Lens flares for React, three.js and React Three Fiber.
+          Procedural lens-flare lights for React, three.js and React Three Fiber.
           <br />
           Build a light once and it looks the same everywhere.
         </p>
@@ -271,7 +278,7 @@ export function App() {
       {/* Presets */}
       <section className="section">
         <h2>Presets</h2>
-        <p className="sub">Five built-in looks. Use one by name.</p>
+        <p className="sub">Five built-in presets. Use one by name.</p>
         <div className="presets">
           {PRESETS.map((name) => (
             <figure key={name} className="preset-card">
@@ -411,10 +418,22 @@ export function App() {
       <section className="section" id="effects">
         <h2>Effects</h2>
         <p className="sub">
-          Bring any preset to life with <code>flicker</code>, <code>spin</code>, <code>hover</code>,
-          or <code>collapse</code>.
+          Bring any preset to life with <code>pulse</code>, <code>flicker</code>, <code>spin</code>,{' '}
+          <code>hover</code> or <code>collapse</code>.
         </p>
         <div className="examples effects-grid">
+          <figure>
+            <h3>Pulse</h3>
+            <div className="light-box">
+              <ShardLight
+                preset="star"
+                size={BOX}
+                effects={[{ type: 'pulse', channels: ['body'], amount: 0.15 }]}
+              />
+            </div>
+            <Code code={CODE.pulse} />
+          </figure>
+
           <figure>
             <h3>Flicker</h3>
             <div className="light-box">

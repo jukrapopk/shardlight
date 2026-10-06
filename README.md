@@ -5,9 +5,9 @@
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![demo](https://img.shields.io/badge/demo-live-ffb454)](https://jukrapopk.github.io/shardlight/)
 
-Layered **shard** lens-flare lights for normal 2D React (DOM), [three.js](https://threejs.org)
-and [React Three Fiber](https://r3f.docs.pmnd.rs/) — one config that renders the same
-in all three.
+Procedural lens-flare lights for React, [three.js](https://threejs.org) and
+[React Three Fiber](https://r3f.docs.pmnd.rs/). Build a light once and it looks the same
+everywhere.
 
 ![shardlight presets: star, sun, sparkle, starburst, ember](assets/demo.png)
 
@@ -35,7 +35,7 @@ Works the same in three.js and R3F, with per-shard motion, effects and imperativ
 ## Highlights
 
 - **One light, three targets.** The same config renders to `<img>`, to three.js planes and to R3F
-  meshes, and looks identical everywhere.
+  meshes, and looks the same everywhere.
 - **Easy by default.** `<ShardLight preset="star" />` draws a light; swap the preset, or start from
   nothing.
 - **Tunable at every level.** Preset → shards → per-shard motion → channel effects → per-frame

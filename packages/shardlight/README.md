@@ -5,8 +5,9 @@
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jukrapopk/shardlight/blob/main/packages/shardlight/LICENSE)
 [![demo](https://img.shields.io/badge/demo-live-ffb454)](https://jukrapopk.github.io/shardlight/)
 
-Layered **shard** lens-flare lights that render the same in normal 2D React (DOM),
-[three.js](https://threejs.org) and [React Three Fiber](https://r3f.docs.pmnd.rs/).
+Procedural lens-flare lights for React, [three.js](https://threejs.org) and
+[React Three Fiber](https://r3f.docs.pmnd.rs/). Build a light once and it looks the same
+everywhere.
 
 A light is an ordered list of _shards_ (glows, rays, streak bundles, halos). Shards that
 share a motion channel are baked into one image, then animated — scale, opacity and rotation —
@@ -15,7 +16,7 @@ with no re-rendering.
 ![shardlight presets: star, sun, sparkle, starburst, ember](https://raw.githubusercontent.com/jukrapopk/shardlight/main/assets/demo.png)
 
 - **One light, three targets.** The same config renders to `<img>`, to three.js planes, and
-  to R3F meshes, and looks identical everywhere.
+  to R3F meshes, and looks the same everywhere.
 - **Easy by default.** `<ShardLight preset="star" />` draws a light; swap the preset, or start
   from nothing.
 - **Tunable at every level.** Preset → shards → per-shard motion → channel effects → per-frame
@@ -195,7 +196,7 @@ model.dispose();
 
 ## Control
 
-Everything below animates without re-baking. Only changing a shard — its kind, params or colour —
+Everything below animates without re-baking. Only changing a shard — its kind, params or color —
 bakes again, and only the layers that changed.
 
 **Presets.** Start from a built-in, your own config object, or nothing:
@@ -274,7 +275,7 @@ const dots = defineShardKind({
   kind: 'dots',
   label: 'Ring of dots',
   params: { count: { type: 'number', default: 12, min: 1, max: 64, step: 1 } },
-  draw(ctx, p, env) { /* the context is centred, rotated and coloured for you */ },
+  draw(ctx, p, env) { /* the context is centered, rotated and colored for you */ },
 });
 registerShardKind(dots);
 
