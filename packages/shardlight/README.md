@@ -14,12 +14,15 @@ with no re-rendering.
 
 - **One light, three targets.** The same config renders to `<img>`, to three.js planes, and
   to R3F meshes, and looks identical everywhere.
-- **Easy by default.** `<ShardLight preset="star" />` draws a light; swap the preset for another
-  look. With no `preset`, a light is just the shards you give it.
-- **Tunable all the way down.** Tweak or replace any single layer with `<Shard>` children.
+- **Easy by default.** `<ShardLight preset="star" />` draws a light; swap the preset, or start
+  from nothing.
+- **Tunable at every level.** Preset → shards → per-shard motion → channel effects → per-frame
+  values → CSS variables. Change one shard, or drive the whole light.
+- **Declarative or imperative.** Describe lights as JSX / JSON, or drive them per frame from state,
+  a ref, or CSS — without re-baking.
 - **Extensible without forking.** New shard kinds, effects and presets plug in through public
-  registries. The built-ins are registered the same way.
-- **Data first.** Every light is a plain, versioned JSON config. JSX compiles to it.
+  registries (and augmentable types). The built-ins are registered the same way.
+- **Data first.** Every light is a plain, versioned JSON config; JSX compiles to it.
 
 ## Install
 
@@ -55,9 +58,11 @@ Animate from CSS variables, or imperatively through a ref — never through Reac
 
 ```tsx
 const ref = useRef<ShardLightHandle>(null);
-ref.current?.set({ channels: { rays: { scale: 1.3 } } });
+ref.current?.set({ channels: { rays: { scale: 1.3, rotation: 20 } } });
 ref.current?.setChannel('rays', { scale: 1.3 });
 ```
+
+See [Control](#control) for every level you can change.
 
 #### Effects
 
@@ -151,35 +156,152 @@ Framework-free: config, kinds, presets, effects, baking and cache. Every adapter
 `createLightModel()`.
 
 ```ts
-import { createLightModel, resolveConfig, prewarm } from 'shardlight';
+import { createLightModel, resolveConfig, migrateConfig, prewarm } from 'shardlight';
 
-const model = createLightModel({ preset: 'star', accepts: ['bitmap'] });
+const model = createLightModel({
+  preset: 'star',        // a name, a config, or `null` (start empty)
+  config,                // optional partial ShardLightConfig merged over the preset
+  shards,                // optional per-shard overrides
+  effects,               // optional effects
+  resolution: 1024,
+  rayScale: 1,           // thins every ray
+  accepts: ['bitmap'],   // 'url' | 'bitmap' | 'canvas'
+  reducedMotion: false,  // pauses auto effects
+  hoverEase: 0.25,       // seconds; 0 snaps
+  collapseEase: 0.3,
+});
+
 model.subscribe((layers) => {
-  /* one image per layer */
+  /* one image per layer: add / replace / remove host objects */
 });
 model.onFrame((values) => {
   /* channel scale / opacity / rotation, plus the eased `hover` and `collapse` */
 });
+
+model.set({ channels: { rays: { scale: 1.2 } }, opacity: 0.8 }); // per frame
+model.setChannel('rays', { rotation: 15 });
 model.setHover(true);
+model.setCollapsed(false);
 model.toggleCollapsed();
-await model.ready;
+
+await model.ready;               // every layer baked
+model.update({ preset: 'sun' }); // re-resolves, re-bakes only what changed
+model.resolved;                  // the current ResolvedLight
+model.layers;                    // the current host layers
+model.dispose();
 ```
+
+## Control
+
+Everything below animates without re-baking. Only changing a shard — its kind, params or colour —
+bakes again, and only the layers that changed.
+
+**Presets.** Start from a built-in, your own config object, or nothing:
+
+```tsx
+<ShardLight preset="sun" />
+<ShardLight preset={myConfig} />
+<ShardLight />   {/* empty: build it from <Shard> children */}
+```
+
+**Shards.** Override, hide or add any shard by `id` — no deep merge:
+
+```tsx
+<ShardLight preset="star">
+  <Shard id="beam" strength={0.9} size={1.1} />             {/* tweak a preset shard */}
+  <Shard id="ring" visible={false} />                       {/* hide one */}
+  <Shard id="glint" kind="fan" count={5} channel="glint" /> {/* add one */}
+</ShardLight>
+```
+
+**Per-shard motion.** `spin`, `hover` and `collapse` sit on a shard (see [Effects](#effects)); each
+gets its own channel so it moves independently of what it was baked with.
+
+**Channel values.** Scale / opacity / rotation per channel, statically or per frame:
+
+```tsx
+<ShardLight channels={{ rays: { scale: 1.2, rotation: 15 } }} />
+ref.current?.setChannel('rays', { opacity: 0.5 });
+```
+
+**Imperative / per-frame.** The DOM and R3F refs, and the three controller, expose:
+
+```ts
+set({ channels, opacity, hover, collapse });          // per-frame values
+setChannel(channel, { scale, opacity, rotation });
+setHover(bool); setCollapsed(bool); toggleCollapsed();
+ready;   // Promise that resolves once every layer is baked
+model;   // the headless LightModel
+```
+
+**CSS variables (DOM).** The light writes these on its root, so CSS, WAAPI, GSAP or Framer Motion
+can drive it with no JS per frame:
+
+```
+--shardlight-<channel>-scale      (default 1)
+--shardlight-<channel>-opacity    (default 1)
+--shardlight-<channel>-rotation   (default 0deg)
+--shardlight-opacity              (whole light)
+```
+
+```css
+.badge:hover { --shardlight-rays-scale: 1.3; --shardlight-rays-rotation: 15deg; }
+```
+
+**Render options.** `resolution` (`'auto'` = rendered size × DPR) and `rayScale` at the adapter;
+`baker`, `accepts`, `reducedMotion`, `hoverEase` and `collapseEase` on the model.
+
+**Data first.** Every light is a versioned `ShardLightConfig`: save and load it as JSON,
+`migrateConfig()` old saves, and `prewarm()` a config's layers before first paint.
 
 ## Extending
 
-```ts
-import { defineShardKind, registerShardKind, defineEffect, registerEffect, definePreset, registerPreset } from 'shardlight';
+New kinds, effects and presets register like the built-ins, so they work in every target:
 
+```ts
+import {
+  star,
+  defineShardKind, registerShardKind,
+  defineEffect, registerEffect,
+  definePreset, registerPreset,
+} from 'shardlight';
+import { createShardComponent } from 'shardlight/react';
+
+// a new shard kind — `params` drives defaults, validation and the playground controls
 const dots = defineShardKind({
   kind: 'dots',
   label: 'Ring of dots',
   params: { count: { type: 'number', default: 12, min: 1, max: 64, step: 1 } },
-  draw(ctx, p, env) { /* context is centred, rotated and coloured for you */ },
+  draw(ctx, p, env) { /* the context is centred, rotated and coloured for you */ },
 });
 registerShardKind(dots);
 
-// now it works in every target
-<ShardLight preset="star"><Shard id="crown" kind="dots" count={8} /></ShardLight>
+// a new effect — a pure function of time over the frame values
+const sway = defineEffect({
+  name: 'sway',
+  params: { amount: { type: 'number', default: 0.4, min: 0, max: 1 } },
+  apply(t, p, out) { out.channel('rays').rotation += p.amount * 30 * Math.sin(t); },
+});
+registerEffect(sway);
+
+// a preset is just a config, and can carry its own motion
+registerPreset('star-spin', {
+  ...star,
+  effects: [{ type: 'spin', channels: ['rays'], speed: 0.05 }],
+});
+
+// typed components for a kind, in either React entry
+const Dots = createShardComponent(dots);
+<ShardLight preset="star"><Dots id="crown" count={8} /></ShardLight>
+```
+
+`ShardKinds`, `ShardPresets` and `ChannelValues` are augmentable, so downstream kinds and presets
+are typed too:
+
+```ts
+declare module 'shardlight' {
+  interface ShardKinds { dots: ParamsOf<typeof dots> }
+}
 ```
 
 ## Adapter contract
