@@ -26,8 +26,7 @@ scene.add(light.object);`,
 <ShardLight preset="sun" size={320} />`,
   shardsSun: `import { ShardLight, Shard } from 'shardlight/react';
 
-// preset={null} starts from no preset, so this light is only these shards
-<ShardLight preset={null} color="#FFE9B8">
+<ShardLight color="#FFE9B8">
   <Shard id="bloom"   kind="blob" channel="body" strength={0.55} size={1.15} falloff={2.6} softness={5} />
   <Shard id="hotspot" kind="blob" channel="body" strength={1} size={0.22} hardness={0.3} falloff={2} />
   <Shard id="rays"    kind="fan"  channel="rays" strength={0.45} size={1} count={32} variance={0.7} jitter={0.55} inner={0.06} width={2} taper={1} falloff={1.6} fadeIn={0.05} softness={1.5} />

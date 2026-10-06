@@ -2,11 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { resolveConfig } from '../src/core/index.js';
 
 describe('resolveConfig merge rules', () => {
-  it('uses the default preset (star) when none is given', () => {
+  it('starts empty when no preset is given', () => {
     const light = resolveConfig({});
     expect(light.version).toBe(1);
-    expect(light.color).toBe('#FFF4E0');
-    expect(light.shards.map((s) => s.id)).toEqual(['bloom', 'hotspot', 'beam', 'ring']);
+    expect(light.shards).toEqual([]);
   });
 
   it('uses a named preset as-is', () => {
@@ -83,9 +82,9 @@ describe('defaults and clamping', () => {
     expect(light.effects).toHaveLength(0);
   });
 
-  it('falls back to the default preset for an unknown preset name', () => {
+  it('yields an empty light for an unknown preset name', () => {
     const light = resolveConfig({ preset: 'does-not-exist' });
-    expect(light.shards.map((s) => s.id)).toEqual(['bloom', 'hotspot', 'beam', 'ring']);
+    expect(light.shards).toEqual([]);
   });
 
   it('measures relativeTo angles from the target shard', () => {

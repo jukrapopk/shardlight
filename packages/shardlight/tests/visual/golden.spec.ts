@@ -17,7 +17,7 @@ for (const preset of presets) {
   });
 }
 
-// One golden per 3D target, on the default preset.
+// One golden per 3D target, on the star preset.
 for (const target of extraTargets) {
   test(`golden: ${target} / star`, async ({ page }) => {
     await page.goto('/');

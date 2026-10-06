@@ -14,7 +14,7 @@ import { getEffect } from '../effects/registry.js';
 import { isCssIdentifier } from '../util/color.js';
 
 export interface ResolveInput {
-  /** Starting config. Omitted = default preset; `null` = start empty. */
+  /** Starting config. Omitted or `null` = start empty (only the shards you give). */
   preset?: Preset | null;
   /** Data-driven config merged over the preset. */
   config?: Partial<ShardLightConfig> | null;
@@ -30,11 +30,10 @@ export interface ResolveInput {
 export interface ResolveOptions {
   /** Force development warnings on/off. Defaults to NODE_ENV !== 'production'. */
   warn?: boolean;
-  /** Preset used when `preset` is omitted. Defaults to 'star'. */
-  defaultPreset?: string;
+  /** Preset used when `preset` is omitted. Defaults to none. */
+  defaultPreset?: string | null;
 }
 
-const DEFAULT_PRESET = 'star';
 const DEFAULT_COLOR = '#FFFFFF';
 
 /**
@@ -48,7 +47,7 @@ export function resolveConfig(
 ): ResolvedLight {
   const warn = makeWarn(options.warn);
 
-  const presetConfig = resolvePreset(input.preset, options.defaultPreset ?? DEFAULT_PRESET, warn);
+  const presetConfig = resolvePreset(input.preset, options.defaultPreset ?? null, warn);
   const config = input.config ?? undefined;
 
   // Light-wide values: preset < config < explicit options.
@@ -83,20 +82,18 @@ export function resolveConfig(
 
 function resolvePreset(
   preset: Preset | null | undefined,
-  defaultName: string,
+  defaultName: string | null,
   warn: Warn,
 ): ShardLightConfig | undefined {
+  // No preset given: start empty, or use the caller's configured default.
+  if (preset === undefined) preset = defaultName ?? null;
   if (preset === null) return undefined;
-  if (preset === undefined) {
-    const fallback = getPreset(defaultName);
-    if (!fallback) warn(`default preset "${defaultName}" is not registered`);
-    return fallback;
-  }
+
   if (typeof preset === 'string') {
     const found = getPreset(preset);
     if (!found) {
-      warn(`unknown preset "${preset}"; falling back to "${defaultName}"`);
-      return getPreset(defaultName);
+      warn(`unknown preset "${preset}"`);
+      return defaultName ? getPreset(defaultName) : undefined;
     }
     return found;
   }

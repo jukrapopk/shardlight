@@ -37,7 +37,7 @@ React.
 ```tsx
 import { ShardLight, Shard, Glow, Rays, Halo } from 'shardlight/react';
 
-<ShardLight />                              // the default preset (star)
+<ShardLight preset="star" size={320} />
 <ShardLight preset="sun" size={320} />
 
 <ShardLight preset="star" size={320} flicker>
@@ -47,7 +47,8 @@ import { ShardLight, Shard, Glow, Rays, Halo } from 'shardlight/react';
 </ShardLight>
 ```
 
-`flicker` is a shorthand for a `flicker` effect.
+`flicker` is a shorthand for a `flicker` effect. Omit `preset` (or pass `preset={null}`) to start
+empty and build a light purely from `<Shard>` children.
 
 Animate from CSS variables, or imperatively through a ref — never through React props:
 
