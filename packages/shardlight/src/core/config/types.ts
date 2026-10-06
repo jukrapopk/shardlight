@@ -122,6 +122,22 @@ export interface BaseShardPresets {
 
 export type ShardBlend = 'add' | 'screen';
 
+export interface ShardSpin {
+  /** Turns per second; negative reverses. */
+  speed: number;
+  /** Starting angle, degrees. Default 0. */
+  phase?: number;
+}
+
+export interface ShardHover {
+  /** Scale multiplier at full hover. Default 1 (no change). */
+  scale?: number;
+  /** Opacity multiplier at full hover. Default 1 (no change). */
+  opacity?: number;
+  /** Degrees added at full hover. Default 0. */
+  rotate?: number;
+}
+
 export interface ShardBase {
   /** Stable name: seeds its randomness, target of overrides. */
   id: string;
@@ -131,12 +147,36 @@ export interface ShardBase {
   visible?: boolean;
   /** Motion channel it animates with; default 'main'. */
   channel?: string;
+  /**
+   * Turns this shard continuously. `number` = turns/second; object = `{ speed, phase }`.
+   * A shard that spins is given its own animation channel, so it turns
+   * independently of the shards baked with it.
+   */
+  spin?: number | ShardSpin;
+  /**
+   * Reacts while the pointer is over the light. `true` = a small default bump;
+   * object = `{ scale, opacity, rotate }` at full hover. Eased in and out.
+   */
+  hover?: boolean | ShardHover;
   /** Default 'add'. */
   blend?: ShardBlend;
   /** Overrides the light's colour for this shard only. */
   color?: string;
   /** Overrides the light's seed for this shard only. */
   seed?: number;
+}
+
+/** A shard's spin, with defaults filled in. */
+export interface ResolvedSpin {
+  speed: number;
+  phase: number;
+}
+
+/** A shard's hover response, with defaults filled in. */
+export interface ResolvedHover {
+  scale: number;
+  opacity: number;
+  rotate: number;
 }
 
 /** A full shard: `kind` required, params optional (kind defaults fill the rest). */
@@ -192,6 +232,10 @@ export interface ResolvedShard {
   color: string;
   /** Resolved seed (shard override or the light's). */
   seed: number;
+  /** Present when the shard turns. */
+  spin?: ResolvedSpin;
+  /** Present when the shard reacts to hover. */
+  hover?: ResolvedHover;
   /** Kind defaults filled in and clamped. */
   params: Record<string, unknown>;
 }

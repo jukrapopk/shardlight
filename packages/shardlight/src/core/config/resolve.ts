@@ -1,11 +1,15 @@
 import type {
   EffectConfig,
   Preset,
+  ResolvedHover,
   ResolvedLight,
   ResolvedShard,
+  ResolvedSpin,
   ShardConfig,
+  ShardHover,
   ShardInput,
   ShardLightConfig,
+  ShardSpin,
 } from './types.js';
 import type { ParamSchema } from './schema.js';
 import { getShardKind } from '../kinds/registry.js';
@@ -69,6 +73,7 @@ export function resolveConfig(
     if (resolved) shards.push(resolved);
   }
   resolveRelativeAngles(shards);
+  const motionEffects = applyShardMotion(shards, warn);
 
   return {
     version: 1,
@@ -76,7 +81,7 @@ export function resolveConfig(
     rotation,
     seed,
     shards,
-    effects: resolveEffects(effects, warn),
+    effects: [...resolveEffects(effects, warn), ...motionEffects],
   };
 }
 
@@ -169,8 +174,119 @@ function resolveShard(
     blend: shard.blend ?? 'add',
     color: shard.color ?? lightColor,
     seed: shard.seed ?? lightSeed,
+    spin: resolveSpin(shard.spin, shard.id, warn),
+    hover: resolveHover(shard.hover, shard.id, warn),
     params,
   };
+}
+
+const DEFAULT_SPIN_SPEED = 0.1;
+const HOVER_DEFAULTS: ResolvedHover = { scale: 1.15, opacity: 1, rotate: 0 };
+
+function resolveSpin(
+  value: number | ShardSpin | boolean | undefined | null,
+  id: string,
+  warn: Warn,
+): ResolvedSpin | undefined {
+  if (value === undefined || value === null || value === false) return undefined;
+  if (value === true) return { speed: DEFAULT_SPIN_SPEED, phase: 0 };
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value) || value === 0) return undefined;
+    return { speed: value, phase: 0 };
+  }
+  if (typeof value === 'object') {
+    const speed = Number(value.speed);
+    if (!Number.isFinite(speed)) {
+      warn(`shard "${id}" spin.speed is not a number; spin ignored`);
+      return undefined;
+    }
+    if (speed === 0) return undefined;
+    const phase = Number(value.phase ?? 0);
+    return { speed, phase: Number.isFinite(phase) ? phase : 0 };
+  }
+  warn(`shard "${id}" spin must be a number, boolean or object; spin ignored`);
+  return undefined;
+}
+
+function resolveHover(
+  value: ShardHover | boolean | undefined | null,
+  id: string,
+  warn: Warn,
+): ResolvedHover | undefined {
+  if (value === undefined || value === null || value === false) return undefined;
+  if (value === true) return { ...HOVER_DEFAULTS };
+  if (typeof value === 'object') {
+    return {
+      scale: finiteOr(value.scale, HOVER_DEFAULTS.scale),
+      opacity: finiteOr(value.opacity, HOVER_DEFAULTS.opacity),
+      rotate: finiteOr(value.rotate, HOVER_DEFAULTS.rotate),
+    };
+  }
+  warn(`shard "${id}" hover must be a boolean or object; hover ignored`);
+  return undefined;
+}
+
+function finiteOr(value: unknown, fallback: number): number {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+/**
+ * Turn per-shard `spin` / `hover` into channel effects. A shard that shares its
+ * channel with others is moved to its own channel (named after its id) so it
+ * can move independently; a shard already alone on its channel keeps it.
+ */
+function applyShardMotion(shards: ResolvedShard[], warn: Warn): EffectConfig[] {
+  const effects: EffectConfig[] = [];
+  const originalChannels = shards.map((shard) => shard.channel);
+  const taken = new Set(originalChannels);
+
+  for (const shard of shards) {
+    if (!shard.spin && !shard.hover) continue;
+
+    const shared = originalChannels.filter((channel) => channel === shard.channel).length > 1;
+    if (shared) {
+      const name = uniqueChannel(shard.id, taken);
+      shard.channel = name;
+      taken.add(name);
+      if (!isCssIdentifier(name)) {
+        warn(`shard "${shard.id}" got an invalid motion channel "${name}"`);
+      }
+    }
+
+    if (shard.spin) {
+      effects.push({
+        type: 'spin',
+        channels: [shard.channel],
+        speed: shard.spin.speed,
+        phase: shard.spin.phase,
+      });
+    }
+    if (shard.hover) {
+      effects.push({
+        type: 'hover',
+        channels: [shard.channel],
+        scale: shard.hover.scale,
+        opacity: shard.hover.opacity,
+        rotate: shard.hover.rotate,
+      });
+    }
+  }
+
+  return effects;
+}
+
+function uniqueChannel(id: string, taken: ReadonlySet<string>): string {
+  const base = isCssIdentifier(id)
+    ? id
+    : `shard-${id.replace(/[^_a-zA-Z0-9-]/g, '-').replace(/^-+/, '')}`;
+  let name = base;
+  let i = 2;
+  while (taken.has(name)) {
+    name = `${base}-${i}`;
+    i += 1;
+  }
+  return name;
 }
 
 /** `relativeTo` measures a fan/cluster's `angle` from another shard's `angle`. */

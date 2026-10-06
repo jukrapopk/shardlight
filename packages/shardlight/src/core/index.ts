@@ -36,11 +36,13 @@ export interface ShardPresets extends BaseShardPresets {}
 
 /**
  * Per-channel animation values. Augmentable so a later release can add fields;
- * v1 ships scale and opacity.
+ * v1 ships scale, opacity and rotation.
  */
 export interface ChannelValues {
   scale: number;
   opacity: number;
+  /** Degrees; turns this channel's layer around the light's centre. */
+  rotation: number;
 }
 
 // ---------------------------------------------------------------------------

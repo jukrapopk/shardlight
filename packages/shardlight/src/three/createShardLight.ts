@@ -32,6 +32,8 @@ export interface CreateShardLightOptions {
   billboard?: boolean;
   /** Circular hit radius at the centre, as a fraction of the half-edge. */
   hitRadius?: number;
+  /** Seconds for hover to ease in/out. Default 0.25; 0 snaps. */
+  hoverEase?: number;
   /** Custom material factory, for custom shading. */
   material?: (layer: Layer) => THREE.Material;
   renderOrder?: number;
@@ -44,6 +46,8 @@ export interface ShardLightController {
   object: THREE.Group;
   model: LightModel;
   set(values: SetValues): void;
+  /** Ease the whole-light hover amount toward 0 or 1. */
+  setHover(hovered: boolean): void;
   update(patch: Partial<CreateShardLightOptions>): void;
   tick(dt: number): void;
   ready: Promise<void>;
@@ -87,6 +91,7 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
     resolution: opts.resolution,
     rayScale: opts.rayScale,
     baker: opts.baker,
+    hoverEase: opts.hoverEase,
     accepts: ['bitmap', 'canvas'],
     onError: (error) => {
       console.error('[shardlight] bake error', error);
@@ -94,7 +99,7 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
   });
 
   let hitMesh: THREE.Mesh | null = null;
-  if (opts.hitRadius !== undefined) hitMesh = createHitMesh(opts.size, opts.hitRadius);
+  ensureHitMesh();
 
   function createMaterial(layer: Layer): MeshEntry['material'] {
     if (opts.material) return opts.material(layer) as MeshEntry['material'];
@@ -120,6 +125,26 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
     mesh.name = 'shardlight-hit';
     object.add(mesh);
     return mesh;
+  }
+
+  /**
+   * Keep a raycast target around: an explicit `hitRadius`, or (sized to the
+   * whole light) whenever any shard reacts to hover.
+   */
+  function ensureHitMesh(): void {
+    const wanted = opts.hitRadius !== undefined || model.resolved.shards.some((s) => s.hover);
+    if (!wanted) {
+      if (hitMesh) {
+        hitMesh.geometry.dispose();
+        (hitMesh.material as THREE.Material).dispose();
+        hitMesh.removeFromParent();
+        hitMesh = null;
+      }
+      return;
+    }
+    const radius = opts.hitRadius ?? 1;
+    if (!hitMesh) hitMesh = createHitMesh(opts.size, radius);
+    else resizeHitMesh(hitMesh, opts.size, radius);
   }
 
   function applyTexture(entry: MeshEntry, layer: Layer): void {
@@ -205,6 +230,7 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
     for (const entry of entries.values()) {
       const channel = values.channel(entry.channel);
       entry.mesh.scale.set(channel.scale, channel.scale, 1);
+      entry.mesh.rotation.z = (channel.rotation * Math.PI) / 180;
       entry.material.opacity = channel.opacity * values.opacity;
     }
   }
@@ -219,6 +245,9 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
     set(values) {
       model.set(values);
     },
+    setHover(hovered) {
+      model.setHover(hovered);
+    },
     update(patch) {
       if (disposed) return;
       const previousSize = opts.size;
@@ -227,7 +256,6 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
         geometry.dispose();
         geometry = new THREE.PlaneGeometry(opts.size, opts.size);
         for (const entry of entries.values()) entry.mesh.geometry = geometry;
-        if (hitMesh) resizeHitMesh(hitMesh, opts.size, opts.hitRadius ?? 0);
       }
       model.update({
         preset: opts.preset,
@@ -238,7 +266,9 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
         resolution: opts.resolution,
         rayScale: opts.rayScale,
         baker: opts.baker,
+        hoverEase: opts.hoverEase,
       });
+      ensureHitMesh();
     },
     tick(dt) {
       model.tick(dt);

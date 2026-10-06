@@ -53,6 +53,50 @@ describe('resolveConfig merge rules', () => {
   });
 });
 
+describe('per-shard motion', () => {
+  it('gives a spinning shard its own channel and a spin effect', () => {
+    const light = resolveConfig({ preset: 'star', shards: [{ id: 'beam', spin: 0.3 }] });
+    const beam = light.shards.find((s) => s.id === 'beam')!;
+    // 'beam' shared 'rays' with 'ring', so it is moved to its own channel.
+    expect(beam.channel).toBe('beam');
+    expect(beam.spin).toEqual({ speed: 0.3, phase: 0 });
+    expect(light.effects).toContainEqual({
+      type: 'spin',
+      channels: ['beam'],
+      speed: 0.3,
+      phase: 0,
+    });
+    // The shard it was baked with keeps the original channel.
+    expect(light.shards.find((s) => s.id === 'ring')!.channel).toBe('rays');
+  });
+
+  it('keeps a channel a shard already has to itself', () => {
+    const light = resolveConfig({ preset: 'sparkle', shards: [{ id: 'glint', hover: true }] });
+    const glint = light.shards.find((s) => s.id === 'glint')!;
+    expect(glint.channel).toBe('glint');
+    expect(glint.hover).toEqual({ scale: 1.15, opacity: 1, rotate: 0 });
+    expect(light.effects).toContainEqual({
+      type: 'hover',
+      channels: ['glint'],
+      scale: 1.15,
+      opacity: 1,
+      rotate: 0,
+    });
+  });
+
+  it('ignores a zero spin and a false hover', () => {
+    const light = resolveConfig({
+      preset: 'star',
+      shards: [{ id: 'beam', spin: 0, hover: false }],
+    });
+    const beam = light.shards.find((s) => s.id === 'beam')!;
+    expect(beam.spin).toBeUndefined();
+    expect(beam.hover).toBeUndefined();
+    expect(beam.channel).toBe('rays');
+    expect(light.effects).toEqual([]);
+  });
+});
+
 describe('defaults and clamping', () => {
   it('fills kind defaults', () => {
     const light = resolveConfig({ preset: null, shards: [{ id: 'x', kind: 'fan' }] });

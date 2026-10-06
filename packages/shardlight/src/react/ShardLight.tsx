@@ -20,7 +20,7 @@ import {
 } from '../shared-react/index.js';
 
 export interface ShardLightProps {
-  /** Starting config. Default 'star'. `null` = start empty. */
+  /** Starting config. Omitted or `null` = start empty. */
   preset?: Preset | null;
   /** Data-driven alternative or addition to children. */
   config?: Partial<ShardLightConfig>;
@@ -51,7 +51,12 @@ export interface ShardLightProps {
 /** The root `<div>` plus the imperative API. */
 export type ShardLightHandle = HTMLDivElement & {
   set(values: SetValues): void;
-  setChannel(channel: string, values: { scale?: number; opacity?: number }): void;
+  setChannel(
+    channel: string,
+    values: { scale?: number; opacity?: number; rotation?: number },
+  ): void;
+  /** Drives the whole-light hover amount (`spin`/`hover` shards use it). */
+  setHover(hovered: boolean): void;
   readonly ready: Promise<void>;
   readonly model: LightModel | null;
 };
@@ -98,6 +103,7 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
         const channel = values.channel(name);
         root.style.setProperty(`--shardlight-${name}-scale`, String(channel.scale));
         root.style.setProperty(`--shardlight-${name}-opacity`, String(channel.opacity));
+        root.style.setProperty(`--shardlight-${name}-rotation`, `${channel.rotation}deg`);
       }
       root.style.setProperty('--shardlight-opacity', String(values.opacity));
     }, []);
@@ -201,8 +207,11 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
       const node = rootRef.current as ShardLightHandle | null;
       if (!node) return;
       node.set = (values: SetValues) => modelRef.current?.set(values);
-      node.setChannel = (channel: string, values: { scale?: number; opacity?: number }) =>
-        modelRef.current?.setChannel(channel, values);
+      node.setChannel = (
+        channel: string,
+        values: { scale?: number; opacity?: number; rotation?: number },
+      ) => modelRef.current?.setChannel(channel, values);
+      node.setHover = (hovered: boolean) => modelRef.current?.setHover(hovered);
       Object.defineProperty(node, 'ready', {
         configurable: true,
         get: () => modelRef.current?.ready ?? Promise.resolve(),
@@ -225,7 +234,15 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
 
     return (
       <ShardLightContext.Provider value={registry}>
-        <div ref={setRefs} className={className} style={rootStyle} aria-hidden="true">
+        <div
+          ref={setRefs}
+          className={className}
+          style={rootStyle}
+          aria-hidden="true"
+          onPointerEnter={() => modelRef.current?.setHover(true)}
+          onPointerLeave={() => modelRef.current?.setHover(false)}
+          onPointerCancel={() => modelRef.current?.setHover(false)}
+        >
           {layers.map((layer) => renderLayer(layer))}
           {!ready && fallback ? (
             <div style={{ position: 'absolute', inset: 0 }}>{fallback}</div>
@@ -247,7 +264,7 @@ function renderLayer(layer: Layer): ReactNode {
     height: '100%',
     pointerEvents: 'none',
     transformOrigin: 'center',
-    transform: `scale(var(--shardlight-${layer.channel}-scale, 1))`,
+    transform: `rotate(var(--shardlight-${layer.channel}-rotation, 0deg)) scale(var(--shardlight-${layer.channel}-scale, 1))`,
     opacity: `var(--shardlight-${layer.channel}-opacity, 1)` as unknown as number,
   };
   return <img key={layer.id} src={src} alt="" draggable={false} style={imgStyle} />;

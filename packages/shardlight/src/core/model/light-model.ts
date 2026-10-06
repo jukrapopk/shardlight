@@ -24,9 +24,11 @@ export interface Layer {
 }
 
 export interface SetValues {
-  channels?: Record<string, { scale?: number; opacity?: number }>;
+  channels?: Record<string, { scale?: number; opacity?: number; rotation?: number }>;
   /** The whole light's opacity. */
   opacity?: number;
+  /** Direct hover amount 0..1; also snaps the eased hover target. */
+  hover?: number;
 }
 
 export interface LightModelOptions extends ResolveInput {
@@ -36,6 +38,8 @@ export interface LightModelOptions extends ResolveInput {
   accepts?: LayerSource['type'][];
   /** Pause effects under `prefers-reduced-motion`. */
   reducedMotion?: boolean;
+  /** Seconds for hover to ease in/out. Default 0.25; 0 snaps. */
+  hoverEase?: number;
   warn?: boolean;
   onError?: (error: unknown) => void;
 }
@@ -45,7 +49,12 @@ export interface LightModel {
   onFrame(listener: (values: FrameValues) => void): () => void;
   update(patch: Partial<LightModelOptions>): void;
   set(values: SetValues): void;
-  setChannel(channel: string, values: { scale?: number; opacity?: number }): void;
+  setChannel(
+    channel: string,
+    values: { scale?: number; opacity?: number; rotation?: number },
+  ): void;
+  /** Ease the light-wide hover amount toward 0 or 1. */
+  setHover(hovered: boolean): void;
   tick(dt: number): void;
   dispose(): void;
   readonly layers: readonly Layer[];
@@ -56,6 +65,7 @@ export interface LightModel {
 
 const DEFAULT_RESOLUTION = 1024;
 const DEFAULT_ACCEPTS: LayerSource['type'][] = ['url'];
+const DEFAULT_HOVER_EASE = 0.25;
 
 /**
  * The headless controller every target wraps. It owns everything that
@@ -81,6 +91,8 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
   let layers: Layer[] = [];
   let manual: SetValues = {};
   let time = 0;
+  let hover = 0;
+  let hoverTarget = 0;
   let disposed = false;
 
   function resolve(current: LightModelOptions): ResolvedLight {
@@ -113,8 +125,12 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
     for (const listener of layerListeners) listener(snapshot);
   }
 
+  function frame(): FrameValues {
+    return computeFrame({ ...manual, hover }, activeEffects(), time, channelNames());
+  }
+
   function emitFrame(): void {
-    const values = computeFrame(manual, activeEffects(), time, channelNames());
+    const values = frame();
     for (const listener of frameListeners) listener(values);
   }
 
@@ -212,7 +228,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
     },
     onFrame(listener) {
       frameListeners.add(listener);
-      listener(computeFrame(manual, activeEffects(), time, channelNames()));
+      listener(frame());
       return () => frameListeners.delete(listener);
     },
     update(patch) {
@@ -224,6 +240,10 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
       emitFrame();
     },
     set(values) {
+      if (values.hover !== undefined) {
+        hover = clamp01(values.hover);
+        hoverTarget = hover;
+      }
       manual = {
         ...manual,
         ...values,
@@ -234,10 +254,29 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
     setChannel(channel, values) {
       model.set({ channels: { [channel]: values } });
     },
+    setHover(hovered) {
+      if (disposed) return;
+      if (!resolved.shards.some((shard) => shard.hover)) return;
+      hoverTarget = hovered ? 1 : 0;
+      if ((opts.hoverEase ?? DEFAULT_HOVER_EASE) <= 0) {
+        hover = hoverTarget;
+        emitFrame();
+      }
+    },
     tick(dt) {
       if (disposed) return;
-      if (activeEffects().length === 0) return;
+      const idle = activeEffects().length === 0;
+      if (idle && hover === hoverTarget) return;
       time += dt;
+      if (hover !== hoverTarget) {
+        const ease = opts.hoverEase ?? DEFAULT_HOVER_EASE;
+        if (ease <= 0) {
+          hover = hoverTarget;
+        } else {
+          hover += (hoverTarget - hover) * (1 - Math.exp(-dt / ease));
+          if (Math.abs(hoverTarget - hover) < 0.001) hover = hoverTarget;
+        }
+      }
       emitFrame();
     },
     dispose() {
@@ -264,4 +303,8 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
 
   sync();
   return model;
+}
+
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value));
 }

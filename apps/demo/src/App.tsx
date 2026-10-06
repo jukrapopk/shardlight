@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { ShardLight } from 'shardlight/react';
+import { ShardLight, Shard } from 'shardlight/react';
 import { ShardLightMesh } from 'shardlight/r3f';
 import { createShardLight } from 'shardlight/three';
 
@@ -31,6 +31,17 @@ scene.add(light.object);`,
   <Shard id="hotspot" kind="blob" channel="body" strength={1} size={0.22} hardness={0.3} falloff={2} />
   <Shard id="rays"    kind="fan"  channel="rays" strength={0.45} size={1} count={32} variance={0.7} jitter={0.55} inner={0.06} width={2} taper={1} falloff={1.6} fadeIn={0.05} softness={1.5} />
   <Shard id="ring"    kind="halo" channel="rays" strength={0.04} size={0.8} width={0.07} falloff={2} softness={2.5} variance={0.4} />
+</ShardLight>`,
+  spin: `import { ShardLight, Shard } from 'shardlight/react';
+
+<ShardLight preset="star" size={320}>
+  <Shard id="beam" spin={0.08} />
+</ShardLight>`,
+  hover: `import { ShardLight, Shard } from 'shardlight/react';
+
+<ShardLight preset="sun" size={320}>
+  <Shard id="hotspot" hover={{ scale: 1.7, opacity: 1.35 }} />
+  <Shard id="ring" hover={{ opacity: 2.5 }} />
 </ShardLight>`,
 };
 
@@ -183,6 +194,37 @@ export function App() {
             <div className="or">or</div>
             <pre>{CODE.shardsSun}</pre>
           </div>
+        </div>
+      </section>
+
+      {/* Effects: per-shard motion you can add over any preset */}
+      <section className="section" id="effects">
+        <h2>Effects</h2>
+        <p className="sub">
+          <code>spin</code> and <code>hover</code> live on a shard, so a preset can carry its own
+          defaults and you can add them over any preset.
+        </p>
+        <div className="examples">
+          <figure>
+            <h3>Spin</h3>
+            <div className="light-box">
+              <ShardLight preset="star" size={BOX}>
+                <Shard id="beam" spin={0.08} />
+              </ShardLight>
+            </div>
+            <pre>{CODE.spin}</pre>
+          </figure>
+
+          <figure>
+            <h3>Hover</h3>
+            <div className="light-box">
+              <ShardLight preset="sun" size={BOX} className="hoverable">
+                <Shard id="hotspot" hover={{ scale: 1.7, opacity: 1.35 }} />
+                <Shard id="ring" hover={{ opacity: 2.5 }} />
+              </ShardLight>
+            </div>
+            <pre>{CODE.hover}</pre>
+          </figure>
         </div>
       </section>
 

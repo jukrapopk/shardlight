@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
-import type { GroupProps } from '@react-three/fiber';
+import type { GroupProps, ThreeEvent } from '@react-three/fiber';
 import type * as THREE from 'three';
 import {
   normalizeEffects,
@@ -30,6 +30,8 @@ export interface ShardLightMeshProps extends Omit<GroupProps, 'ref'> {
   autoUpdate?: boolean;
   billboard?: boolean;
   hitRadius?: number;
+  /** Seconds for hover to ease in/out. Default 0.25; 0 snaps. */
+  hoverEase?: number;
   material?: CreateShardLightOptions['material'];
   renderOrder?: number;
   depthTest?: boolean;
@@ -39,6 +41,8 @@ export interface ShardLightMeshProps extends Omit<GroupProps, 'ref'> {
 
 export interface ShardLightHandle {
   set(values: SetValues): void;
+  /** Ease the whole-light hover amount toward 0 or 1. */
+  setHover(hovered: boolean): void;
   ready: Promise<void>;
   object: THREE.Group | null;
   model: LightModel | null;
@@ -65,6 +69,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
       autoUpdate,
       billboard,
       hitRadius,
+      hoverEase,
       material,
       renderOrder,
       depthTest,
@@ -98,6 +103,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
         autoUpdate,
         billboard,
         hitRadius,
+        hoverEase,
         material,
         renderOrder,
         depthTest,
@@ -126,6 +132,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
       autoUpdate,
       billboard,
       hitRadius,
+      hoverEase,
     });
 
     useEffect(() => {
@@ -142,6 +149,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
         autoUpdate,
         billboard,
         hitRadius,
+        hoverEase,
         material,
         renderOrder,
         depthTest,
@@ -166,6 +174,7 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
       ref,
       () => ({
         set: (values: SetValues) => controller?.set(values),
+        setHover: (hovered: boolean) => controller?.setHover(hovered),
         ready: controller?.ready ?? Promise.resolve(),
         object: controller?.object ?? null,
         model: controller?.model ?? null,
@@ -175,9 +184,22 @@ export const ShardLightMesh = forwardRef<ShardLightHandle, ShardLightMeshProps>(
 
     if (!controller) return null;
 
+    const { onPointerOver, onPointerOut, ...restGroupProps } = groupProps;
+
     return (
       <ShardLightContext.Provider value={registry}>
-        <primitive object={controller.object} {...groupProps}>
+        <primitive
+          object={controller.object}
+          {...restGroupProps}
+          onPointerOver={(event: ThreeEvent<PointerEvent>) => {
+            controller.setHover(true);
+            onPointerOver?.(event);
+          }}
+          onPointerOut={(event: ThreeEvent<PointerEvent>) => {
+            controller.setHover(false);
+            onPointerOut?.(event);
+          }}
+        >
           {children}
         </primitive>
       </ShardLightContext.Provider>

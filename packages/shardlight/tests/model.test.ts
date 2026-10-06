@@ -4,6 +4,7 @@ import {
   clearCache,
   createLightModel,
   definedOnly,
+  type FrameValues,
   type Layer,
 } from '../src/core/index.js';
 import { createFakeBaker, waitFor } from '../src/testing/index.js';
@@ -62,6 +63,31 @@ describe('createLightModel', () => {
     model.set({ channels: { main: { scale: 2 } } });
     model.tick(0.25);
     expect(frames.at(-1)).toBeCloseTo(2.2, 5);
+    model.dispose();
+  });
+
+  it('spins a per-shard motion shard and eases hover', () => {
+    const model = makeModel({ shards: [{ id: 'beam', spin: 0.25, hover: { scale: 2 } }] });
+    // 'beam' splits out of 'rays'; 'ring' stays.
+    expect(ids(model.layers)).toEqual(['beam|add', 'body|add', 'rays|add']);
+
+    const frames: FrameValues[] = [];
+    model.onFrame((values) => frames.push(values));
+
+    model.tick(1);
+    expect(frames.at(-1)!.channel('beam').rotation).toBeCloseTo(90, 3);
+    expect(frames.at(-1)!.hover).toBe(0);
+
+    model.setHover(true);
+    model.tick(1);
+    const hovered = frames.at(-1)!;
+    expect(hovered.hover).toBeGreaterThan(0.9);
+    expect(hovered.channel('beam').rotation).toBeCloseTo(180, 3);
+    expect(hovered.channel('beam').scale).toBeCloseTo(1 + hovered.hover, 3);
+
+    model.setHover(false);
+    model.tick(2);
+    expect(frames.at(-1)!.hover).toBeLessThan(0.01);
     model.dispose();
   });
 

@@ -36,6 +36,33 @@ describe('built-in effects', () => {
     const frame = computeFrame({ channels: { main: { scale: 2 } } }, effects, 0.25);
     expect(frame.channel('main').scale).toBeCloseTo(2.2, 5);
   });
+
+  it('spin adds rotation to a channel', () => {
+    const effects = resolveConfig({
+      preset: null,
+      shards: [],
+      effects: [{ type: 'spin', speed: 0.25, channels: ['rays'] }],
+    }).effects;
+    // 0.25 turns/s → 90° after one second.
+    expect(computeFrame({}, effects, 1).channel('rays').rotation).toBeCloseTo(90, 5);
+  });
+
+  it('hover scales, fades and turns by the hover amount', () => {
+    const effects = resolveConfig({
+      preset: null,
+      shards: [],
+      effects: [{ type: 'hover', channels: ['main'], scale: 1.5, opacity: 2, rotate: 30 }],
+    }).effects;
+    expect(computeFrame({ hover: 0 }, effects, 0).channel('main')).toMatchObject({
+      scale: 1,
+      opacity: 1,
+      rotation: 0,
+    });
+    const half = computeFrame({ hover: 0.5 }, effects, 0).channel('main');
+    expect(half.scale).toBeCloseTo(1.25, 5);
+    expect(half.opacity).toBeCloseTo(1.5, 5);
+    expect(half.rotation).toBeCloseTo(15, 5);
+  });
 });
 
 describe('migration', () => {

@@ -13,8 +13,8 @@ no re-rendering.
 
 - **One light, three targets.** The same config renders to `<img>`, to three.js planes, and
   to R3F meshes, and looks identical everywhere.
-- **Easy by default.** `<ShardLight />` draws a light; `<ShardLight preset="sun" />` picks
-  another look.
+- **Easy by default.** `<ShardLight preset="star" />` draws a light; swap the preset for another
+  look. With no `preset`, a light is just the shards you give it.
 - **Tunable all the way down.** Tweak or replace any single layer with `<Shard>` children.
 - **Extensible without forking.** New shard kinds, effects and presets plug in through public
   registries. The built-ins are registered the same way.
@@ -58,6 +58,32 @@ ref.current?.set({ channels: { rays: { scale: 1.3 } } });
 ref.current?.setChannel('rays', { scale: 1.3 });
 ```
 
+#### Effects
+
+`spin` and `hover` are built-in effects, and they also sit directly on a shard so a preset can
+carry its own defaults:
+
+```tsx
+<ShardLight preset="star" size={320}>
+  <Shard id="beam" spin={0.08} />                             {/* turns on its own */}
+  <Shard id="hotspot" hover={{ scale: 1.6, opacity: 1.4 }} /> {/* reacts to pointer-over */}
+</ShardLight>
+```
+
+A shard with `spin` or `hover` is moved to its own channel, so it never drags the shards it was
+baked with. `spin` is `turns/second` (negative reverses); `hover` scales / fades / turns the
+shard as the pointer sits over the light, eased in and out. Hover is whole-light, and
+`ref.current?.setHover(false)` drives it by hand.
+
+Both are ordinary effects too, so a preset (or you) can list them with any channel:
+
+```ts
+effects={[
+  { type: 'spin', channels: ['rays'], speed: 0.05 },
+  { type: 'hover', channels: ['body'], scale: 1.2 },
+]}
+```
+
 ### three.js — `shardlight/three`
 
 ```ts
@@ -96,7 +122,7 @@ model.subscribe((layers) => {
   /* one image per layer */
 });
 model.onFrame((values) => {
-  /* channel scale / opacity */
+  /* channel scale / opacity / rotation */
 });
 await model.ready;
 ```

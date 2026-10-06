@@ -181,6 +181,10 @@ body {
   display: block;
 }
 
+.hoverable {
+  cursor: crosshair;
+}
+
 /* ---------- examples: light + its code ---------- */
 .examples {
   display: grid;
