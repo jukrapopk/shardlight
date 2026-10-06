@@ -8,8 +8,8 @@ Layered **shard** lens-flare lights that render the same in normal 2D React (DOM
 [three.js](https://threejs.org) and [React Three Fiber](https://docs.pmnd.rs/react-three-fiber).
 
 A light is an ordered list of _shards_ (glows, rays, streak bundles, halos). Shards that
-share a motion channel are baked into one image, then animated with transforms and opacity —
-no re-rendering.
+share a motion channel are baked into one image, then animated — scale, opacity and rotation —
+with no re-rendering.
 
 - **One light, three targets.** The same config renders to `<img>`, to three.js planes, and
   to R3F meshes, and looks identical everywhere.
@@ -60,8 +60,22 @@ ref.current?.setChannel('rays', { scale: 1.3 });
 
 #### Effects
 
-`spin` and `hover` are built-in effects, and they also sit directly on a shard so a preset can
-carry its own defaults:
+Four built-in effects:
+
+| Effect | Params (defaults) | Does |
+|---|---|---|
+| `pulse` | `amount` 0.1, `speed` 1, `channels` `['main']` | Scales a channel in and out |
+| `flicker` | `amount` 0.15, `speed` 1, `channels` all | Wobbles a channel's brightness |
+| `spin` | `speed` 0.1 turns/s, `phase` 0, `channels` `['main']` | Turns a channel |
+| `hover` | `scale` 1.15, `opacity` 1, `rotate` 0, `spin` 0, `channels` `['main']` | Reacts while hovered |
+
+`flicker` is also a shorthand prop:
+
+```tsx
+<ShardLight preset="ember" size={320} flicker={{ amount: 0.35 }} />
+```
+
+`spin` and `hover` sit directly on a shard, so a preset can carry its own defaults:
 
 ```tsx
 <ShardLight preset="star" size={320}>
@@ -76,14 +90,17 @@ baked with. `spin` is `turns/second` (negative reverses). `hover` scales / fades
 as the pointer sits over the light, eased in and out; add `spin` to keep turning while hovered and
 hold that angle after. Hover is whole-light, and `ref.current?.setHover(false)` drives it by hand.
 
-Both are ordinary effects too, so a preset (or you) can list them with any channel:
+Every effect is also plain config, so a preset (or you) can list them on any channel:
 
 ```ts
 effects={[
   { type: 'spin', channels: ['rays'], speed: 0.05 },
   { type: 'hover', channels: ['body'], scale: 1.2, spin: 0.1 },
+  { type: 'flicker', amount: 0.2, channels: ['*'] },
 ]}
 ```
+
+The five built-in presets ship effect-free, so a preset stays still until you give it motion.
 
 ### three.js — `shardlight/three`
 
@@ -95,6 +112,7 @@ scene.add(light.object);
 
 // per frame: no re-bake, just transforms and opacity
 light.set({ channels: { rays: { scale: 1.2 } }, opacity: 0.8 });
+light.setHover(true); // eases the light's `hover` shards in
 
 light.update({ shards: [{ id: 'beam', strength: 1 }] }); // re-bakes only what changed
 light.dispose();
@@ -108,6 +126,9 @@ import { ShardLightMesh, Shard } from 'shardlight/r3f';
 <ShardLightMesh ref={light} preset="sun" size={0.4} position={[0, 1, -2]} flicker>
   <Shard id="ring" visible={false} />
 </ShardLightMesh>;
+
+// pointer-over eases `hover` shards in automatically; the ref adds setHover(bool)
+light.current?.setHover(false);
 ```
 
 ### Headless core — `shardlight`
@@ -123,8 +144,9 @@ model.subscribe((layers) => {
   /* one image per layer */
 });
 model.onFrame((values) => {
-  /* channel scale / opacity / rotation */
+  /* channel scale / opacity / rotation, plus the eased `hover` */
 });
+model.setHover(true);
 await model.ready;
 ```
 
