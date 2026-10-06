@@ -15,11 +15,7 @@ import { NullContextError } from './baker.js';
 export const canvas2dBaker: Baker = {
   id: 'canvas2d',
 
-  async bake(
-    layer: ResolvedLayer,
-    opts: BakeOptions,
-    signal: AbortSignal,
-  ): Promise<LayerSource> {
+  async bake(layer: ResolvedLayer, opts: BakeOptions, signal: AbortSignal): Promise<LayerSource> {
     throwIfAborted(signal);
     const resolution = Math.max(1, Math.floor(opts.resolution));
 

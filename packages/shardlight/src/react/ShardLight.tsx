@@ -1,11 +1,4 @@
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, MutableRefObject, ReactNode } from 'react';
 import {
   createLightModel,
@@ -119,7 +112,9 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
       (node: HTMLDivElement | null) => {
         rootRef.current = node;
         if (typeof ref === 'function') ref(node as ShardLightHandle | null);
-        else if (ref) (ref as MutableRefObject<ShardLightHandle | null>).current = node as ShardLightHandle | null;
+        else if (ref)
+          (ref as MutableRefObject<ShardLightHandle | null>).current =
+            node as ShardLightHandle | null;
       },
       [ref],
     );
@@ -236,12 +231,7 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
 
     return (
       <ShardLightContext.Provider value={registry}>
-        <div
-          ref={setRefs}
-          className={className}
-          style={rootStyle}
-          aria-hidden="true"
-        >
+        <div ref={setRefs} className={className} style={rootStyle} aria-hidden="true">
           {layers.map((layer) => renderLayer(layer))}
           {!ready && fallback ? (
             <div style={{ position: 'absolute', inset: 0 }}>{fallback}</div>
@@ -266,9 +256,7 @@ function renderLayer(layer: Layer): ReactNode {
     transform: `scale(var(--shardlight-${layer.channel}-scale, 1))`,
     opacity: `var(--shardlight-${layer.channel}-opacity, 1)` as unknown as number,
   };
-  const img = (
-    <img key={layer.id} src={src} alt="" draggable={false} style={imgStyle} />
-  );
+  const img = <img key={layer.id} src={src} alt="" draggable={false} style={imgStyle} />;
   if (!layer.spin) return img;
   return (
     <div

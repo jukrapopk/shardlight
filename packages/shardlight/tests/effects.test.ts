@@ -27,9 +27,7 @@ describe('built-in effects (§4.3)', () => {
     }).effects;
     const frame = computeFrame({}, effects, 0, ['a', 'b']);
     const s = 0;
-    const expected =
-      1 -
-      0.15 * (0.5 + 0.25 * Math.sin(11.3 * s) + 0.25 * Math.sin(17.9 * s + 1.7));
+    const expected = 1 - 0.15 * (0.5 + 0.25 * Math.sin(11.3 * s) + 0.25 * Math.sin(17.9 * s + 1.7));
     expect(frame.channel('a').opacity).toBeCloseTo(expected, 5);
     expect(frame.channel('b').opacity).toBeCloseTo(expected, 5);
   });

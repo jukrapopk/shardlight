@@ -1,8 +1,6 @@
 import type { ParamMap, ParamsFromSchema } from '../config/schema.js';
 
-export type Ctx2D =
-  | CanvasRenderingContext2D
-  | OffscreenCanvasRenderingContext2D;
+export type Ctx2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 
 /**
  * Everything a draw function needs besides the context and its params. The
@@ -31,10 +29,7 @@ export interface DrawEnv {
  * written the same way and go through the same registry, so nothing in core
  * switches on kind names (plan §4.1).
  */
-export interface ShardKindDefinition<
-  K extends string = string,
-  P extends ParamMap = ParamMap,
-> {
+export interface ShardKindDefinition<K extends string = string, P extends ParamMap = ParamMap> {
   kind: K;
   label?: string;
   params: P;
@@ -48,10 +43,5 @@ export interface ShardKindDefinition<
    * Optional mask applied to the shard's scratch canvas after drawing (e.g. the
    * variance mask for blob/halo). Receives an untransformed context.
    */
-  mask?: (
-    ctx: Ctx2D,
-    params: ParamsFromSchema<P>,
-    env: DrawEnv,
-    size: number,
-  ) => void;
+  mask?: (ctx: Ctx2D, params: ParamsFromSchema<P>, env: DrawEnv, size: number) => void;
 }

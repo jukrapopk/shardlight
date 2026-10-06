@@ -98,12 +98,17 @@
   "publishConfig": {
     "access": "public"
   },
+  "author": "Jukrapop K <jukrapopk@gmail.com>",
+  "engines": {
+    "node": ">=18"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shardlight/shardlight.git"
+    "url": "https://github.com/jukrapopk/shardlight.git",
+    "directory": "packages/shardlight"
   },
   "bugs": {
-    "url": "https://github.com/shardlight/shardlight/issues"
+    "url": "https://github.com/jukrapopk/shardlight/issues"
   },
-  "homepage": "https://github.com/shardlight/shardlight#readme"
+  "homepage": "https://github.com/jukrapopk/shardlight#readme"
 }

@@ -16,10 +16,7 @@ export interface FrameValues {
   channels(): string[];
 }
 
-export interface EffectDefinition<
-  N extends string = string,
-  P extends ParamMap = ParamMap,
-> {
+export interface EffectDefinition<N extends string = string, P extends ParamMap = ParamMap> {
   name: N;
   label?: string;
   params: P;

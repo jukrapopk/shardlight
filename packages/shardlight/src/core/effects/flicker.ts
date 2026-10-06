@@ -15,9 +15,7 @@ export const flicker = defineEffect({
   apply(t, p, out) {
     const s = t * p.speed;
     const factor =
-      1 -
-      p.amount *
-        (0.5 + 0.25 * Math.sin(11.3 * s) + 0.25 * Math.sin(17.9 * s + 1.7));
+      1 - p.amount * (0.5 + 0.25 * Math.sin(11.3 * s) + 0.25 * Math.sin(17.9 * s + 1.7));
     const targets = p.channels.includes('*') ? out.channels() : p.channels;
     for (const channel of targets) out.channel(channel).opacity *= factor;
   },

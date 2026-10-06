@@ -1,9 +1,7 @@
 /** Environment helpers shared by the bakers and adapters. */
 
 export type AnyCanvas = HTMLCanvasElement | OffscreenCanvas;
-export type AnyCanvasContext =
-  | CanvasRenderingContext2D
-  | OffscreenCanvasRenderingContext2D;
+export type AnyCanvasContext = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 
 export function isBrowser(): boolean {
   return typeof window !== 'undefined' && typeof document !== 'undefined';

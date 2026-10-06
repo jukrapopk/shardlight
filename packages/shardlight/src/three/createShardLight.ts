@@ -84,7 +84,6 @@ export function createShardLight(options: CreateShardLightOptions = {}): ShardLi
     baker: opts.baker,
     accepts: ['bitmap', 'canvas'],
     onError: (error) => {
-      // eslint-disable-next-line no-console
       console.error('[shardlight] bake error', error);
     },
   });

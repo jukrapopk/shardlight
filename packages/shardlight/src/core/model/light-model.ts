@@ -104,9 +104,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
 
   function activeEffects(): EffectConfig[] {
     if (!opts.reducedMotion) return resolved.effects;
-    return resolved.effects.filter(
-      (effect) => getEffect(effect.type)?.reducedMotion === 'keep',
-    );
+    return resolved.effects.filter((effect) => getEffect(effect.type)?.reducedMotion === 'keep');
   }
 
   function channelNames(): string[] {
@@ -237,9 +235,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
       manual = {
         ...manual,
         ...values,
-        channels: values.channels
-          ? { ...manual.channels, ...values.channels }
-          : manual.channels,
+        channels: values.channels ? { ...manual.channels, ...values.channels } : manual.channels,
       };
       emitFrame();
     },

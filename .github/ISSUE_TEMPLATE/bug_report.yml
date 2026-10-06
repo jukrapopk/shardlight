@@ -1,0 +1,48 @@
+name: Bug report
+description: Something renders wrong, throws, or doesn't work.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. For security issues, please follow SECURITY.md instead.
+  - type: dropdown
+    id: target
+    attributes:
+      label: Which target?
+      options:
+        - shardlight/react (DOM)
+        - shardlight/three
+        - shardlight/r3f
+        - shardlight (core) / headless
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: shardlight version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you see instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: A minimal config, code snippet, or repo link. Configs are plain JSON — please paste them.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser/OS, and versions of React, three.js and @react-three/fiber if relevant.
+    validations:
+      required: false

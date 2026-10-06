@@ -1,9 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import {
-  createShardLight,
-  textureCacheSize,
-} from '../src/three/index.js';
+import { createShardLight, textureCacheSize } from '../src/three/index.js';
 import { createFakeBaker, runAdapterContract } from '../src/testing/index.js';
 
 afterEach(() => {
@@ -36,9 +33,19 @@ describe('three adapter (§7.1)', () => {
   });
 
   it('instances share textures', async () => {
-    const a = createShardLight({ preset: 'star', size: 1, resolution: 64, baker: createFakeBaker() });
+    const a = createShardLight({
+      preset: 'star',
+      size: 1,
+      resolution: 64,
+      baker: createFakeBaker(),
+    });
     await a.ready;
-    const b = createShardLight({ preset: 'star', size: 1, resolution: 64, baker: createFakeBaker() });
+    const b = createShardLight({
+      preset: 'star',
+      size: 1,
+      resolution: 64,
+      baker: createFakeBaker(),
+    });
     await b.ready;
     expect(textureCacheSize()).toBe(2);
     a.dispose();

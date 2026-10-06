@@ -38,11 +38,7 @@ export function createFakeBaker(options: FakeBakerOptions = {}): FakeBaker {
     id: options.id ?? 'fake',
     baked,
     cancelled,
-    async bake(
-      layer: ResolvedLayer,
-      opts: BakeOptions,
-      signal: AbortSignal,
-    ): Promise<LayerSource> {
+    async bake(layer: ResolvedLayer, opts: BakeOptions, signal: AbortSignal): Promise<LayerSource> {
       if (delay > 0) await sleep(delay);
       if (signal.aborted) {
         cancelled.push(layer.key);
@@ -101,7 +97,10 @@ export interface AdapterContractInstance {
 
 export interface AdapterContract {
   name: string;
-  create(config: { preset?: Preset | null; shards?: ShardInput[] }): Promise<AdapterContractInstance>;
+  create(config: {
+    preset?: Preset | null;
+    shards?: ShardInput[];
+  }): Promise<AdapterContractInstance>;
 }
 
 /**

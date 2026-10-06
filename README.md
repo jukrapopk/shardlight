@@ -1,5 +1,9 @@
 # shardlight
 
+[![CI](https://github.com/jukrapopk/shardlight/actions/workflows/ci.yml/badge.svg)](https://github.com/jukrapopk/shardlight/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/shardlight.svg)](https://www.npmjs.com/package/shardlight)
+[![license](https://img.shields.io/npm/l/shardlight.svg)](./LICENSE)
+
 Monorepo for [`shardlight`](packages/shardlight) — layered shard lens-flare lights for the
 DOM (React), three.js and React Three Fiber.
 

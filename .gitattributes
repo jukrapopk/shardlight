@@ -1,0 +1,16 @@
+# Normalise line endings to LF in the repository.
+* text=auto eol=lf
+
+# Keep binary assets untouched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.glb binary
+
+# Don't let Git try to diff lockfiles.
+pnpm-lock.yaml linguist-generated=true

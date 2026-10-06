@@ -31,6 +31,5 @@ export function unregisterEffect(name: string): void {
 
 function warn(message: string): void {
   if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') return;
-  // eslint-disable-next-line no-console
   console.warn(`[shardlight] ${message}`);
 }

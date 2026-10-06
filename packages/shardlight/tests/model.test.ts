@@ -1,10 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import {
-  cacheSize,
-  clearCache,
-  createLightModel,
-  type Layer,
-} from '../src/core/index.js';
+import { cacheSize, clearCache, createLightModel, type Layer } from '../src/core/index.js';
 import { createFakeBaker, waitFor } from '../src/testing/index.js';
 
 afterEach(() => clearCache());
@@ -43,11 +38,7 @@ describe('createLightModel (§5)', () => {
     model.update({
       shards: [{ id: 'extra', kind: 'fan', channel: 'extra', count: 3, size: 0.4 }],
     });
-    expect(ids(model.layers)).toEqual([
-      'body|false|add',
-      'extra|false|add',
-      'rays|false|add',
-    ]);
+    expect(ids(model.layers)).toEqual(['body|false|add', 'extra|false|add', 'rays|false|add']);
     await model.ready;
     expect(model.layers.every((l) => l.source !== null)).toBe(true);
 

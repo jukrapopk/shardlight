@@ -191,10 +191,7 @@ function resolveRelativeAngles(shards: ResolvedShard[]): void {
   }
 }
 
-function resolveEffects(
-  effects: readonly EffectConfig[],
-  warn: Warn,
-): EffectConfig[] {
+function resolveEffects(effects: readonly EffectConfig[], warn: Warn): EffectConfig[] {
   const out: EffectConfig[] = [];
   for (const effect of effects) {
     const def = getEffect(effect.type);
@@ -264,11 +261,9 @@ type Warn = (message: string) => void;
 
 function makeWarn(enabled?: boolean): Warn {
   const on =
-    enabled ??
-    (typeof process !== 'undefined' ? process.env?.NODE_ENV !== 'production' : true);
+    enabled ?? (typeof process !== 'undefined' ? process.env?.NODE_ENV !== 'production' : true);
   if (!on) return () => {};
   return (message: string) => {
-    // eslint-disable-next-line no-console
     console.warn(`[shardlight] ${message}`);
   };
 }

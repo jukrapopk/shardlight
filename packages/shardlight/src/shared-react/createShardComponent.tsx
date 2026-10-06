@@ -3,7 +3,9 @@ import type { ParamsOf, ShardBase, ShardKindDefinition } from '../core/index.js'
 import { Shard, type ShardProps } from './Shard.js';
 
 /** Props for a component made by `createShardComponent`. */
-export type ShardComponentProps<D> = Omit<ShardBase, 'kind'> & { id: string } & Partial<ParamsOf<D>>;
+export type ShardComponentProps<D> = Omit<ShardBase, 'kind'> & { id: string } & Partial<
+    ParamsOf<D>
+  >;
 
 /**
  * Make a typed component for a shard kind: `const Dots = createShardComponent(dots)`

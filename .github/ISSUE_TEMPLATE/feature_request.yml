@@ -1,0 +1,23 @@
+name: Feature request
+description: Suggest a new kind, effect, preset, option or adapter.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The look or behaviour you want, and why the current API can't do it.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: A new `define*` extension, a config field, an option, etc.
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        Note: new shard kinds, effects, presets and adapters are designed to be added
+        without forking through the public registries (see CONTRIBUTING.md).

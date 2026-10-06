@@ -51,12 +51,7 @@ export interface ChannelsParam {
 }
 
 export type ParamSchema =
-  | NumberParam
-  | AngleParam
-  | ColorParam
-  | BooleanParam
-  | EnumParam
-  | ChannelsParam;
+  NumberParam | AngleParam | ColorParam | BooleanParam | EnumParam | ChannelsParam;
 
 export type ParamMap = Record<string, ParamSchema>;
 

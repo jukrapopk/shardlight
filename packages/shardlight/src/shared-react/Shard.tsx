@@ -18,6 +18,7 @@ export function Shard(props: ShardProps): null {
   const registry = useContext(ShardLightContext);
   const key = JSON.stringify(props);
   // A stable input per prop-change so the layout effect re-runs only then.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const input = useMemo(() => ({ ...props }) as ShardInput, [key]);
 
   useIsomorphicLayoutEffect(() => {

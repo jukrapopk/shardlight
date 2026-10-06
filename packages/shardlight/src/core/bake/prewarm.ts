@@ -55,8 +55,7 @@ export async function prewarm(options: PrewarmOptions = {}): Promise<void> {
       prewarmed.push(layer.key);
       return acquireSource(layer.key, () =>
         scheduler.run(
-          () =>
-            baker.bake(layer, { resolution, rayScale, accept: accepts }, controller.signal),
+          () => baker.bake(layer, { resolution, rayScale, accept: accepts }, controller.signal),
           controller.signal,
         ),
       );

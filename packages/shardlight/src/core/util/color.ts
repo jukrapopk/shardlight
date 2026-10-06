@@ -41,7 +41,10 @@ export function parseColor(input: string): RGB {
 
   const fn = RGB_FN.exec(value);
   if (fn) {
-    const parts = fn[1]!.split(/[\s,/]+/).filter(Boolean).map(Number);
+    const parts = fn[1]!
+      .split(/[\s,/]+/)
+      .filter(Boolean)
+      .map(Number);
     if (parts.length >= 3 && parts.every((n) => Number.isFinite(n))) {
       return {
         r: clampByte(parts[0]!),

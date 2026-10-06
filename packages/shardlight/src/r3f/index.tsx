@@ -10,11 +10,7 @@ export {
   Halo,
   normalizeEffects,
 } from '../shared-react/index.js';
-export type {
-  ShardProps,
-  ShardComponentProps,
-  EffectShorthand,
-} from '../shared-react/index.js';
+export type { ShardProps, ShardComponentProps, EffectShorthand } from '../shared-react/index.js';
 
 export type {
   Baker,

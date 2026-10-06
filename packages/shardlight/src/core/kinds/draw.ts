@@ -88,9 +88,11 @@ export function conicVarianceMask(
   const variance = params.variance ?? 0;
   if (variance <= 0) return;
 
-  const createConic = (ctx as unknown as {
-    createConicGradient?: (angle: number, x: number, y: number) => CanvasGradient;
-  }).createConicGradient;
+  const createConic = (
+    ctx as unknown as {
+      createConicGradient?: (angle: number, x: number, y: number) => CanvasGradient;
+    }
+  ).createConicGradient;
   if (typeof createConic !== 'function') return;
 
   const center = size / 2;
