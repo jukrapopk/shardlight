@@ -38,6 +38,9 @@ scene.add(light.object);`,
 <ShardLight preset="starburst" size={320}>
   <Shard id="rays" hover={{ spin: 0.3 }} />
 </ShardLight>`,
+  flicker: `import { ShardLight } from 'shardlight/react';
+
+<ShardLight preset="ember" size={320} flicker={{ amount: 0.35 }} />`,
 };
 
 const SHARD_BASE_KEYS = new Set([
@@ -247,10 +250,18 @@ export function App() {
       <section className="section" id="effects">
         <h2>Effects</h2>
         <p className="sub">
-          <code>spin</code> and <code>hover</code> live on a shard, so a preset can carry its own
-          defaults and you can add them over any preset.
+          Bring any preset to life with <code>flicker</code>, <code>spin</code>, or{' '}
+          <code>hover</code>.
         </p>
-        <div className="examples">
+        <div className="examples effects-grid">
+          <figure>
+            <h3>Flicker</h3>
+            <div className="light-box">
+              <ShardLight preset="ember" size={BOX} flicker={{ amount: 0.35 }} />
+            </div>
+            <pre>{CODE.flicker}</pre>
+          </figure>
+
           <figure>
             <h3>Spin</h3>
             <div className="light-box">

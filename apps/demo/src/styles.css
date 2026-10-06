@@ -224,6 +224,18 @@ body {
   overflow-x: auto;
 }
 
+/* ---------- effects: 2x2 showcase ---------- */
+.effects-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+
+@media (max-width: 720px) {
+  .effects-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---------- compose: one light, two snippets ---------- */
 .compose {
   display: flex;
