@@ -236,14 +236,35 @@ body {
   }
 }
 
-/* ---------- compose: one light, two snippets ---------- */
-.compose {
+/* ---------- compose: preset vs custom ---------- */
+.compose-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .compose-compare {
+    grid-template-columns: 1fr;
+  }
+}
+
+.compose-col {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 22px;
-  max-width: 680px;
-  margin: 0 auto;
+  gap: 16px;
+  min-width: 0;
+}
+
+.compose-col h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .compose-code {
@@ -265,7 +286,8 @@ body {
   font-size: 12.5px;
   line-height: 1.6;
   color: var(--accent-2);
-  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .compose-code .or {
@@ -275,15 +297,14 @@ body {
   color: var(--muted);
 }
 
-.preset-picker {
-  display: inline-flex;
+.compose-head {
+  display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 13px;
-  color: var(--muted);
+  min-height: 36px;
 }
 
-.preset-picker select {
+.preset-select {
   appearance: none;
   padding: 8px 14px;
   border-radius: 999px;
@@ -295,11 +316,11 @@ body {
   cursor: pointer;
 }
 
-.preset-picker select:hover {
+.preset-select:hover {
   border-color: var(--muted);
 }
 
-.preset-picker select:focus-visible {
+.preset-select:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }

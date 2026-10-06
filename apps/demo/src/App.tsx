@@ -41,6 +41,23 @@ scene.add(light.object);`,
   flicker: `import { ShardLight } from 'shardlight/react';
 
 <ShardLight preset="ember" size={320} flicker={{ amount: 0.35 }} />`,
+  custom: `import { ShardLight, Shard } from 'shardlight/react';
+
+<ShardLight
+  color="#9BE8FF"
+  effects={[
+    { type: 'spin', channels: ['rays'], speed: 0.05 },
+    { type: 'spin', channels: ['cross'], speed: -0.07 },
+    { type: 'flicker', channels: ['dust'], amount: 0.35 },
+  ]}
+>
+  <Shard id="glow"  kind="blob"     channel="body"  strength={0.35} size={0.95} falloff={3} softness={5} />
+  <Shard id="core"  kind="blob"     channel="body"  strength={1} size={0.14} hardness={0.45} falloff={2.2} hover={{ scale: 1.3, opacity: 1.35 }} />
+  <Shard id="rays"  kind="fan"      channel="rays"  strength={0.7} size={1} count={6} width={4} taper={1} falloff={1.8} softness={1.5} />
+  <Shard id="cross" kind="fan"      channel="cross" angle={30} strength={0.45} size={0.72} count={6} width={2} taper={1} falloff={2} softness={1} />
+  <Shard id="ring"  kind="halo"     channel="rays"  strength={0.12} size={0.62} width={0.05} falloff={2} softness={1.5} />
+  <Shard id="dust"  kind="clusters" channel="dust"  clusters={4} perCluster={5} spread={40} inner={0.4} strength={0.25} size={0.5} width={2} taper={1} falloff={2} softness={1} />
+</ShardLight>`,
 };
 
 const SHARD_BASE_KEYS = new Set([
@@ -218,31 +235,124 @@ export function App() {
         </div>
       </section>
 
-      {/* Compose: pick any preset and see the shards it's built from */}
+      {/* Compose: a preset on the left, a fully custom light on the right */}
       <section className="section" id="compose">
         <h2>Compose it yourself</h2>
         <p className="sub">Every preset is just shards.</p>
-        <div className="compose">
-          <label className="preset-picker">
-            <span>Preset</span>
-            <select
-              value={composePreset}
-              onChange={(event) => setComposePreset(event.target.value)}
-            >
-              {PRESETS.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="light-box">
-            <ShardLight preset={composePreset} size={BOX} />
+        <div className="compose-compare">
+          <div className="compose-col">
+            <div className="compose-head">
+              <h3>Preset</h3>
+              <select
+                className="preset-select"
+                aria-label="Choose a preset"
+                value={composePreset}
+                onChange={(event) => setComposePreset(event.target.value)}
+              >
+                {PRESETS.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="light-box">
+              <ShardLight preset={composePreset} size={BOX} />
+            </div>
+            <div className="compose-code">
+              <pre>{compose.preset}</pre>
+              <div className="or">or</div>
+              <pre>{compose.shards}</pre>
+            </div>
           </div>
-          <div className="compose-code">
-            <pre>{compose.preset}</pre>
-            <div className="or">or</div>
-            <pre>{compose.shards}</pre>
+
+          <div className="compose-col">
+            <div className="compose-head">
+              <h3>Custom</h3>
+            </div>
+            <div className="light-box hoverable">
+              <ShardLight
+                color="#9BE8FF"
+                effects={[
+                  { type: 'spin', channels: ['rays'], speed: 0.05 },
+                  { type: 'spin', channels: ['cross'], speed: -0.07 },
+                  { type: 'flicker', channels: ['dust'], amount: 0.35 },
+                ]}
+              >
+                <Shard
+                  id="glow"
+                  kind="blob"
+                  channel="body"
+                  strength={0.35}
+                  size={0.95}
+                  falloff={3}
+                  softness={5}
+                />
+                <Shard
+                  id="core"
+                  kind="blob"
+                  channel="body"
+                  strength={1}
+                  size={0.14}
+                  hardness={0.45}
+                  falloff={2.2}
+                  hover={{ scale: 1.3, opacity: 1.35 }}
+                />
+                <Shard
+                  id="rays"
+                  kind="fan"
+                  channel="rays"
+                  strength={0.7}
+                  size={1}
+                  count={6}
+                  width={4}
+                  taper={1}
+                  falloff={1.8}
+                  softness={1.5}
+                />
+                <Shard
+                  id="cross"
+                  kind="fan"
+                  channel="cross"
+                  angle={30}
+                  strength={0.45}
+                  size={0.72}
+                  count={6}
+                  width={2}
+                  taper={1}
+                  falloff={2}
+                  softness={1}
+                />
+                <Shard
+                  id="ring"
+                  kind="halo"
+                  channel="rays"
+                  strength={0.12}
+                  size={0.62}
+                  width={0.05}
+                  falloff={2}
+                  softness={1.5}
+                />
+                <Shard
+                  id="dust"
+                  kind="clusters"
+                  channel="dust"
+                  clusters={4}
+                  perCluster={5}
+                  spread={40}
+                  inner={0.4}
+                  strength={0.25}
+                  size={0.5}
+                  width={2}
+                  taper={1}
+                  falloff={2}
+                  softness={1}
+                />
+              </ShardLight>
+            </div>
+            <div className="compose-code">
+              <pre>{CODE.custom}</pre>
+            </div>
           </div>
         </div>
       </section>
