@@ -1,6 +1,6 @@
 {
   "name": "shardlight",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Layered shard lens-flare lights that render identically in 2D React (DOM), three.js and React Three Fiber.",
   "type": "module",
   "license": "MIT",
