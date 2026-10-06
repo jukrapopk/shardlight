@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { ShardLight } from 'shardlight/react';
+import { ShardLight, Shard } from 'shardlight/react';
 import { ShardLightMesh } from 'shardlight/r3f';
 import { createShardLight } from 'shardlight/three';
 
@@ -21,6 +21,17 @@ scene.add(light.object);`,
   r3f: `import { ShardLightMesh } from 'shardlight/r3f';
 
 <ShardLightMesh preset="star" size={0.4} />`,
+  presetSun: `import { ShardLight } from 'shardlight/react';
+
+<ShardLight preset="sun" size={320} />`,
+  shardsSun: `import { ShardLight, Shard } from 'shardlight/react';
+
+<ShardLight preset={null} color="#FFE9B8">
+  <Shard id="bloom"   kind="blob" channel="body" strength={0.55} size={1.15} falloff={2.6} softness={5} />
+  <Shard id="hotspot" kind="blob" channel="body" strength={1} size={0.22} hardness={0.3} falloff={2} />
+  <Shard id="rays"    kind="fan"  channel="rays" strength={0.45} size={1} count={32} variance={0.7} jitter={0.55} inner={0.06} width={2} taper={1} falloff={1.6} fadeIn={0.05} softness={1.5} />
+  <Shard id="ring"    kind="halo" channel="rays" strength={0.04} size={0.8} width={0.07} falloff={2} softness={2.5} variance={0.4} />
+</ShardLight>`,
 };
 
 /** Plain three.js: an orthographic camera framing a 2-unit plane. */
@@ -68,7 +79,7 @@ function ThreeView() {
 export function App() {
   return (
     <div className="page">
-      {/* Hero + quick start */}
+      {/* Hero */}
       <header className="hero">
         <div className="hero-light">
           <ShardLight preset="star" size={300} />
@@ -154,6 +165,78 @@ export function App() {
               <figcaption>{name}</figcaption>
             </figure>
           ))}
+        </div>
+      </section>
+
+      {/* Compose: the sun preset vs the same light built from shards */}
+      <section className="section" id="compose">
+        <h2>Compose it yourself</h2>
+        <p className="sub">
+          Every preset is just shards. Here is <code>sun</code>, and the same light assembled by
+          hand.
+        </p>
+        <div className="examples">
+          <figure>
+            <h3>Preset</h3>
+            <div className="light-box">
+              <ShardLight preset="sun" size={BOX} />
+            </div>
+            <pre>{CODE.presetSun}</pre>
+          </figure>
+
+          <figure>
+            <h3>Built from shards</h3>
+            <div className="light-box">
+              <ShardLight preset={null} color="#FFE9B8" size={BOX}>
+                <Shard
+                  id="bloom"
+                  kind="blob"
+                  channel="body"
+                  strength={0.55}
+                  size={1.15}
+                  falloff={2.6}
+                  softness={5}
+                />
+                <Shard
+                  id="hotspot"
+                  kind="blob"
+                  channel="body"
+                  strength={1}
+                  size={0.22}
+                  hardness={0.3}
+                  falloff={2}
+                />
+                <Shard
+                  id="rays"
+                  kind="fan"
+                  channel="rays"
+                  strength={0.45}
+                  size={1}
+                  count={32}
+                  variance={0.7}
+                  jitter={0.55}
+                  inner={0.06}
+                  width={2}
+                  taper={1}
+                  falloff={1.6}
+                  fadeIn={0.05}
+                  softness={1.5}
+                />
+                <Shard
+                  id="ring"
+                  kind="halo"
+                  channel="rays"
+                  strength={0.04}
+                  size={0.8}
+                  width={0.07}
+                  falloff={2}
+                  softness={2.5}
+                  variance={0.4}
+                />
+              </ShardLight>
+            </div>
+            <pre>{CODE.shardsSun}</pre>
+          </figure>
         </div>
       </section>
 

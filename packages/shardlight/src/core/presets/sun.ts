@@ -5,7 +5,7 @@ export const sun = definePreset({
   version: 1,
   color: '#FFE9B8',
   rotation: 0,
-  seed: 2,
+  seed: 1,
   shards: [
     {
       id: 'bloom',
