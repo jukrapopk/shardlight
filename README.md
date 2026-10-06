@@ -10,7 +10,7 @@ DOM (React), three.js and React Three Fiber.
 ```
 shardlight/
 ├── packages/shardlight/   # the published package (core + react + three + r3f + testing)
-└── apps/                  # playground and docs (later phases)
+└── apps/demo/             # landing page + live demo (GitHub Pages)
 ```
 
 ## Development
@@ -20,7 +20,7 @@ pnpm install
 pnpm build        # build packages/shardlight
 pnpm test         # unit tests (Vitest)
 pnpm test:visual  # Playwright golden + cross-target parity tests (Chromium)
-pnpm demo         # build, then start the demo site (localhost:5173)
+pnpm demo         # start the demo site (localhost:5173)
 pnpm lint
 pnpm typecheck
 pnpm format:check

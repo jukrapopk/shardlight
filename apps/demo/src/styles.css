@@ -53,14 +53,6 @@ body {
   margin-bottom: 8px;
 }
 
-.eyebrow {
-  margin: 0 0 8px;
-  font-size: 13px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
 .hero h1 {
   margin: 0 0 14px;
   font-size: clamp(40px, 8vw, 72px);
@@ -76,11 +68,6 @@ body {
   font-size: 18px;
   line-height: 1.55;
   color: var(--muted);
-}
-
-.lede em {
-  color: var(--text);
-  font-style: normal;
 }
 
 .hero-actions {
