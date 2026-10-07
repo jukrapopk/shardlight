@@ -343,7 +343,8 @@ body {
   color: #6f7486;
 }
 
-/* ---------- effects: 2x2 showcase ---------- */
+/* ---------- shards + effects: two-up showcase ---------- */
+.shards-grid,
 .effects-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--sp-7);
@@ -457,12 +458,14 @@ footer a {
   .compose-compare {
     grid-template-columns: minmax(0, 1fr);
   }
+  .shards-grid,
   .effects-grid {
     gap: var(--sp-6);
   }
 }
 
 @media (max-width: 720px) {
+  .shards-grid,
   .effects-grid {
     grid-template-columns: minmax(0, 1fr);
   }

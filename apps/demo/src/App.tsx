@@ -75,6 +75,57 @@ scene.add(light.object);`,
 <ShardLight preset="star" size={${BOX}} collapse />`,
 };
 
+/** The four built-in shard kinds, each drawn on its own. */
+const SHARDS = [
+  {
+    kind: 'blob',
+    code: `import { ShardLight, Shard } from 'shardlight/react';
+
+<ShardLight size={${BOX}}>
+  <Shard id="glow" kind="blob" size={1} falloff={2.6} />
+</ShardLight>`,
+    shard: <Shard id="glow" kind="blob" size={1} falloff={2.6} />,
+  },
+  {
+    kind: 'fan',
+    code: `import { ShardLight, Shard } from 'shardlight/react';
+
+<ShardLight size={${BOX}}>
+  <Shard id="rays" kind="fan" count={8} size={1} width={7} />
+</ShardLight>`,
+    shard: <Shard id="rays" kind="fan" count={8} size={1} width={7} />,
+  },
+  {
+    kind: 'halo',
+    code: `import { ShardLight, Shard } from 'shardlight/react';
+
+<ShardLight size={${BOX}}>
+  <Shard id="ring" kind="halo" size={0.7} width={0.09} strength={0.5} />
+</ShardLight>`,
+    shard: <Shard id="ring" kind="halo" size={0.7} width={0.09} strength={0.5} />,
+  },
+  {
+    kind: 'clusters',
+    code: `import { ShardLight, Shard } from 'shardlight/react';
+
+<ShardLight size={${BOX}}>
+  <Shard id="streaks" kind="clusters" clusters={5} perCluster={7} spread={40} inner={0.45} size={1} width={3} />
+</ShardLight>`,
+    shard: (
+      <Shard
+        id="streaks"
+        kind="clusters"
+        clusters={5}
+        perCluster={7}
+        spread={40}
+        inner={0.45}
+        size={1}
+        width={3}
+      />
+    ),
+  },
+];
+
 const SHARD_BASE_KEYS = new Set([
   'id',
   'kind',
@@ -286,6 +337,25 @@ export function App() {
                 <ShardLight preset={name} size={160} />
               </div>
               <figcaption>{name}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      {/* Shards: the four kinds you build a light from */}
+      <section className="section" id="shards">
+        <h2>Shards</h2>
+        <p className="sub">A light is a stack of shards. Four kinds to mix and match.</p>
+        <div className="examples shards-grid">
+          {SHARDS.map(({ kind, code, shard }) => (
+            <figure key={kind}>
+              <h3>{kind}</h3>
+              <div className="light-box">
+                <ShardLight size={BOX} color="#FFF4E0">
+                  {shard}
+                </ShardLight>
+              </div>
+              <Code code={code} />
             </figure>
           ))}
         </div>
