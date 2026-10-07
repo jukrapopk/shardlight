@@ -3,7 +3,6 @@ import type { CSSProperties, MutableRefObject, ReactNode } from 'react';
 import {
   collapseTrigger,
   createLightModel,
-  isLowMemoryDevice,
   type Baker,
   type EffectConfig,
   type FrameValues,
@@ -19,6 +18,7 @@ import {
   useShardRegistry,
   type EffectShorthand,
 } from '../shared-react/index.js';
+import { autoResolution, measuredEdge } from './resolution.js';
 
 export interface ShardLightProps {
   /** Starting config. Omitted or `null` = start empty. */
@@ -103,7 +103,8 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
     );
 
     const bakeResolution = useCallback(
-      () => (resolution === 'auto' ? autoResolution(size) : resolution),
+      () =>
+        resolution === 'auto' ? autoResolution(size, measuredEdge(rootRef.current)) : resolution,
       [resolution, size],
     );
 
@@ -288,11 +289,4 @@ function renderLayer(layer: Layer): ReactNode {
     opacity: `var(--shardlight-${layer.channel}-opacity, 1)` as unknown as number,
   };
   return <img key={layer.id} src={src} alt="" draggable={false} style={imgStyle} />;
-}
-
-function autoResolution(size: number | string): number {
-  const edge = typeof size === 'number' ? size : 256;
-  const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
-  const cap = isLowMemoryDevice() ? 1024 : 2048;
-  return Math.min(cap, Math.max(64, Math.round(edge * dpr)));
 }
