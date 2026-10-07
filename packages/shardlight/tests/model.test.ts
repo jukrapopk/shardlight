@@ -5,8 +5,10 @@ import {
   createLightModel,
   defineEffect,
   definedOnly,
+  NullContextError,
   registerEffect,
   unregisterEffect,
+  type Baker,
   type FrameValues,
   type Layer,
 } from '../src/core/index.js';
@@ -275,6 +277,40 @@ describe('createLightModel', () => {
     model.setHover(false);
     for (let i = 0; i < 500 && model.animating; i += 1) model.tick(0.05);
     expect(model.animating).toBe(false);
+    model.dispose();
+  });
+
+  it('re-bakes a failed layer on the next update', async () => {
+    const errors: unknown[] = [];
+    let calls = 0;
+    const flaky: Baker = {
+      id: 'flaky',
+      async bake() {
+        calls += 1;
+        if (calls === 1) throw new NullContextError();
+        return {
+          type: 'bitmap',
+          bitmap: { width: 64, height: 64, close() {} } as unknown as ImageBitmap,
+        };
+      },
+    };
+    const model = createLightModel({
+      preset: 'star',
+      resolution: 64,
+      accepts: ['bitmap'],
+      baker: flaky,
+      onError: (error) => errors.push(error),
+    });
+
+    await waitFor(() => errors.length === 1);
+    // The failed layer is still pending: no source, and `ready` has not resolved.
+    expect(model.layers.some((layer) => layer.source === null)).toBe(true);
+
+    // A later update retries it instead of being skipped by the acquisition.
+    model.update({});
+    await model.ready;
+    expect(model.layers.every((layer) => layer.source !== null)).toBe(true);
+    expect(errors).toHaveLength(1);
     model.dispose();
   });
 });

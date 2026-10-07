@@ -226,8 +226,14 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
       })
       .catch((error) => {
         if (disposed || isAbortError(error)) return;
+        // The bake failed (e.g. NullContextError, the canvas memory cap). Drop
+        // this acquisition so a later sync re-tries instead of being skipped,
+        // and so the cache does not keep a dangling reference to the key.
+        if (acquired.has(view.key)) {
+          acquired.delete(view.key);
+          releaseSource(view.key);
+        }
         opts.onError?.(error);
-        // Leave it pending so a later update retries.
       });
   }
 
