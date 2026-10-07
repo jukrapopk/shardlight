@@ -30,7 +30,7 @@ export interface ShardLightProps {
   color?: string;
   /** CSS edge length of the light box. */
   size?: number | string;
-  /** Bake size. Default `'auto'`: the rendered size × DPR, measured on mount, capped. */
+  /** Bake size. Default `'auto'`: rendered size × DPR rounded to a power of two, re-measured on resize. */
   resolution?: number | 'auto';
   /** Thins every ray. */
   rayScale?: number;
@@ -94,6 +94,7 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
     const rootRef = useRef<HTMLDivElement | null>(null);
     const modelRef = useRef<LightModel | null>(null);
     const readyFiredRef = useRef(false);
+    const lastSrcRef = useRef<Map<string, string>>(new Map());
     const [layers, setLayers] = useState<Layer[]>([]);
     const [ready, setReady] = useState(false);
 
@@ -141,13 +142,14 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
         typeof window.matchMedia === 'function' &&
         window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+      const initialResolution = bakeResolution();
       const model = createLightModel({
         preset,
         config,
         shards,
         effects: effectsList,
         color,
-        resolution: bakeResolution(),
+        resolution: initialResolution,
         rayScale,
         baker,
         accepts: ['url'],
@@ -155,7 +157,19 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
       });
       modelRef.current = model;
 
-      const unsubscribeLayers = model.subscribe(setLayers);
+      const unsubscribeLayers = model.subscribe((next) => {
+        // Remember the last baked url per layer. A loaded blob still displays
+        // after the model revokes it, so a re-bake swaps in place instead of
+        // blanking the image.
+        const keep = new Set(next.map((layer) => layer.id));
+        for (const id of [...lastSrcRef.current.keys()]) {
+          if (!keep.has(id)) lastSrcRef.current.delete(id);
+        }
+        for (const layer of next) {
+          if (layer.source?.type === 'url') lastSrcRef.current.set(layer.id, layer.source.url);
+        }
+        setLayers(next);
+      });
       const unsubscribeFrame = model.onFrame(applyFrame);
       model.ready.then(() => {
         if (readyFiredRef.current) return;
@@ -198,8 +212,28 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
         syncTick();
       }
 
+      // Re-measure 'auto' on any layout change — a resize, becoming visible, or
+      // a transformed ancestor — and re-bake only when the power-of-two step
+      // moves, so a light is never stuck at the mount-time or 256 fallback.
+      let resizeObserver: ResizeObserver | null = null;
+      if (resolution === 'auto' && node && typeof ResizeObserver !== 'undefined') {
+        let applied = initialResolution;
+        const remeasure = () => {
+          const edge = measuredEdge(rootRef.current);
+          if (!edge) return;
+          const next = autoResolution(size, edge);
+          if (next === applied) return;
+          applied = next;
+          model.update({ resolution: next });
+        };
+        resizeObserver = new ResizeObserver(remeasure);
+        resizeObserver.observe(node);
+        remeasure();
+      }
+
       return () => {
         observer?.disconnect();
+        resizeObserver?.disconnect();
         unsubscribeActivity();
         unsubscribeTick?.();
         unsubscribeLayers();
@@ -265,6 +299,26 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
       });
     }, []);
 
+    const renderLayer = (layer: Layer): ReactNode => {
+      // Fall back to the last baked url while the current key re-bakes.
+      const src =
+        layer.source && layer.source.type === 'url'
+          ? layer.source.url
+          : lastSrcRef.current.get(layer.id);
+      if (!src) return null;
+      const imgStyle: CSSProperties = {
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        transformOrigin: 'center',
+        transform: `rotate(var(--shardlight-${layer.channel}-rotation, 0deg)) scale(var(--shardlight-${layer.channel}-scale, 1))`,
+        opacity: `var(--shardlight-${layer.channel}-opacity, 1)` as unknown as number,
+      };
+      return <img key={layer.id} src={src} alt="" draggable={false} style={imgStyle} />;
+    };
+
     const rootStyle: CSSProperties = {
       position: 'relative',
       display: 'inline-block',
@@ -303,19 +357,3 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
     );
   },
 );
-
-function renderLayer(layer: Layer): ReactNode {
-  if (!layer.source || layer.source.type !== 'url') return null;
-  const src = layer.source.url;
-  const imgStyle: CSSProperties = {
-    position: 'absolute',
-    inset: 0,
-    width: '100%',
-    height: '100%',
-    pointerEvents: 'none',
-    transformOrigin: 'center',
-    transform: `rotate(var(--shardlight-${layer.channel}-rotation, 0deg)) scale(var(--shardlight-${layer.channel}-scale, 1))`,
-    opacity: `var(--shardlight-${layer.channel}-opacity, 1)` as unknown as number,
-  };
-  return <img key={layer.id} src={src} alt="" draggable={false} style={imgStyle} />;
-}

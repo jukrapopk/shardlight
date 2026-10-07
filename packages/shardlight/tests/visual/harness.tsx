@@ -70,7 +70,7 @@ async function renderDOM(options: RenderOptions): Promise<void> {
         config={options.config as never}
         effects={options.effects as never}
         size={size}
-        resolution={options.resolution ?? size}
+        resolution={options.resolution}
         onReady={finish}
       />,
     );

@@ -4,10 +4,20 @@ import { autoResolution, measuredEdge } from '../src/react/resolution.js';
 describe('autoResolution', () => {
   it('uses a measured edge over the declared size', () => {
     expect(autoResolution('100%', 512)).toBe(512);
+    expect(autoResolution(256, 900)).toBe(1024);
   });
 
-  it('falls back to a numeric size when nothing was measured', () => {
-    expect(autoResolution(300)).toBe(300);
+  it('quantises to the nearest power of two', () => {
+    expect(autoResolution(200)).toBe(256);
+    expect(autoResolution(300)).toBe(256);
+    expect(autoResolution(400)).toBe(512);
+    expect(autoResolution(900)).toBe(1024);
+  });
+
+  it('keeps sizes within a step stable, so a resize rarely re-bakes', () => {
+    expect(autoResolution(256)).toBe(256);
+    expect(autoResolution(300)).toBe(256);
+    expect(autoResolution(320)).toBe(256);
   });
 
   it('falls back to 256 for a string size with no measurement', () => {
@@ -15,7 +25,11 @@ describe('autoResolution', () => {
   });
 
   it('ignores a zero measurement', () => {
-    expect(autoResolution(200, 0)).toBe(200);
+    expect(autoResolution(200, 0)).toBe(256);
+  });
+
+  it('clamps to a minimum of 64', () => {
+    expect(autoResolution(10)).toBe(64);
   });
 });
 
