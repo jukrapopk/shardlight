@@ -19,6 +19,7 @@ import {
   type EffectShorthand,
 } from '../shared-react/index.js';
 import { autoResolution, measuredEdge } from './resolution.js';
+import { sharedTicker } from './ticker.js';
 
 export interface ShardLightProps {
   /** Starting config. Omitted or `null` = start empty. */
@@ -161,18 +162,32 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
         onReady?.();
       });
 
-      let raf = 0;
-      let last = typeof performance !== 'undefined' ? performance.now() : 0;
-      const loop = (now: number) => {
-        const dt = last === 0 ? 0 : (now - last) / 1000;
-        last = now;
-        model.tick(dt);
-        raf = requestAnimationFrame(loop);
+      // One shared loop for every light; tick only while on screen.
+      let unsubscribeTick: (() => void) | null = null;
+      const startTick = () => {
+        if (!unsubscribeTick) unsubscribeTick = sharedTicker.subscribe((dt) => model.tick(dt));
       };
-      raf = requestAnimationFrame(loop);
+      const stopTick = () => {
+        unsubscribeTick?.();
+        unsubscribeTick = null;
+      };
+
+      const node = rootRef.current;
+      let observer: IntersectionObserver | null = null;
+      if (node && typeof IntersectionObserver !== 'undefined') {
+        observer = new IntersectionObserver((entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) startTick();
+          else stopTick();
+        });
+        observer.observe(node);
+      } else {
+        // No IntersectionObserver (SSR, tests): always tick.
+        startTick();
+      }
 
       return () => {
-        cancelAnimationFrame(raf);
+        observer?.disconnect();
+        stopTick();
         unsubscribeLayers();
         unsubscribeFrame();
         model.dispose();
