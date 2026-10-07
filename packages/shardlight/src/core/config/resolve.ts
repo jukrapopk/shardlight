@@ -6,6 +6,7 @@ import type {
   ResolvedLight,
   ResolvedShard,
   ResolvedSpin,
+  ShardBlend,
   ShardCollapse,
   ShardConfig,
   ShardHover,
@@ -65,6 +66,19 @@ export function resolveConfig(
   let list: ShardConfig[] = presetConfig ? presetConfig.shards.map((s) => ({ ...s })) : [];
   if (config?.shards) list = mergeShardList(list, config.shards, warn);
   if (input.shards) list = mergeShardList(list, input.shards, warn);
+
+  // Only additive blending is implemented. Coerce any other requested blend
+  // (e.g. `screen`) to `add` and say so once for the whole light, rather than
+  // warn per shard on every resolve.
+  const coercedBlends = list
+    .filter((shard) => shard.blend !== undefined && shard.blend !== 'add')
+    .map((shard) => `"${shard.id}"`);
+  if (coercedBlends.length > 0) {
+    warn(
+      `shard${coercedBlends.length > 1 ? 's' : ''} ${coercedBlends.join(', ')} ` +
+        'requested a non-additive blend, which is not implemented; using "add"',
+    );
+  }
 
   // Effects: explicit overrides config.effects overrides the preset's.
   const effects = input.effects ?? config?.effects ?? presetConfig?.effects ?? [];
@@ -168,12 +182,7 @@ function resolveShard(
     warn(`shard "${shard.id}" channel "${channel}" is not a valid CSS identifier`);
   }
 
-  const blend = shard.blend ?? 'add';
-  if (blend !== 'add') {
-    // No target implements screen yet, so say so rather than shipping a
-    // silently-wrong look. See ShardBlend.
-    warn(`shard "${shard.id}" blend "${blend}" is not implemented; it renders as "add"`);
-  }
+  const blend: ShardBlend = 'add';
 
   return {
     id: shard.id,

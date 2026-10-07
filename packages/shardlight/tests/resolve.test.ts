@@ -167,14 +167,20 @@ describe('defaults and clamping', () => {
     expect(light.rotation).toBe(10);
   });
 
-  it('warns that a non-add blend is not implemented', () => {
+  it('coerces an unsupported blend to add, warning once for all shards', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const light = resolveConfig({
       preset: null,
-      shards: [{ id: 'x', kind: 'blob', blend: 'screen' }],
+      shards: [
+        { id: 'x', kind: 'blob', blend: 'screen' },
+        { id: 'y', kind: 'blob', blend: 'screen' },
+      ],
     });
-    expect(light.shards[0]!.blend).toBe('screen');
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"screen"'));
+    expect(light.shards.map((s) => s.blend)).toEqual(['add', 'add']);
+    const blendWarnings = warn.mock.calls.filter(([message]) => String(message).includes('blend'));
+    expect(blendWarnings).toHaveLength(1);
+    expect(String(blendWarnings[0]?.[0])).toContain('"x"');
+    expect(String(blendWarnings[0]?.[0])).toContain('"y"');
     warn.mockRestore();
   });
 });
