@@ -203,6 +203,55 @@ or very light background; give it a dark (or at least dark-enough) backdrop.
 A shard's `blend` accepts `'add'` (the default) or `'screen'`, but only `'add'` is
 implemented today: `'screen'` renders as `'add'` and logs a development warning.
 
+## Reference
+
+### Shard kinds
+
+Four kinds build every light; `kind` is the `kind` prop / config value. Ranges are
+the schema's `min`–`max`.
+
+| Kind | Name | Params — default · range |
+|---|---|---|
+| `blob` | Glow | `strength` 1 · 0–2; `size` 0.5 · 0–2 (half-edge fraction); `hardness` 0 · 0–0.999; `falloff` 2 · 0.1–8; `aspect` 1 · 0.1–10; `angle` 0°; `softness` 0 · 0–50 px (at 1024); `variance` 0 · 0–1 |
+| `fan` | Rays | `strength` 1 · 0–2; `size` 1 · 0–2 (half-edge fraction); `count` 4 · 1–256; `angle` 0°; `jitter` 0 · 0–1; `inner` 0 · 0–1; `variance` 0 · 0–1; `width` 4 · 0–100 px (at 1024, ray-scaled); `taper` 1 · 0–1; `falloff` 1 · 0–8; `fadeIn` 0 · 0–1; `softness` 1 · 0–50 px (ray-scaled) |
+| `halo` | Halo | `strength` 0.1 · 0–2; `size` 0.5 · 0–2 (half-edge fraction); `width` 0.05 · 0–2 (half-edge fraction); `falloff` 1 · 0–8; `softness` 0 · 0–50 px (at 1024); `variance` 0 · 0–1 |
+| `clusters` | Streaks | `clusters` 4 · 1–64; `perCluster` 5 · 1–64; `spread` 20 · 0–360°; `inner` 0.1 · 0–1; `strength` 0.5 · 0–2; `size` 0.5 · 0–2 (half-edge fraction); `angle` 0°; `variance` 0.5 · 0–1; `width` 2 · 0–100 px (at 1024, ray-scaled); `taper` 0.5 · 0–1; `falloff` 1 · 0–8; `fadeIn` 0.1 · 0–1; `softness` 1 · 0–50 px (ray-scaled) |
+
+`relativeTo="<id>"` on a `fan` or `clusters` measures its `angle` from another shard's.
+
+### Preset shards
+
+Override, hide or extend a preset by `id`. Every preset also takes a light-wide
+`color`, `rotation` and `seed`.
+
+| Preset | Shards — `id` · kind · channel |
+|---|---|
+| `star` | `bloom` blob·body; `hotspot` blob·body; `beam` fan·rays; `ring` halo·rays |
+| `sun` | `bloom` blob·body; `hotspot` blob·body; `rays` fan·rays; `ring` halo·rays |
+| `sparkle` | `bloom` blob·body; `hotspot` blob·body; `spikes` fan·rays; `glint` fan·glint |
+| `starburst` | `glow` blob·body; `core` blob·body; `rays` fan·rays |
+| `ember` | `bloom` blob·body; `hotspot` blob·body; `sparks` fan·rays |
+
+### Resolution
+
+The bake edge. Default **1024**; `'auto'` uses the rendered size × DPR, measured on
+mount, capped at 2048 (1024 on low-memory devices). Each layer is one `resolution²`
+RGBA image — about 4 MiB decoded at 1024², so `star`'s two layers are ~8 MiB. Lower it
+for many lights at once; raise it for very large ones.
+
+### SSR and first paint
+
+The model is created in an effect, so on the server (and the first paint) a
+`<ShardLight>` renders an empty box. Pass `fallback` for something to show meanwhile,
+or `prewarm()` a config's layers before first paint.
+
+### Accessibility
+
+The DOM root is `aria-hidden` and its images have `alt=""` — a light is decorative.
+`hover` follows pointer-over and `collapse` is click-only, with no keyboard path; for a
+keyboard-accessible control, set `collapse={{ trigger: 'none' }}` and drive it yourself
+with `ref.current?.toggleCollapsed()`.
+
 ## Control
 
 Everything below animates without re-baking. Only changing a shard — its kind, params or color —
