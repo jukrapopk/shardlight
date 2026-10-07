@@ -64,16 +64,18 @@ export const canvas2dBaker: Baker = {
       scratchCtx.rotate((layer.rotation * Math.PI) / 180);
       try {
         def.draw(scratchCtx, params as never, env);
-      } catch {
-        // A misbehaving custom kind must not take down the whole bake.
+      } catch (error) {
+        // A misbehaving custom kind must not take down the whole bake, but a
+        // silent skip makes it hard to notice.
+        warnShardFailure(shard.kind, shard.id, 'draw', error);
       }
       scratchCtx.restore();
 
       if (def.mask) {
         try {
           def.mask(scratchCtx, params as never, env, resolution);
-        } catch {
-          /* ignore */
+        } catch (error) {
+          warnShardFailure(shard.kind, shard.id, 'mask', error);
         }
       }
 
@@ -96,6 +98,14 @@ export const canvas2dBaker: Baker = {
     return encode(canvas, opts, signal);
   },
 };
+
+function warnShardFailure(kind: string, id: string, phase: 'draw' | 'mask', error: unknown): void {
+  if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') return;
+  console.warn(
+    `[shardlight] shard "${id}" (${kind}) ${phase} failed; the shard was skipped`,
+    error,
+  );
+}
 
 async function encode(
   canvas: HTMLCanvasElement | OffscreenCanvas,
