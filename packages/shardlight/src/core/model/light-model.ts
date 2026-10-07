@@ -69,7 +69,7 @@ export interface LightModel {
   readonly resolved: ResolvedLight;
   /**
    * True while the model has something that changes frame to frame: a
-   * continuous effect, or hover/collapse easing in flight. An effect-free,
+   * time-driven effect, or hover/collapse easing in flight. An effect-free,
    * settled light reports `false`, so a host can stop ticking it.
    */
   readonly animating: boolean;
@@ -119,7 +119,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
 
   /** True while the model has something that changes frame to frame. */
   function isActive(): boolean {
-    if (activeEffects().some((effect) => getEffect(effect.type)?.continuous === true)) {
+    if (activeEffects().some((effect) => getEffect(effect.type)?.inputDriven !== true)) {
       return true;
     }
     if (hover !== hoverTarget || collapse !== collapseTarget) return true;

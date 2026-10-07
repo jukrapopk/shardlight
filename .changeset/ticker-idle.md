@@ -1,5 +1,5 @@
 ---
-"shardlight": patch
+"shardlight": minor
 ---
 
-Stop ticking DOM lights that have nothing to animate. The shared `requestAnimationFrame` loop ran for every visible light, even when idle — and presets ship effect-free, so that was the default case. A light now subscribes only while it has a continuous effect (`pulse`, `flicker`, `spin`) or hover/collapse easing in flight. The model exposes the state as `model.animating` / `model.onActivity(listener)`, and `tick()` returns immediately while idle.
+DOM lights stop ticking when they have nothing to animate. The shared loop ran for every visible light, and presets ship effect-free, so an idle light used to run an `requestAnimationFrame` every frame. The model now exposes `model.animating` and `model.onActivity(listener)`, and the DOM adapter subscribes only while a light is on screen and animating. Every effect animates by default; the built-in `hover` and `collapse` are marked `inputDriven` and only count while easing, so a custom effect keeps animating unless it opts in.

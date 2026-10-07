@@ -6,7 +6,6 @@ import { defineEffect } from './registry.js';
 export const pulse = defineEffect({
   name: 'pulse',
   label: 'Pulse',
-  continuous: true,
   params: {
     channels: { type: 'channels', default: ['main'] },
     speed: { type: 'number', default: 1, min: 0, max: 10, step: 0.01 },

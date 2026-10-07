@@ -8,7 +8,6 @@ import { defineEffect } from './registry.js';
 export const spin = defineEffect({
   name: 'spin',
   label: 'Spin',
-  continuous: true,
   params: {
     channels: { type: 'channels', default: ['main'] },
     speed: { type: 'number', default: 0.1, min: -10, max: 10, step: 0.01, unit: 'turns/s' },

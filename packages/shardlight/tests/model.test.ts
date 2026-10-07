@@ -3,13 +3,19 @@ import {
   cacheSize,
   clearCache,
   createLightModel,
+  defineEffect,
   definedOnly,
+  registerEffect,
+  unregisterEffect,
   type FrameValues,
   type Layer,
 } from '../src/core/index.js';
 import { createFakeBaker, waitFor } from '../src/testing/index.js';
 
-afterEach(() => clearCache());
+afterEach(() => {
+  clearCache();
+  unregisterEffect('sway-test');
+});
 
 function makeModel(options: Record<string, unknown> = {}) {
   return createLightModel({
@@ -226,6 +232,21 @@ describe('createLightModel', () => {
     expect(model.animating).toBe(true);
     model.update({ effects: [] });
     expect(model.animating).toBe(false);
+    model.dispose();
+  });
+
+  it('treats an effect with no flag as time-driven, so custom effects animate', () => {
+    registerEffect(
+      defineEffect({
+        name: 'sway-test',
+        params: {},
+        apply(t, _p, out) {
+          out.channel('body').rotation += t;
+        },
+      }) as never,
+    );
+    const model = makeModel({ effects: [{ type: 'sway-test', channels: ['body'] }] });
+    expect(model.animating).toBe(true);
     model.dispose();
   });
 

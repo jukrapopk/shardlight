@@ -12,6 +12,7 @@ import { defineEffect } from './registry.js';
 export const hover = defineEffect({
   name: 'hover',
   label: 'Hover',
+  inputDriven: true,
   params: {
     channels: { type: 'channels', default: ['main'] },
     scale: { type: 'number', default: 1.15, min: 0, max: 4, step: 0.01 },

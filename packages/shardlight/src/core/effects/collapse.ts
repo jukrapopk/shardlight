@@ -18,6 +18,7 @@ export type CollapseTrigger = 'click' | 'once' | 'none';
 export const collapse = defineEffect({
   name: 'collapse',
   label: 'Collapse',
+  inputDriven: true,
   params: {
     channels: { type: 'channels', default: ['*'] },
     scale: { type: 'number', default: 0, min: 0, max: 4, step: 0.01 },
