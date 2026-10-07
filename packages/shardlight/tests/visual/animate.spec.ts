@@ -43,3 +43,20 @@ test('a DOM light with a continuous effect animates', async ({ page }) => {
 
   expect(new Set(values).size).toBeGreaterThan(1);
 });
+
+test('effects on the config still apply (not shadowed by the adapter)', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate((options) => window.__harness.render(options), {
+    target: 'dom' as const,
+    size: 256,
+    config: { effects: [{ type: 'pulse', channels: ['body'], speed: 2, amount: 0.4 }] },
+  });
+
+  const animating = await page.evaluate(() => {
+    const root = document.querySelector('#stage > div') as HTMLElement & {
+      model?: { animating: boolean };
+    };
+    return root.model?.animating;
+  });
+  expect(animating).toBe(true);
+});

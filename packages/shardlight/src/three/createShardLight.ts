@@ -19,7 +19,7 @@ export interface CreateShardLightOptions {
   preset?: Preset | null;
   config?: Partial<ShardLightConfig>;
   shards?: ShardInput[];
-  effects?: EffectConfig[];
+  effects?: EffectConfig[] | null;
   color?: string;
   /** World units (plane edge). */
   size?: number;

@@ -98,10 +98,12 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
     const [ready, setReady] = useState(false);
 
     const { registry, shards } = useShardRegistry();
-    const effectsList = useMemo(
-      () => normalizeEffects(effects, flicker, collapse),
-      [effects, flicker, collapse],
-    );
+    const effectsList = useMemo(() => {
+      // `null` (not `[]`) when there is nothing here, so `resolveConfig` can fall
+      // through to the config's or the preset's own effects instead of clearing them.
+      const list = normalizeEffects(effects, flicker, collapse);
+      return list.length > 0 ? list : null;
+    }, [effects, flicker, collapse]);
 
     const bakeResolution = useCallback(
       () =>
