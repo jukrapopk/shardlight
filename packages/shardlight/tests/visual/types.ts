@@ -6,6 +6,8 @@ export interface RenderOptions {
   preset?: string | null;
   /** Partial config merged over the preset (for controlled tests). */
   config?: Record<string, unknown>;
+  /** Effects passed as the `effects` prop (the adapter's prop wins over config). */
+  effects?: Record<string, unknown>[];
   /** Pixel size of the square stage. */
   size?: number;
   /** Bake resolution. */

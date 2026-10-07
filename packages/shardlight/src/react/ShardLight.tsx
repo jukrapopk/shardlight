@@ -162,32 +162,44 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
         onReady?.();
       });
 
-      // One shared loop for every light; tick only while on screen.
+      // Subscribe to the shared loop only while this light is both on screen
+      // and has something to animate (a continuous effect, or hover/collapse
+      // easing). A static preset runs no frames at all.
+      let visible = false;
+      let active = model.animating;
       let unsubscribeTick: (() => void) | null = null;
-      const startTick = () => {
-        if (!unsubscribeTick) unsubscribeTick = sharedTicker.subscribe((dt) => model.tick(dt));
+      const syncTick = () => {
+        const shouldRun = visible && active;
+        if (shouldRun && !unsubscribeTick) {
+          unsubscribeTick = sharedTicker.subscribe((dt) => model.tick(dt));
+        } else if (!shouldRun && unsubscribeTick) {
+          unsubscribeTick();
+          unsubscribeTick = null;
+        }
       };
-      const stopTick = () => {
-        unsubscribeTick?.();
-        unsubscribeTick = null;
-      };
+      const unsubscribeActivity = model.onActivity((value) => {
+        active = value;
+        syncTick();
+      });
 
       const node = rootRef.current;
       let observer: IntersectionObserver | null = null;
       if (node && typeof IntersectionObserver !== 'undefined') {
         observer = new IntersectionObserver((entries) => {
-          if (entries.some((entry) => entry.isIntersecting)) startTick();
-          else stopTick();
+          visible = entries.some((entry) => entry.isIntersecting);
+          syncTick();
         });
         observer.observe(node);
       } else {
-        // No IntersectionObserver (SSR, tests): always tick.
-        startTick();
+        // No IntersectionObserver (SSR, tests): treat as on screen.
+        visible = true;
+        syncTick();
       }
 
       return () => {
         observer?.disconnect();
-        stopTick();
+        unsubscribeActivity();
+        unsubscribeTick?.();
         unsubscribeLayers();
         unsubscribeFrame();
         model.dispose();

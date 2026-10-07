@@ -31,6 +31,12 @@ export interface EffectDefinition<N extends string = string, P extends ParamMap 
    * per frame. Reserved for a later release.
    */
   css?: (params: ParamsFromSchema<P>) => string;
+  /**
+   * True when `apply` keeps changing the frame over time with no input (pulse,
+   * flicker, spin). Input-driven effects (hover, collapse) leave it unset: the
+   * model reports them idle once their easing settles.
+   */
+  continuous?: boolean;
   /** Pause under `prefers-reduced-motion` unless this is `'keep'`. */
   reducedMotion?: 'keep';
 }

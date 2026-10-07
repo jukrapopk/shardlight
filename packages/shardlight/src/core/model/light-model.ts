@@ -67,6 +67,14 @@ export interface LightModel {
   dispose(): void;
   readonly layers: readonly Layer[];
   readonly resolved: ResolvedLight;
+  /**
+   * True while the model has something that changes frame to frame: a
+   * continuous effect, or hover/collapse easing in flight. An effect-free,
+   * settled light reports `false`, so a host can stop ticking it.
+   */
+  readonly animating: boolean;
+  /** Fires when `animating` changes; calls the listener immediately with the current value. */
+  onActivity(listener: (active: boolean) => void): () => void;
   /** Resolves once every currently-known layer has a baked source. */
   readonly ready: Promise<void>;
 }
@@ -106,6 +114,34 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
   let collapse = 0;
   let collapseTarget = 0;
   let disposed = false;
+
+  const activityListeners = new Set<(active: boolean) => void>();
+
+  /** True while the model has something that changes frame to frame. */
+  function isActive(): boolean {
+    if (activeEffects().some((effect) => getEffect(effect.type)?.continuous === true)) {
+      return true;
+    }
+    if (hover !== hoverTarget || collapse !== collapseTarget) return true;
+    // A settled hover can still wind a spin while the pointer rests on the
+    // light, so it keeps animating until the pointer leaves.
+    if (hover > 0) {
+      return resolved.effects.some(
+        (effect) =>
+          effect.type === 'hover' && Number((effect as { spin?: number }).spin ?? 0) !== 0,
+      );
+    }
+    return false;
+  }
+
+  let active = isActive();
+
+  function refreshActivity(): void {
+    const next = isActive();
+    if (next === active) return;
+    active = next;
+    for (const listener of activityListeners) listener(active);
+  }
 
   function resolve(current: LightModelOptions): ResolvedLight {
     const config = current.config ? migrateConfig(current.config) : undefined;
@@ -252,6 +288,11 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
       listener(frame());
       return () => frameListeners.delete(listener);
     },
+    onActivity(listener) {
+      activityListeners.add(listener);
+      listener(active);
+      return () => activityListeners.delete(listener);
+    },
     update(patch) {
       if (disposed) return;
       opts = { ...opts, ...definedOnly(patch) };
@@ -259,6 +300,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
       sync();
       // Effects may have changed: recompute the current frame.
       emitFrame();
+      refreshActivity();
     },
     set(values) {
       if (values.hover !== undefined) {
@@ -275,6 +317,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
         channels: values.channels ? { ...manual.channels, ...values.channels } : manual.channels,
       };
       emitFrame();
+      refreshActivity();
     },
     setChannel(channel, values) {
       model.set({ channels: { [channel]: values } });
@@ -287,6 +330,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
         hover = hoverTarget;
         emitFrame();
       }
+      refreshActivity();
     },
     setCollapsed(collapsed) {
       if (disposed) return;
@@ -296,14 +340,14 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
         collapse = collapseTarget;
         emitFrame();
       }
+      refreshActivity();
     },
     toggleCollapsed() {
       model.setCollapsed(collapseTarget < 0.5);
     },
     tick(dt) {
       if (disposed) return;
-      const idle = activeEffects().length === 0;
-      if (idle && hover === hoverTarget && collapse === collapseTarget) return;
+      if (!isActive()) return;
       time += dt;
       if (hover !== hoverTarget) {
         const ease = opts.hoverEase ?? DEFAULT_HOVER_EASE;
@@ -326,6 +370,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
       // Bank time spent hovering, so `hover.spin` can wind up and down.
       hoverTime += hover * dt;
       emitFrame();
+      refreshActivity();
     },
     dispose() {
       if (disposed) return;
@@ -335,6 +380,7 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
       acquired.clear();
       layerListeners.clear();
       frameListeners.clear();
+      activityListeners.clear();
       flushReady();
     },
     get layers() {
@@ -342,6 +388,9 @@ export function createLightModel(options: LightModelOptions = {}): LightModel {
     },
     get resolved() {
       return resolved;
+    },
+    get animating() {
+      return active;
     },
     get ready() {
       if (pendingCount() === 0) return Promise.resolve();

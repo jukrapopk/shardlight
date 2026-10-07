@@ -214,6 +214,48 @@ describe('createLightModel', () => {
     expect(second.layers.every((layer) => layer.source !== null)).toBe(true);
     second.dispose();
   });
+
+  it('reports itself idle when there is nothing to animate', () => {
+    const model = makeModel();
+    expect(model.animating).toBe(false);
+    model.dispose();
+  });
+
+  it('reports active while a continuous effect runs, and stops when it is removed', () => {
+    const model = makeModel({ effects: [{ type: 'spin', speed: 0.2, channels: ['main'] }] });
+    expect(model.animating).toBe(true);
+    model.update({ effects: [] });
+    expect(model.animating).toBe(false);
+    model.dispose();
+  });
+
+  it('reports active only while hover easing is in flight', () => {
+    const model = makeModel({ shards: [{ id: 'beam', hover: { scale: 2 } }], hoverEase: 0.1 });
+    const seen: boolean[] = [];
+    model.onActivity((active) => seen.push(active));
+    expect(model.animating).toBe(false);
+
+    model.setHover(true);
+    expect(model.animating).toBe(true);
+    for (let i = 0; i < 500 && model.animating; i += 1) model.tick(0.05);
+    expect(model.animating).toBe(false);
+
+    expect(seen).toEqual([false, true, false]);
+    model.dispose();
+  });
+
+  it('stays active while a hovered shard winds its spin', () => {
+    const model = makeModel({ shards: [{ id: 'beam', hover: { spin: 0.25 } }], hoverEase: 0.1 });
+    model.setHover(true);
+    for (let i = 0; i < 500 && model.animating; i += 1) model.tick(0.05);
+    // Hover has settled, but the spin keeps winding while the pointer rests.
+    expect(model.animating).toBe(true);
+
+    model.setHover(false);
+    for (let i = 0; i < 500 && model.animating; i += 1) model.tick(0.05);
+    expect(model.animating).toBe(false);
+    model.dispose();
+  });
 });
 
 describe('definedOnly', () => {

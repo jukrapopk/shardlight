@@ -7,6 +7,7 @@ import { defineEffect } from './registry.js';
 export const flicker = defineEffect({
   name: 'flicker',
   label: 'Flicker',
+  continuous: true,
   params: {
     amount: { type: 'number', default: 0.15, min: 0, max: 1 },
     speed: { type: 'number', default: 1, min: 0, max: 10, step: 0.01 },
