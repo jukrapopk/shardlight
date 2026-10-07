@@ -68,8 +68,9 @@ async function renderDOM(options: RenderOptions): Promise<void> {
       <ShardLight
         preset={resolvePreset(options.preset)}
         config={options.config as never}
+        effects={options.effects as never}
         size={size}
-        resolution={options.resolution ?? size}
+        resolution={options.resolution}
         onReady={finish}
       />,
     );

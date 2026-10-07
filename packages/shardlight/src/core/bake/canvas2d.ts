@@ -30,15 +30,20 @@ export const canvas2dBaker: Baker = {
     const unit = resolution / 2;
     const px = resolution / 1024;
 
-    // One scratch canvas for the whole bake, cleared before each shard, so a
-    // layer with many shards allocates one full-size canvas instead of N.
-    const scratch = createCanvas(resolution, resolution);
-    const scratchCtx = get2dContext(scratch);
+    // One scratch canvas for the whole bake, so a layer with many shards
+    // allocates one full-size canvas instead of N. A shard may leave the
+    // context in any state (or throw), so it is fully reset before each shard;
+    // `reset()` also drops transforms, clip and the save stack. Engines without
+    // `reset()` fall back to a fresh canvas per shard (the pre-reuse behaviour),
+    // which is safe by construction.
+    let scratch = createCanvas(resolution, resolution);
+    let scratchCtx = get2dContext(scratch);
     if (!scratchCtx) {
       freeCanvas(scratch);
       freeCanvas(canvas);
       throw new NullContextError();
     }
+    const canReset = typeof (scratchCtx as unknown as { reset?: unknown }).reset === 'function';
 
     try {
       for (const shard of layer.shards) {
@@ -62,7 +67,20 @@ export const canvas2dBaker: Baker = {
           rgba: makeRgba(shard.color),
         };
 
-        scratchCtx.clearRect(0, 0, resolution, resolution);
+        if (canReset) {
+          (scratchCtx as unknown as { reset(): void }).reset();
+        } else {
+          // No `reset()`: a fresh canvas is guaranteed clean.
+          freeCanvas(scratch);
+          scratch = createCanvas(resolution, resolution);
+          const nextCtx = get2dContext(scratch);
+          if (!nextCtx) {
+            freeCanvas(scratch);
+            freeCanvas(canvas);
+            throw new NullContextError();
+          }
+          scratchCtx = nextCtx;
+        }
         // The context is centred and turned by the light's rotation for the shard.
         scratchCtx.save();
         scratchCtx.translate(unit, unit);

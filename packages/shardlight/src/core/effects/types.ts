@@ -31,6 +31,13 @@ export interface EffectDefinition<N extends string = string, P extends ParamMap 
    * per frame. Reserved for a later release.
    */
   css?: (params: ParamsFromSchema<P>) => string;
+  /**
+   * Set for effects that only move in response to input (the built-in `hover`
+   * and `collapse`). The model treats every other effect as running over time,
+   * so an idle light can stop its animation loop. Unset by default, which keeps
+   * a custom effect animating.
+   */
+  inputDriven?: boolean;
   /** Pause under `prefers-reduced-motion` unless this is `'keep'`. */
   reducedMotion?: 'keep';
 }

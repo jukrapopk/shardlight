@@ -122,9 +122,9 @@ export interface BaseShardPresets {
 // ---------------------------------------------------------------------------
 
 /**
- * How a shard's layer composites. Only `'add'` is implemented today; `'screen'`
- * is accepted by the config but currently renders as `'add'` (with a
- * development warning).
+ * How a shard's layer composites. Only `'add'` is implemented; `'screen'` is
+ * accepted by the config but coerced to `'add'` (with one development warning
+ * per light).
  */
 export type ShardBlend = 'add' | 'screen';
 

@@ -122,6 +122,11 @@ effects={[
 
 The five built-in presets ship effect-free, so a preset stays still until you give it motion.
 
+A light only runs its animation loop while it is on screen and the tab is visible, so effects
+pause offscreen and resume when it scrolls back. Every effect animates by default; `hover` and
+`collapse` are input-driven and only run while easing. A light with nothing to animate — an
+effect-free preset — runs no frames at all.
+
 ### three.js — `shardlight/three`
 
 ```ts
@@ -180,6 +185,10 @@ model.subscribe((layers) => {
 model.onFrame((values) => {
   /* channel scale / opacity / rotation, plus the eased `hover` and `collapse` */
 });
+model.animating;                 // false when there is nothing to animate
+model.onActivity((active) => {
+  /* drive your own render loop; called with the current value */
+});
 
 model.set({ channels: { rays: { scale: 1.2 } }, opacity: 0.8 }); // per frame
 model.setChannel('rays', { rotation: 15 });
@@ -201,7 +210,7 @@ three.js and R3F. Additive light only ever brightens, so a light is invisible on
 or very light background; give it a dark (or at least dark-enough) backdrop.
 
 A shard's `blend` accepts `'add'` (the default) or `'screen'`, but only `'add'` is
-implemented today: `'screen'` renders as `'add'` and logs a development warning.
+implemented: `'screen'` is coerced to `'add'` (with one development warning per light).
 
 ## Reference
 
@@ -234,10 +243,13 @@ Override, hide or extend a preset by `id`. Every preset also takes a light-wide
 
 ### Resolution
 
-The bake edge. Default **1024**; `'auto'` uses the rendered size × DPR, measured on
-mount, capped at 2048 (1024 on low-memory devices). Each layer is one `resolution²`
-RGBA image — about 4 MiB decoded at 1024², so `star`'s two layers are ~8 MiB. Lower it
-for many lights at once; raise it for very large ones.
+The bake edge. `<ShardLight>` defaults to **`'auto'`** — the rendered size × DPR, rounded to the
+nearest power of two (256, 512, 1024, …) and capped at 2048 (1024 on low-memory devices). It
+re-measures with a `ResizeObserver`, so a resize, a light that starts hidden, or a resizing
+ancestor re-bakes when the size crosses a step; the previous image stays on screen until the new
+one is ready. The headless model and the three.js / R3F adapters default to **1024**. Each layer
+is one `resolution²` RGBA image — about 4 MiB decoded at 1024², so `star`'s two layers are ~8 MiB.
+Lower it for many lights at once; raise it for very large ones.
 
 ### SSR and first paint
 
@@ -309,8 +321,9 @@ can drive it with no JS per frame:
 .badge:hover { --shardlight-rays-scale: 1.3; --shardlight-rays-rotation: 15deg; }
 ```
 
-**Render options.** `resolution` (`'auto'` = rendered size × DPR) and `rayScale` at the adapter;
-`baker`, `accepts`, `reducedMotion`, `hoverEase` and `collapseEase` on the model.
+**Render options.** `resolution` (`'auto'` = rendered size × DPR rounded to a power of two, the
+`<ShardLight>` default) and `rayScale` at the adapter; `baker`, `accepts`, `reducedMotion`,
+`hoverEase` and `collapseEase` on the model.
 
 **Data first.** Every light is a versioned `ShardLightConfig`: save and load it as JSON,
 `migrateConfig()` old saves, and `prewarm()` a config's layers before first paint.
@@ -356,6 +369,10 @@ const Dots = createShardComponent(dots);
 <ShardLight preset="star"><Dots id="crown" count={8} /></ShardLight>
 ```
 
+An effect animates by default. Mark one `inputDriven: true` — as the built-in `hover` and
+`collapse` do — only if it moves purely in response to input, so an idle light can stop its
+animation loop.
+
 `ShardKinds`, `ShardPresets` and `ChannelValues` are augmentable, so downstream kinds and presets
 are typed too:
 
@@ -379,7 +396,8 @@ pnpm test:visual    # Playwright: golden PNGs + cross-target parity (Chromium)
 
 The visual tests render every preset in real headless Chromium through all three targets,
 compare against golden PNGs in `tests/visual/__screenshots__`, and check parity between
-`<ShardLight>`, `createShardLight()` and `<ShardLightMesh>`. Regenerate goldens with
+`<ShardLight>`, `createShardLight()` and `<ShardLightMesh>`, plus resolution parity and that
+effects animate (and idle lights do not). Regenerate goldens with
 `pnpm test:visual:update` after an intentional look change.
 
 ## License
