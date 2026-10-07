@@ -1,6 +1,6 @@
 {
   "name": "shardlight",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Procedural lens-flare lights for React, three.js and React Three Fiber. Build a light once and it looks the same everywhere.",
   "type": "module",
   "license": "MIT",
