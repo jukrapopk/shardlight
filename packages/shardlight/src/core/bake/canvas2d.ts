@@ -8,7 +8,7 @@ import type { BakeOptions, Baker, LayerSource } from './baker.js';
 import { NullContextError } from './baker.js';
 
 /**
- * The default baker. Draws each shard to its own scratch canvas with
+ * The default baker. Draws each shard to a reusable scratch canvas with
  * the kind's `draw`, applies its variance mask, then composites it onto the
  * layer canvas with `lighter` and a per-shard blur.
  */
@@ -30,72 +30,78 @@ export const canvas2dBaker: Baker = {
     const unit = resolution / 2;
     const px = resolution / 1024;
 
-    for (const shard of layer.shards) {
-      throwIfAborted(signal);
-      if (!shard.visible) continue;
-      const def = getShardKind(shard.kind);
-      if (!def) continue;
-
-      const scratch = createCanvas(resolution, resolution);
-      const scratchCtx = get2dContext(scratch);
-      if (!scratchCtx) {
-        freeCanvas(scratch);
-        continue;
-      }
-
-      const params = applyRayScale(
-        shard.params,
-        def.params as Record<string, { ray?: boolean }>,
-        opts.rayScale,
-      );
-      const env = {
-        unit,
-        px,
-        color: shard.color,
-        rayScale: opts.rayScale,
-        size: resolution,
-        rng: mulberry32(shardSeed(shard.id, shard.seed)),
-        rgba: makeRgba(shard.color),
-      };
-
-      // The context is centred and turned by the light's rotation for the shard.
-      scratchCtx.save();
-      scratchCtx.translate(unit, unit);
-      scratchCtx.rotate((layer.rotation * Math.PI) / 180);
-      try {
-        def.draw(scratchCtx, params as never, env);
-      } catch (error) {
-        // A misbehaving custom kind must not take down the whole bake, but a
-        // silent skip makes it hard to notice.
-        warnShardFailure(shard.kind, shard.id, 'draw', error);
-      }
-      scratchCtx.restore();
-
-      if (def.mask) {
-        try {
-          def.mask(scratchCtx, params as never, env, resolution);
-        } catch (error) {
-          warnShardFailure(shard.kind, shard.id, 'mask', error);
-        }
-      }
-
-      let blur = 0;
-      if (def.blur) blur = def.blur(params as never, env);
-      else if (typeof params.softness === 'number') blur = params.softness;
-      // `softness` (and a kind's `blur()`) are px at a 1024 bake; scale to this
-      // bake's resolution so a light looks the same at any resolution.
-      blur *= px;
-
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
-      if (blur > 0 && typeof ctx.filter === 'string') ctx.filter = `blur(${blur}px)`;
-      ctx.drawImage(scratch as unknown as CanvasImageSource, 0, 0);
-      ctx.restore();
-
+    // One scratch canvas for the whole bake, cleared before each shard, so a
+    // layer with many shards allocates one full-size canvas instead of N.
+    const scratch = createCanvas(resolution, resolution);
+    const scratchCtx = get2dContext(scratch);
+    if (!scratchCtx) {
       freeCanvas(scratch);
+      freeCanvas(canvas);
+      throw new NullContextError();
     }
 
-    return encode(canvas, opts, signal);
+    try {
+      for (const shard of layer.shards) {
+        throwIfAborted(signal);
+        if (!shard.visible) continue;
+        const def = getShardKind(shard.kind);
+        if (!def) continue;
+
+        const params = applyRayScale(
+          shard.params,
+          def.params as Record<string, { ray?: boolean }>,
+          opts.rayScale,
+        );
+        const env = {
+          unit,
+          px,
+          color: shard.color,
+          rayScale: opts.rayScale,
+          size: resolution,
+          rng: mulberry32(shardSeed(shard.id, shard.seed)),
+          rgba: makeRgba(shard.color),
+        };
+
+        scratchCtx.clearRect(0, 0, resolution, resolution);
+        // The context is centred and turned by the light's rotation for the shard.
+        scratchCtx.save();
+        scratchCtx.translate(unit, unit);
+        scratchCtx.rotate((layer.rotation * Math.PI) / 180);
+        try {
+          def.draw(scratchCtx, params as never, env);
+        } catch (error) {
+          // A misbehaving custom kind must not take down the whole bake, but a
+          // silent skip makes it hard to notice.
+          warnShardFailure(shard.kind, shard.id, 'draw', error);
+        }
+        scratchCtx.restore();
+
+        if (def.mask) {
+          try {
+            def.mask(scratchCtx, params as never, env, resolution);
+          } catch (error) {
+            warnShardFailure(shard.kind, shard.id, 'mask', error);
+          }
+        }
+
+        let blur = 0;
+        if (def.blur) blur = def.blur(params as never, env);
+        else if (typeof params.softness === 'number') blur = params.softness;
+        // `softness` (and a kind's `blur()`) are px at a 1024 bake; scale to this
+        // bake's resolution so a light looks the same at any resolution.
+        blur *= px;
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        if (blur > 0 && typeof ctx.filter === 'string') ctx.filter = `blur(${blur}px)`;
+        ctx.drawImage(scratch as unknown as CanvasImageSource, 0, 0);
+        ctx.restore();
+      }
+
+      return await encode(canvas, opts, signal);
+    } finally {
+      freeCanvas(scratch);
+    }
   },
 };
 
