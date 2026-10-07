@@ -30,7 +30,7 @@ export interface ShardLightProps {
   color?: string;
   /** CSS edge length of the light box. */
   size?: number | string;
-  /** Bake size. `'auto'` uses rendered size × DPR, capped. */
+  /** Bake size. Default 1024; `'auto'` measures the rendered size × DPR on mount, capped. */
   resolution?: number | 'auto';
   /** Thins every ray. */
   rayScale?: number;
