@@ -1,5 +1,18 @@
 # demo
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies [23aa470]
+- Updated dependencies [9e3ad8b]
+- Updated dependencies [7e89511]
+- Updated dependencies [3e19e57]
+- Updated dependencies [3d8c62d]
+- Updated dependencies [34d4d07]
+- Updated dependencies [45dc7e2]
+  - shardlight@0.2.1
+
 ## 0.0.1
 
 ### Patch Changes
