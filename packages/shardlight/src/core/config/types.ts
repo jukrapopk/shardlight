@@ -56,7 +56,7 @@ export interface FanParams {
   falloff: number;
   /** Distance from the root over which the ray ramps in. */
   fadeIn: number;
-  /** Composite blur, px (ray-scaled). */
+  /** Composite blur, px at a 1024 bake (ray-scaled). */
   softness: number;
 }
 
@@ -78,6 +78,7 @@ export interface ClusterParams {
   taper: number;
   falloff: number;
   fadeIn: number;
+  /** Composite blur, px at a 1024 bake (ray-scaled). */
   softness: number;
 }
 
@@ -89,7 +90,7 @@ export interface HaloParams {
   width: number;
   /** Edge curve across the thickness. */
   falloff: number;
-  /** Composite blur, px. */
+  /** Composite blur, px at a 1024 bake. */
   softness: number;
   /** Uneven brightness around the ring. */
   variance: number;

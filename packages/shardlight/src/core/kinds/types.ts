@@ -35,7 +35,8 @@ export interface ShardKindDefinition<K extends string = string, P extends ParamM
   params: P;
   draw: (ctx: Ctx2D, params: ParamsFromSchema<P>, env: DrawEnv) => void;
   /**
-   * Optional composite blur for this shard, in px. Defaults to the shard's
+   * Optional composite blur for this shard, in base px (px at a 1024 bake — the
+   * baker scales it to the current resolution). Defaults to the shard's
    * `softness` param when present.
    */
   blur?: (params: ParamsFromSchema<P>, env: DrawEnv) => number;

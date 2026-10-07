@@ -4,6 +4,8 @@ export interface RenderOptions {
   target: Target;
   /** Preset name, or null for an empty light. */
   preset?: string | null;
+  /** Partial config merged over the preset (for controlled tests). */
+  config?: Record<string, unknown>;
   /** Pixel size of the square stage. */
   size?: number;
   /** Bake resolution. */

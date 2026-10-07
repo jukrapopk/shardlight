@@ -67,6 +67,7 @@ async function renderDOM(options: RenderOptions): Promise<void> {
     reactRoot.render(
       <ShardLight
         preset={resolvePreset(options.preset)}
+        config={options.config as never}
         size={size}
         resolution={options.resolution ?? size}
         onReady={finish}

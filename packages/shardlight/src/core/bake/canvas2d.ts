@@ -80,6 +80,9 @@ export const canvas2dBaker: Baker = {
       let blur = 0;
       if (def.blur) blur = def.blur(params as never, env);
       else if (typeof params.softness === 'number') blur = params.softness;
+      // `softness` (and a kind's `blur()`) are px at a 1024 bake; scale to this
+      // bake's resolution so a light looks the same at any resolution.
+      blur *= px;
 
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
