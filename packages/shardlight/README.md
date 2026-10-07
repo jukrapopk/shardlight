@@ -123,7 +123,8 @@ effects={[
 The five built-in presets ship effect-free, so a preset stays still until you give it motion.
 
 A light only runs its animation loop while it is on screen and the tab is visible, so effects
-pause offscreen and resume when it scrolls back. A light with nothing to animate — an
+pause offscreen and resume when it scrolls back. Every effect animates by default; `hover` and
+`collapse` are input-driven and only run while easing. A light with nothing to animate — an
 effect-free preset — runs no frames at all.
 
 ### three.js — `shardlight/three`
@@ -242,11 +243,11 @@ Override, hide or extend a preset by `id`. Every preset also takes a light-wide
 
 ### Resolution
 
-The bake edge. Default **1024**; `'auto'` uses the rendered size × DPR, capped at 2048
-(1024 on low-memory devices). `'auto'` is measured once on mount, so it does not track a
-later resize, and a light mounted while hidden falls back to 256. Each layer is one
-`resolution²` RGBA image — about 4 MiB decoded at 1024², so `star`'s two layers are ~8 MiB.
-Lower it for many lights at once; raise it for very large ones.
+The bake edge. `<ShardLight>` defaults to **`'auto'`** — the rendered size × DPR, measured once
+on mount, capped at 2048 (1024 on low-memory devices). It does not track a later resize, and a
+light mounted while hidden falls back to 256. The headless model and the three.js / R3F adapters
+default to **1024**. Each layer is one `resolution²` RGBA image — about 4 MiB decoded at 1024²,
+so `star`'s two layers are ~8 MiB. Lower it for many lights at once; raise it for very large ones.
 
 ### SSR and first paint
 
@@ -318,8 +319,9 @@ can drive it with no JS per frame:
 .badge:hover { --shardlight-rays-scale: 1.3; --shardlight-rays-rotation: 15deg; }
 ```
 
-**Render options.** `resolution` (`'auto'` = rendered size × DPR) and `rayScale` at the adapter;
-`baker`, `accepts`, `reducedMotion`, `hoverEase` and `collapseEase` on the model.
+**Render options.** `resolution` (`'auto'` = rendered size × DPR, the `<ShardLight>` default) and
+`rayScale` at the adapter; `baker`, `accepts`, `reducedMotion`, `hoverEase` and `collapseEase` on
+the model.
 
 **Data first.** Every light is a versioned `ShardLightConfig`: save and load it as JSON,
 `migrateConfig()` old saves, and `prewarm()` a config's layers before first paint.
@@ -364,6 +366,10 @@ registerPreset('star-spin', {
 const Dots = createShardComponent(dots);
 <ShardLight preset="star"><Dots id="crown" count={8} /></ShardLight>
 ```
+
+An effect animates by default. Mark one `inputDriven: true` — as the built-in `hover` and
+`collapse` do — only if it moves purely in response to input, so an idle light can stop its
+animation loop.
 
 `ShardKinds`, `ShardPresets` and `ChannelValues` are augmentable, so downstream kinds and presets
 are typed too:

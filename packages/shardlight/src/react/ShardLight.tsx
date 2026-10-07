@@ -30,7 +30,7 @@ export interface ShardLightProps {
   color?: string;
   /** CSS edge length of the light box. */
   size?: number | string;
-  /** Bake size. Default 1024; `'auto'` measures the rendered size × DPR on mount, capped. */
+  /** Bake size. Default `'auto'`: the rendered size × DPR, measured on mount, capped. */
   resolution?: number | 'auto';
   /** Thins every ray. */
   rayScale?: number;
@@ -76,7 +76,7 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
       config,
       color,
       size = 256,
-      resolution = 1024,
+      resolution = 'auto',
       rayScale,
       effects,
       flicker,
@@ -165,7 +165,7 @@ export const ShardLight = forwardRef<ShardLightHandle, ShardLightProps>(
       });
 
       // Subscribe to the shared loop only while this light is both on screen
-      // and has something to animate (a continuous effect, or hover/collapse
+      // and has something to animate (a time-driven effect, or hover/collapse
       // easing). A static preset runs no frames at all.
       let visible = false;
       let active = model.animating;
