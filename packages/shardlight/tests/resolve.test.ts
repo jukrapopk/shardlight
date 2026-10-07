@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { resolveConfig } from '../src/core/index.js';
 
 describe('resolveConfig merge rules', () => {
@@ -165,5 +165,16 @@ describe('defaults and clamping', () => {
     });
     expect(light.color).toBe('#abcdef');
     expect(light.rotation).toBe(10);
+  });
+
+  it('warns that a non-add blend is not implemented', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const light = resolveConfig({
+      preset: null,
+      shards: [{ id: 'x', kind: 'blob', blend: 'screen' }],
+    });
+    expect(light.shards[0]!.blend).toBe('screen');
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('"screen"'));
+    warn.mockRestore();
   });
 });

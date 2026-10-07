@@ -168,12 +168,19 @@ function resolveShard(
     warn(`shard "${shard.id}" channel "${channel}" is not a valid CSS identifier`);
   }
 
+  const blend = shard.blend ?? 'add';
+  if (blend !== 'add') {
+    // No target implements screen yet, so say so rather than shipping a
+    // silently-wrong look. See ShardBlend.
+    warn(`shard "${shard.id}" blend "${blend}" is not implemented; it renders as "add"`);
+  }
+
   return {
     id: shard.id,
     kind: shard.kind,
     visible: shard.visible ?? true,
     channel,
-    blend: shard.blend ?? 'add',
+    blend,
     color: shard.color ?? lightColor,
     seed: shard.seed ?? lightSeed,
     spin: resolveSpin(shard.spin, shard.id, warn),

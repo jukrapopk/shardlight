@@ -121,6 +121,11 @@ export interface BaseShardPresets {
 // Shards and lights
 // ---------------------------------------------------------------------------
 
+/**
+ * How a shard's layer composites. Only `'add'` is implemented today; `'screen'`
+ * is accepted by the config but currently renders as `'add'` (with a
+ * development warning).
+ */
 export type ShardBlend = 'add' | 'screen';
 
 export interface ShardSpin {

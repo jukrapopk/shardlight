@@ -194,6 +194,15 @@ model.layers;                    // the current host layers
 model.dispose();
 ```
 
+### Blending and backgrounds
+
+Layers composite **additively** — `plus-lighter` on the DOM, `AdditiveBlending` in
+three.js and R3F. Additive light only ever brightens, so a light is invisible on a white
+or very light background; give it a dark (or at least dark-enough) backdrop.
+
+A shard's `blend` accepts `'add'` (the default) or `'screen'`, but only `'add'` is
+implemented today: `'screen'` renders as `'add'` and logs a development warning.
+
 ## Control
 
 Everything below animates without re-baking. Only changing a shard — its kind, params or color —
